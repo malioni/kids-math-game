@@ -19,7 +19,7 @@ Each world folder contains a `levels.json` — a JSON array of level IDs in inte
   "id": "world_forest_01",
   "world": "forest",
   "mechanic": "placement",
-  "target_count": 2,
+  "target_count": 1,
   "narrative_key": "forest_bridge_intro",
   "skill_tags": ["counting", "one-to-one-correspondence"]
 }
