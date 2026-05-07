@@ -1,6 +1,6 @@
 extends Node
 
-## Loads a single level by ID from data/levels/. Returns {} on missing file or malformed JSON.
+## Loads a single level by ID from data/levels/. Returns {} on missing file, malformed JSON, or if the parsed result is not a Dictionary.
 func load_level(level_id: String) -> Dictionary:
 	var parts: PackedStringArray = level_id.split("_")
 	parts.resize(parts.size() - 1)
