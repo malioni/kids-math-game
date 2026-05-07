@@ -1,0 +1,8 @@
+{
+  "id": "world_forest_05",
+  "world": "forest",
+  "mechanic": "placement",
+  "target_count": 3,
+  "narrative_key": "forest_bridge_05",
+  "skill_tags": ["counting", "one-to-one-correspondence"]
+}
