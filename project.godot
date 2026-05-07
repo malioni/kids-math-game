@@ -24,6 +24,7 @@ config/auto_accept_quit=false
 GameRegistry="*res://scripts/autoloads/game_registry.gd"
 Progression="*res://scripts/autoloads/progression.gd"
 SaveManager="*res://scripts/autoloads/save_manager.gd"
+LevelLoader="*res://scripts/systems/level_loader.gd"
 
 [display]
 
