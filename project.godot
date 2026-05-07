@@ -33,6 +33,10 @@ window/size/mode=2
 window/size/initial_screen=0
 window/handheld/orientation="landscape"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
 [rendering]
 
 rendering_device/driver.windows="d3d12"
