@@ -13,6 +13,7 @@ config_version=5
 config/name="kids-math-game"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
+config/auto_accept_quit=false
 
 [physics]
 
@@ -30,6 +31,7 @@ window/size/viewport_width=1280
 window/size/viewport_height=720
 window/size/mode=2
 window/size/initial_screen=0
+window/handheld/orientation="landscape"
 
 [rendering]
 
