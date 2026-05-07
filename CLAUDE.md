@@ -6,13 +6,13 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ```bash
 # Run the game (Mac)
-/Applications/Godot.app/Contents/MacOS/Godot --path .
+/Applications/Godot-2.app/Contents/MacOS/Godot --path .
 
 # Run the game headless
-/Applications/Godot.app/Contents/MacOS/Godot --path . --headless --quit
+/Applications/Godot-2.app/Contents/MacOS/Godot --path . --headless --quit
 
 # Run GUT tests
-/Applications/Godot.app/Contents/MacOS/Godot --path . --headless -s addons/gut/gut_cmdln.gd -gconfig=.gut_config.json
+/Applications/Godot-2.app/Contents/MacOS/Godot --path . --headless -s addons/gut/gut_cmdln.gd -gconfig=.gut_config.json
 
 # Lint GDScript (requires gdtoolkit: pip install gdtoolkit)
 gdlint scripts/ scenes/
