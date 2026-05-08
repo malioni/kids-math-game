@@ -13,7 +13,8 @@ func _ready() -> void:
 	_levels = LevelLoader.get_levels_for_world("forest")
 	_mechanic.correct.connect(_on_correct)
 	_mechanic.incorrect.connect(_on_incorrect)
-	_load_level(0)
+	var start_index: int = clampi(SaveManager.load_progress("forest") - 1, 0, _levels.size() - 1)
+	_load_level(start_index)
 
 
 func _load_level(index: int) -> void:
@@ -24,8 +25,10 @@ func _load_level(index: int) -> void:
 
 func _on_correct() -> void:
 	if _current_index >= _levels.size() - 1:
+		SaveManager.reset_progress("forest")
 		world_complete.emit()
 	else:
+		SaveManager.save_progress("forest", _current_index + 2)
 		_load_level(_current_index + 1)
 
 
