@@ -2,6 +2,7 @@ extends Node
 
 ## Handles reading and writing local save data for level progress.
 
+## Path to the local save file.
 const SAVE_PATH := "user://save.cfg"
 
 const _SECTION_PROGRESS := "progress"

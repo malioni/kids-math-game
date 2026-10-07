@@ -1,9 +1,336 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/worlds/forest_bridge.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/mechanics/placement_mechanic.tscn" id="2_mechanic"]
+[ext_resource type="Script" path="res://scripts/worlds/forest_bridge.gd" id="1_r6ik2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/bg_river.png" id="2_snsyn"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/bridge_platform.png" id="3_l16ox"]
+[ext_resource type="PackedScene" path="res://scenes/mechanics/placement_mechanic.tscn" id="4_qwf10"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/home.png" id="5_qbtwk"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_celebrate.png" id="6_fw6qt"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_fall.png" id="7_4ptvh"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_idle.png" id="8_sjol5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_walk.png" id="9_22dpq"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="10_jkb70"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.png" id="go_icon_tex"]
 
-[node name="ForestBridge" type="Node2D"]
-script = ExtResource("1_script")
+[sub_resource type="AtlasTexture" id="AtlasTexture_hkbu2"]
+atlas = ExtResource("6_fw6qt")
+region = Rect2(0, 0, 64, 64)
 
-[node name="PlacementMechanic" parent="." instance=ExtResource("2_mechanic")]
+[sub_resource type="AtlasTexture" id="AtlasTexture_n8vu1"]
+atlas = ExtResource("6_fw6qt")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0l78d"]
+atlas = ExtResource("6_fw6qt")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_awcj7"]
+atlas = ExtResource("6_fw6qt")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hv663"]
+atlas = ExtResource("7_4ptvh")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6gowc"]
+atlas = ExtResource("7_4ptvh")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sm1xo"]
+atlas = ExtResource("7_4ptvh")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hcj3x"]
+atlas = ExtResource("8_sjol5")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kosi1"]
+atlas = ExtResource("8_sjol5")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_glgs1"]
+atlas = ExtResource("8_sjol5")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5rfji"]
+atlas = ExtResource("8_sjol5")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_acqaq"]
+atlas = ExtResource("9_22dpq")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qojim"]
+atlas = ExtResource("9_22dpq")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_33ld5"]
+atlas = ExtResource("9_22dpq")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yndu8"]
+atlas = ExtResource("9_22dpq")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i70p8"]
+atlas = ExtResource("9_22dpq")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vtvan"]
+atlas = ExtResource("9_22dpq")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_p4n18"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hkbu2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n8vu1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0l78d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_awcj7")
+}],
+"loop": true,
+"name": &"celebrate",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hv663")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6gowc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sm1xo")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hcj3x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kosi1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_glgs1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5rfji")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_acqaq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qojim")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_33ld5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yndu8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i70p8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vtvan")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[sub_resource type="Animation" id="Animation_e0ldd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BridgeLayer/PlacementMechanic:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Character:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(150, 340)]
+}
+
+[sub_resource type="Animation" id="Animation_smgvd"]
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Character:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.8),
+"transitions": PackedFloat32Array(1, 2, 1),
+"update": 0,
+"values": [Vector2(150, 340), Vector2(360, 340), Vector2(380, 820)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Character")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [&"walk"],
+"method": &"play"
+}, {
+"args": [&"fall"],
+"method": &"play"
+}]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("BridgeLayer/PlacementMechanic:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_g1bp4"]
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Character:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(-2, 1),
+"update": 0,
+"values": [Vector2(150, 340), Vector2(1150, 340)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Character")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [&"walk"],
+"method": &"play"
+}, {
+"args": [&"idle"],
+"method": &"play"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pqt7u"]
+_data = {
+&"RESET": SubResource("Animation_e0ldd"),
+&"bridge_collapse": SubResource("Animation_smgvd"),
+&"walk_across": SubResource("Animation_g1bp4")
+}
+
+[sub_resource type="Gradient" id="Gradient_djeja"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.82, 0.47, 1, 0.48, 0.62, 0.32, 1, 0.87, 0.5, 0.24, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_m0u85"]
+gradient = SubResource("Gradient_djeja")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_idf6t"]
+direction = Vector3(0, -1, 0)
+spread = 60.0
+initial_velocity_min = 200.0
+initial_velocity_max = 350.0
+gravity = Vector3(0, 400, 0)
+scale_min = 4.0
+scale_max = 8.0
+color_ramp = SubResource("GradientTexture1D_m0u85")
+
+[node name="ForestBridge" type="Node2D" unique_id=1789084449]
+script = ExtResource("1_r6ik2")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=223485824]
+position = Vector2(640, 360)
+texture = ExtResource("2_snsyn")
+
+[node name="BridgeLayer" type="Node2D" parent="." unique_id=1481835943]
+
+[node name="LeftPlatform" type="Sprite2D" parent="BridgeLayer" unique_id=797932933]
+position = Vector2(140, 400)
+texture = ExtResource("3_l16ox")
+
+[node name="RightPlatform" type="Sprite2D" parent="BridgeLayer" unique_id=1651159020]
+position = Vector2(1140, 400)
+texture = ExtResource("3_l16ox")
+
+[node name="PlacementMechanic" parent="BridgeLayer" unique_id=899994164 instance=ExtResource("4_qwf10")]
+position = Vector2(640, 400)
+go_texture = ExtResource("go_icon_tex")
+
+[node name="Home" type="Sprite2D" parent="." unique_id=1288162524]
+position = Vector2(1215, 318)
+texture = ExtResource("5_qbtwk")
+
+[node name="Character" type="AnimatedSprite2D" parent="." unique_id=919596609]
+position = Vector2(150, 340)
+sprite_frames = SubResource("SpriteFrames_p4n18")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1433981335]
+libraries/ = SubResource("AnimationLibrary_pqt7u")
+
+[node name="CelebrationParticles" type="GPUParticles2D" parent="." unique_id=400001633]
+position = Vector2(1150, 320)
+emitting = false
+amount = 60
+lifetime = 1.2
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_idf6t")
+
+[node name="RetryPrompt" type="CanvasLayer" parent="." unique_id=1851348834]
+
+[node name="RetryIcon" type="TextureButton" parent="RetryPrompt" unique_id=506535667]
+visible = false
+offset_left = 580.0
+offset_top = 300.0
+offset_right = 700.0
+offset_bottom = 420.0
+texture_normal = ExtResource("10_jkb70")
+ignore_texture_size = true
+stretch_mode = 5
