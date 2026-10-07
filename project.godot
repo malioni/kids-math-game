@@ -11,13 +11,9 @@ config_version=5
 [application]
 
 config/name="kids-math-game"
+config/auto_accept_quit=false
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
-config/auto_accept_quit=false
-
-[physics]
-
-3d/physics_engine="Jolt Physics"
 
 [autoload]
 
@@ -31,12 +27,15 @@ LevelLoader="*res://scripts/systems/level_loader.gd"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/size/mode=2
-window/size/initial_screen=0
 window/handheld/orientation="landscape"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
 
 [rendering]
 
