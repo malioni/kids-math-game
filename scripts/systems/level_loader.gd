@@ -1,6 +1,7 @@
 extends Node
 
-## Loads a single level by ID from data/levels/. Returns {} on missing file, malformed JSON, or if the parsed result is not a Dictionary.
+## Loads a single level by ID from data/levels/.
+## Returns {} on missing file, malformed JSON, or if the parsed result is not a Dictionary.
 func load_level(level_id: String) -> Dictionary:
 	var parts: PackedStringArray = level_id.split("_")
 	parts.resize(parts.size() - 1)
@@ -22,7 +23,9 @@ func load_level(level_id: String) -> Dictionary:
 	var parsed: Variant = json.data
 
 	if not parsed is Dictionary:
-		push_warning("LevelLoader: expected Dictionary, got %s in %s" % [type_string(typeof(parsed)), path])
+		push_warning(
+			"LevelLoader: expected Dictionary, got %s in %s" % [type_string(typeof(parsed)), path]
+		)
 		return {}
 
 	return parsed
@@ -41,7 +44,9 @@ func get_levels_for_world(world_name: String) -> Array[Dictionary]:
 	var err: Error = json.parse(content)
 
 	if err != OK:
-		push_warning("LevelLoader: failed to parse JSON in %s: %s" % [index_path, json.get_error_message()])
+		push_warning(
+			"LevelLoader: failed to parse JSON in %s: %s" % [index_path, json.get_error_message()]
+		)
 		return []
 
 	var parsed: Variant = json.data
