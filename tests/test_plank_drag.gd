@@ -74,3 +74,15 @@ func test_plank_drag_ignores_input_when_locked() -> void:
 	_plank.lock()
 	_press(Vector2(200, 200), true)
 	assert_false(_plank.is_dragging())
+
+
+func test_plank_drag_set_not_interactive_mid_drag_cancels_drag() -> void:
+	watch_signals(_plank)
+	_press(Vector2(200, 200), true)
+	_move(Vector2(300, 100))
+	_plank.interactive = false
+	assert_false(_plank.is_dragging())
+	assert_false(_plank.get_node("Shadow").visible)
+	assert_signal_not_emitted(_plank, "dropped")
+	await wait_seconds(0.4)
+	assert_almost_eq(_plank.position, Vector2(200, 200), Vector2(0.5, 0.5))

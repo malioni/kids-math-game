@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_idle.png" id="8_sjol5"]
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_walk.png" id="9_22dpq"]
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="10_jkb70"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.png" id="go_icon_tex"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hkbu2"]
 atlas = ExtResource("6_fw6qt")
@@ -298,6 +299,7 @@ texture = ExtResource("3_l16ox")
 
 [node name="PlacementMechanic" parent="BridgeLayer" unique_id=899994164 instance=ExtResource("4_qwf10")]
 position = Vector2(640, 400)
+go_texture = ExtResource("go_icon_tex")
 
 [node name="Home" type="Sprite2D" parent="." unique_id=1288162524]
 position = Vector2(1215, 318)

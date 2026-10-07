@@ -205,3 +205,21 @@ func test_placement_mechanic_spawns_n_plus_1_planks_in_source() -> void:
 	mechanic.target_count = 4
 	mechanic.reset()
 	assert_eq(mechanic.get_planks().size(), 5)
+
+
+func test_set_interactive_false_mid_drag_cancels_drag() -> void:
+	mechanic.reset()
+	var plank: PlankDrag = mechanic.get_planks()[0]
+	plank._begin_drag(plank.global_position)
+	mechanic.set_interactive(false)
+	assert_false(plank.is_dragging())
+	assert_eq(mechanic.get_placed_count(), 0)
+
+
+func test_go_texture_applied_to_go_button() -> void:
+	var m: Node2D = preload("res://scenes/mechanics/placement_mechanic.tscn").instantiate()
+	var tex := PlaceholderTexture2D.new()
+	m.go_texture = tex
+	add_child(m)
+	assert_eq(m.get_node("GoButton").texture_normal, tex)
+	m.queue_free()

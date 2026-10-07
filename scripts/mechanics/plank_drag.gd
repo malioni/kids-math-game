@@ -6,11 +6,17 @@ extends Node2D
 ## Emitted when the player releases a drag, with the plank's global position.
 signal dropped(release_position: Vector2)
 
+## Seconds the plank takes to tween back to its origin.
 const BOUNCE_DURATION := 0.25
+## z_index applied to the plank while it is being dragged.
 const DRAG_Z_INDEX := 10
 
-## When false, the plank ignores pointer input.
-var interactive: bool = true
+## When false, the plank ignores pointer input. Setting it false mid-drag cancels the drag.
+var interactive: bool = true:
+	set(value):
+		interactive = value
+		if not interactive and _dragging:
+			cancel_drag()
 
 var _origin: Vector2 = Vector2.ZERO
 var _dragging: bool = false
@@ -47,6 +53,16 @@ func bounce_back() -> void:
 	var tween := create_tween()
 	tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	tween.tween_property(self, "position", _origin, BOUNCE_DURATION)
+
+
+## Aborts the current drag without emitting dropped and bounces the plank back.
+func cancel_drag() -> void:
+	if not _dragging:
+		return
+	_dragging = false
+	z_index = _base_z_index
+	_shadow.visible = false
+	bounce_back()
 
 
 ## Fixes the plank in place so it can no longer be dragged.

@@ -9,28 +9,34 @@ signal incorrect
 ## Emitted on every placement, removal, or reset with the new count value.
 signal count_changed(new_count: int)
 
+## Scene instantiated for each gap slot.
 const GAP_SLOT_SCENE := preload("res://scenes/mechanics/gap_slot.tscn")
+## Scene instantiated for each draggable plank.
 const PLANK_DRAG_SCENE := preload("res://scenes/mechanics/plank_drag.tscn")
 ## Horizontal space, in pixels, the gap slots are spread across.
-const BRIDGE_WIDTH := 600.0
+@export var bridge_width: float = 600.0
 ## Vertical offset of the plank supply row below the bridge.
-const PLANK_SOURCE_Y := 200.0
+@export var plank_source_y: float = 200.0
 ## Horizontal distance between planks in the supply row.
-const PLANK_SPACING := 120.0
+@export var plank_spacing: float = 120.0
 ## Maximum distance from a slot centre at which a dropped plank snaps in.
-const SNAP_RADIUS := 60.0
+@export var snap_radius: float = 60.0
 
 ## The number of objects the player must place to satisfy this mechanic.
 @export var target_count: int = 0
+## Texture shown on the Go button.
+@export var go_texture: Texture2D
 
 var _placed_count: int = 0
 
 @onready var _gap_container: Node2D = $GapContainer
 @onready var _plank_source: Node2D = $PlankSource
-@onready var _go_button: BaseButton = $GoButton
+@onready var _go_button: TextureButton = $GoButton
 
 
 func _ready() -> void:
+	if go_texture != null:
+		_go_button.texture_normal = go_texture
 	_go_button.pressed.connect(confirm)
 
 
@@ -91,19 +97,19 @@ func get_planks() -> Array[Node]:
 func _layout_gaps() -> void:
 	if target_count <= 0:
 		return
-	var spacing: float = BRIDGE_WIDTH / target_count
+	var spacing: float = bridge_width / target_count
 	for i in target_count:
 		var slot: GapSlot = GAP_SLOT_SCENE.instantiate()
-		slot.position = Vector2(-BRIDGE_WIDTH / 2.0 + spacing * (i + 0.5), 0.0)
+		slot.position = Vector2(-bridge_width / 2.0 + spacing * (i + 0.5), 0.0)
 		_gap_container.add_child(slot)
 
 
 func _spawn_planks() -> void:
 	var plank_count: int = target_count + 1
-	var start_x: float = -PLANK_SPACING * (plank_count - 1) / 2.0
+	var start_x: float = -plank_spacing * (plank_count - 1) / 2.0
 	for i in plank_count:
 		var plank: PlankDrag = PLANK_DRAG_SCENE.instantiate()
-		plank.position = Vector2(start_x + PLANK_SPACING * i, PLANK_SOURCE_Y)
+		plank.position = Vector2(start_x + plank_spacing * i, plank_source_y)
 		plank.dropped.connect(_on_plank_dropped.bind(plank))
 		_plank_source.add_child(plank)
 
@@ -121,7 +127,7 @@ func _on_plank_dropped(release_position: Vector2, plank: PlankDrag) -> void:
 
 func _find_snap_slot(point: Vector2) -> GapSlot:
 	var nearest: GapSlot = null
-	var nearest_distance: float = SNAP_RADIUS
+	var nearest_distance: float = snap_radius
 	for slot: GapSlot in _gap_container.get_children():
 		if slot.is_occupied:
 			continue
