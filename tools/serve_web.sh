@@ -32,6 +32,29 @@ fi
 
 python3 -m http.server "$PORT" --bind 127.0.0.1 >/dev/null 2>&1 &
 SERVER_PID=$!
-trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
-echo "Starting tunnel. Open the https://....trycloudflare.com address it prints on your iPhone."
-cloudflared tunnel --no-autoupdate --url "http://127.0.0.1:${PORT}"
+LOG="$(mktemp "${TMPDIR:-/tmp}/cloudflared.XXXXXX")"
+cloudflared tunnel --no-autoupdate --url "http://127.0.0.1:${PORT}" >"$LOG" 2>&1 &
+TUNNEL_PID=$!
+trap 'kill "$SERVER_PID" "$TUNNEL_PID" 2>/dev/null || true; rm -f "$LOG"' EXIT
+
+echo "Starting the tunnel (this can take up to 30 seconds)..."
+URL=""
+for _ in $(seq 1 60); do
+	URL="$(grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' "$LOG" | grep -v '^https://api\.' | head -n 1 || true)"
+	if [ -n "$URL" ] || ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+		break
+	fi
+	sleep 0.5
+done
+
+if [ -z "$URL" ]; then
+	echo "No tunnel address appeared. Last lines from cloudflared:"
+	tail -n 20 "$LOG"
+	exit 1
+fi
+
+echo
+echo "  Open this on your iPhone:  $URL"
+echo
+echo "Leave this window open while you play. Ctrl+C stops the server and the tunnel."
+wait "$TUNNEL_PID"
