@@ -51,7 +51,7 @@ A small creature needs to cross a river to get home before dark. A gap blocks th
 
 - **Teaches:** Addition, number composition (which numbers make a total)
 - **Mechanic:** `PlacementMechanic`
-- **Levels:** 10 levels, bridge length rising from under 5 to about 50; each puzzle is generated from per-level ranges, so replays differ
+- **Levels:** 10 levels, bridge length rising from under 5 to about 30; each puzzle is generated from per-level ranges, so replays differ
 - **Win condition:** Creature reaches home; warm celebratory animation
 - **Fail state:** Bridge collapses, planks float away — gentle retry prompt, no penalty
 

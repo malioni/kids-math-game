@@ -62,9 +62,9 @@ func test_world_forest_level_01_bridge_length_below_5() -> void:
 	assert_lt(_levels[0]["bridge_length"]["max"], 5)
 
 
-func test_world_forest_level_10_bridge_length_around_50() -> void:
-	assert_gte(_levels[9]["bridge_length"]["min"], 45)
-	assert_lte(_levels[9]["bridge_length"]["max"], 55)
+func test_world_forest_level_10_bridge_length_around_30() -> void:
+	assert_gte(_levels[9]["bridge_length"]["min"], 25)
+	assert_lte(_levels[9]["bridge_length"]["max"], 35)
 
 
 func test_world_forest_bridge_length_min_never_decreases_between_levels() -> void:
