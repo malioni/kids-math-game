@@ -94,6 +94,12 @@ func get_remaining_length() -> int:
 	return _target_length - get_placed_total()
 
 
+## Returns the global position where the placed planks end (the left bank edge if none).
+## Uses the placed total rather than plank nodes, which may still be tweening into place.
+func get_bridge_end_position() -> Vector2:
+	return to_global(Vector2(-bridge_width / 2.0 + get_placed_total() * _unit_px, 0.0))
+
+
 ## Returns every plank, in the pile and on the bridge.
 func get_planks() -> Array[Node]:
 	return _plank_source.get_children() + _placed_planks.get_children()

@@ -34,6 +34,7 @@ func _make_world() -> Node2D:
 	var world: Node2D = SCENE.instantiate()
 	world.celebrate_duration = 0.01
 	world.puzzle_seed = _SEED
+	world.walk_speed = 50000.0
 	world.get_node("AnimationPlayer").speed_scale = _ANIM_SPEED
 	return world
 
@@ -213,3 +214,32 @@ func test_forest_bridge_last_level_correct_resets_progress() -> void:
 	_fill_and_confirm(world.get_node("BridgeLayer/PlacementMechanic"))
 	await wait_seconds(_SETTLE)
 	assert_eq(SaveManager.load_progress("forest"), 1)
+
+
+func test_forest_bridge_incorrect_fox_falls_where_planks_end() -> void:
+	var character: Node2D = _world.get_node("Character")
+	_drop_one_short_and_confirm(_mechanic)
+	var end_x: float = _world.to_local(_mechanic.get_bridge_end_position()).x
+	await wait_seconds(_SETTLE)
+	assert_almost_eq(character.position.x, end_x + 12.0, 0.5)
+	assert_gt(character.position.y, 700.0)
+
+
+func test_forest_bridge_incorrect_on_empty_bridge_falls_at_bank_edge() -> void:
+	var character: Node2D = _world.get_node("Character")
+	var bank_edge_x: float = _world.to_local(_mechanic.to_global(Vector2(-300, 0))).x
+	_mechanic.confirm()
+	await wait_seconds(_SETTLE)
+	assert_almost_eq(character.position.x, bank_edge_x + 12.0, 0.5)
+
+
+func test_forest_bridge_fox_does_not_fall_before_reaching_plank_end() -> void:
+	var world: Node2D = _make_world()
+	world.walk_speed = 500.0
+	add_child_autofree(world)
+	var mechanic: Node2D = world.get_node("BridgeLayer/PlacementMechanic")
+	var character: Node2D = world.get_node("Character")
+	_drop_one_short_and_confirm(mechanic)
+	await wait_seconds(0.1)
+	assert_eq(character.position.y, 340.0)
+	assert_ne(world.get_node("AnimationPlayer").current_animation, "bridge_collapse")

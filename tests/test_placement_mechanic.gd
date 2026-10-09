@@ -207,3 +207,9 @@ func test_go_texture_applied_to_go_button() -> void:
 	m.go_texture = tex
 	add_child_autofree(m)
 	assert_eq(m.get_node("GoButton").texture_normal, tex)
+
+
+func test_placement_mechanic_bridge_end_position_moves_with_placed_planks() -> void:
+	assert_eq(mechanic.to_local(mechanic.get_bridge_end_position()), Vector2(-300, 0))
+	_drop_on_gap(_plank(3))
+	assert_eq(mechanic.to_local(mechanic.get_bridge_end_position()), Vector2(-300 + 180, 0))

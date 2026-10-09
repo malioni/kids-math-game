@@ -3,8 +3,14 @@ extends Node2D
 ## Emitted when the player completes all levels in this world.
 signal world_complete
 
+# How far past the last plank the fox steps before falling, so it visibly walks off the end.
+const _STEP_OFF_PX := 12.0
+
 ## Seconds the celebration plays at home before the next level loads.
 @export var celebrate_duration: float = 1.5
+## Fox walking speed, in px/s, onto a too-short bridge before it falls.
+## Matches walk_across, which covers 1000 px in 2 s.
+@export var walk_speed: float = 500.0
 ## Seed for puzzle generation. 0 picks a random seed, so every run gets different puzzles.
 @export var puzzle_seed: int = 0
 
@@ -64,9 +70,21 @@ func _on_correct() -> void:
 
 func _on_incorrect() -> void:
 	_mechanic.set_interactive(false)
+	await _walk_to_bridge_end()
 	_anim.play("bridge_collapse")
 	await _anim.animation_finished
 	_retry_prompt.visible = true
+
+
+func _walk_to_bridge_end() -> void:
+	var end_x: float = to_local(_mechanic.get_bridge_end_position()).x + _STEP_OFF_PX
+	var distance: float = end_x - _character.position.x
+	if distance <= 0.0:
+		return
+	_character.play("walk")
+	var tween := create_tween()
+	tween.tween_property(_character, "position:x", end_x, distance / walk_speed)
+	await tween.finished
 
 
 func _on_retry_pressed() -> void:
