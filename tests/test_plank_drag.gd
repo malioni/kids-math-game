@@ -127,3 +127,14 @@ func test_plank_drag_set_not_interactive_mid_drag_cancels_drag() -> void:
 	assert_signal_not_emitted(_plank, "dropped")
 	await wait_seconds(0.4)
 	assert_almost_eq(_plank.position, HOME, Vector2(0.5, 0.5))
+
+
+func test_plank_drag_press_just_outside_drawn_plank_starts_drag() -> void:
+	# Plank spans x 125..275; the touch padding extends the grab area 8 px past each end.
+	_press(Vector2(281, 200), true)
+	assert_true(_plank.is_dragging())
+
+
+func test_plank_drag_press_beyond_touch_padding_is_ignored() -> void:
+	_press(Vector2(200, 200 + 32 + 10), true)
+	assert_false(_plank.is_dragging())

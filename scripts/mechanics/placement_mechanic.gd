@@ -21,7 +21,7 @@ const PLANK_DRAG_SCENE := preload("res://scenes/mechanics/plank_drag.tscn")
 ## Right edge of the plank pile; planks wrap to the next row past this.
 @export var pile_right: float = 340.0
 ## Local y of each pile row, top to bottom.
-@export var pile_row_y: Array[float] = [170.0, 230.0, 290.0]
+@export var pile_row_y: Array[float] = [110.0, 182.0, 254.0]
 ## Horizontal gap between planks in the pile.
 @export var pile_spacing: float = 16.0
 ## Texture shown on the Go button.

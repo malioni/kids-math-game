@@ -17,8 +17,11 @@ const MOVE_DURATION := 0.2
 const DRAG_Z_INDEX := 10
 ## Pointer travel, in pixels, below which a press and release counts as a tap.
 const TAP_THRESHOLD := 12.0
-## Drawn height of the plank in pixels.
-const PLANK_HEIGHT := 40.0
+## Drawn height of the plank in pixels. 64 keeps it near Apple's 44 pt minimum on a phone.
+const PLANK_HEIGHT := 64.0
+## Extra touch area around the drawn plank, so small fingers and narrow planks are easy to grab.
+## Horizontal padding is half the pile spacing, so neighbouring planks' areas don't overlap.
+const TOUCH_PADDING := Vector2(8, 6)
 
 ## When false, the plank ignores pointer input. Setting it false mid-drag cancels the drag.
 var interactive: bool = true:
@@ -148,7 +151,10 @@ func _tween_to(target: Vector2, duration: float, trans: Tween.TransitionType) ->
 
 
 func _contains_global_point(point: Vector2) -> bool:
-	return _body.get_rect().has_point(to_local(point))
+	var area := _body.get_rect().grow_individual(
+		TOUCH_PADDING.x, TOUCH_PADDING.y, TOUCH_PADDING.x, TOUCH_PADDING.y
+	)
+	return area.has_point(to_local(point))
 
 
 func _pointer_global(event: InputEvent) -> Vector2:

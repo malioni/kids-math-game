@@ -7,3 +7,6 @@ export_presets.cfg
 # Claude Code local state
 .claude/settings.local.json
 .claude/plans/
+
+# Export output (tools/export_web.sh)
+build/

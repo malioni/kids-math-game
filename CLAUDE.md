@@ -14,6 +14,12 @@ This file provides guidance to Claude Code when working with code in this reposi
 # Run GUT tests
 /Applications/Godot-2.app/Contents/MacOS/Godot --path . --headless -s addons/gut/gut_cmdln.gd -gconfig=.gut_config.json
 
+# Export for the web into build/web/ (needs Godot's export templates installed)
+tools/export_web.sh
+
+# Serve build/web/ to a phone on the same Wi-Fi
+tools/serve_web.sh
+
 # Lint GDScript (requires gdtoolkit: pip install gdtoolkit)
 gdlint scripts/ scenes/
 
