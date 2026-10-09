@@ -14,7 +14,7 @@ A tablet game for children aged 4–7 where mathematical concepts are the physic
 
 **Math as world physics, not a gating mechanic.**
 
-- Quantity has consequence: placing the wrong number of planks collapses a bridge
+- Quantity has consequence: planks that don't add up to the bridge's length make it collapse
 - No quiz popups — mathematical concepts emerge through play, not testing
 - Short sessions: 5–10 minutes per sitting
 - Immediate visual and audio feedback for all interactions
@@ -37,7 +37,7 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 
 | Mechanic | Primary Skill | Example |
 |----------|--------------|---------|
-| `PlacementMechanic` | Counting, one-to-one | Place N planks across N gaps |
+| `PlacementMechanic` | Addition, number composition | Lay numbered planks end to end until they add up to the bridge length |
 | `CountingMechanic` | Cardinality | Tap to count a group of objects |
 | `SortingMechanic` | Comparison | Order objects by size or quantity |
 | `MatchingMechanic` | Equivalence | Match two groups of equal size |
@@ -47,11 +47,11 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 
 ### World 1: The Forest Bridge (v0.1 target)
 
-A small creature needs to cross a river to get home before dark. Gaps of varying widths block the path. The child places wooden planks to fill each gap exactly.
+A small creature needs to cross a river to get home before dark. A gap blocks the path, and a sign shows how long it is. The child picks numbered planks, each drawn to scale, that add up to exactly that length.
 
-- **Teaches:** Counting, one-to-one correspondence
+- **Teaches:** Addition, number composition (which numbers make a total)
 - **Mechanic:** `PlacementMechanic`
-- **Levels:** 10 levels, gap count increases from 1 to 5 planks
+- **Levels:** 10 levels, bridge length rising from under 5 to about 50; each puzzle is generated from per-level ranges, so replays differ
 - **Win condition:** Creature reaches home; warm celebratory animation
 - **Fail state:** Bridge collapses, planks float away — gentle retry prompt, no penalty
 

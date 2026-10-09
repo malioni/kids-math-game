@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cjyj4ipmw3ws"
-path="res://.godot/imported/gap_slot_filled.png-ba792738db445d654810067a46578e03.ctex"
+uid="uid://dnrjkiq5epwiq"
+path="res://.godot/imported/target_sign.png-8a0b444fd88d46403b19a5ce88c2c0b7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/forest_bridge/gap_slot_filled.png"
-dest_files=["res://.godot/imported/gap_slot_filled.png-ba792738db445d654810067a46578e03.ctex"]
+source_file="res://assets/sprites/forest_bridge/target_sign.png"
+dest_files=["res://.godot/imported/target_sign.png-8a0b444fd88d46403b19a5ce88c2c0b7.ctex"]
 
 [params]
 

@@ -2,7 +2,7 @@ extends GutTest
 
 const SCENE := preload("res://scenes/worlds/forest_bridge/forest_bridge.tscn")
 const _SAVE_PATH := "user://save.cfg"
-const _LEVEL_COUNTS := [1, 2, 2, 3, 3, 3, 4, 4, 5, 5]
+const _SEED := 1234
 # AnimationPlayer speed-up so walk_across (2 s) and bridge_collapse (1 s) finish quickly.
 const _ANIM_SPEED := 20.0
 const _SETTLE := 0.3
@@ -33,46 +33,106 @@ func _clear_save() -> void:
 func _make_world() -> Node2D:
 	var world: Node2D = SCENE.instantiate()
 	world.celebrate_duration = 0.01
+	world.puzzle_seed = _SEED
 	world.get_node("AnimationPlayer").speed_scale = _ANIM_SPEED
 	return world
 
 
+## Drops a set of planks that adds up to the bridge length, found by brute force.
 func _fill_and_confirm(mechanic: Node2D) -> void:
-	for i in mechanic.target_count:
-		mechanic.place()
+	var planks: Array[Node] = mechanic.get_planks()
+	var target: int = mechanic.get_target_length()
+	for mask in range(1, 1 << planks.size()):
+		var total: int = 0
+		for i in planks.size():
+			if mask & (1 << i):
+				total += planks[i].length
+		if total == target:
+			for i in planks.size():
+				if mask & (1 << i):
+					planks[i].dropped.emit(mechanic.to_global(Vector2.ZERO))
+			break
 	mechanic.confirm()
 
 
-func test_forest_bridge_ready_sets_first_level_target_count() -> void:
-	assert_eq(_mechanic.target_count, 1)
+func _drop_one_short_and_confirm(mechanic: Node2D) -> void:
+	var smallest: PlankDrag = null
+	for plank: PlankDrag in mechanic.get_planks():
+		if smallest == null or plank.length < smallest.length:
+			smallest = plank
+	smallest.dropped.emit(mechanic.to_global(Vector2.ZERO))
+	mechanic.confirm()
 
 
-func test_forest_bridge_ready_resets_mechanic_count() -> void:
-	assert_eq(_mechanic.get_placed_count(), 0)
+func _bridge_length_in_range(level_index: int, length: int) -> bool:
+	var level: Dictionary = LevelLoader.get_levels_for_world("forest")[level_index]
+	return length >= level["bridge_length"]["min"] and length <= level["bridge_length"]["max"]
+
+
+func _pile_lengths(mechanic: Node2D) -> Array[int]:
+	var lengths: Array[int] = []
+	for plank: PlankDrag in mechanic.get_planks():
+		lengths.append(plank.length)
+	return lengths
+
+
+func _level_index(world: Node2D) -> int:
+	return world._current_index
+
+
+func test_forest_bridge_ready_loads_first_level() -> void:
+	assert_eq(_level_index(_world), 0)
+
+
+func test_forest_bridge_load_level_sets_bridge_length_within_level_range() -> void:
+	assert_true(_bridge_length_in_range(0, _mechanic.get_target_length()))
+
+
+func test_forest_bridge_ready_starts_with_empty_bridge() -> void:
+	assert_eq(_mechanic.get_placed_total(), 0)
 
 
 func test_forest_bridge_retry_prompt_hidden_on_start() -> void:
 	assert_false(_retry.visible)
 
 
+func test_forest_bridge_same_seed_generates_same_first_puzzle() -> void:
+	var other: Node2D = add_child_autofree(_make_world())
+	var other_mechanic: Node2D = other.get_node("BridgeLayer/PlacementMechanic")
+	assert_eq(other_mechanic.get_target_length(), _mechanic.get_target_length())
+	assert_eq(_pile_lengths(other_mechanic), _pile_lengths(_mechanic))
+
+
 func test_forest_bridge_correct_advances_level() -> void:
 	_fill_and_confirm(_mechanic)
 	await wait_seconds(_SETTLE)
-	assert_eq(_mechanic.target_count, 2)
+	assert_eq(_level_index(_world), 1)
+	assert_true(_bridge_length_in_range(1, _mechanic.get_target_length()))
 
 
-func test_forest_bridge_correct_resets_placed_count() -> void:
+func test_forest_bridge_correct_resets_placed_total() -> void:
 	_fill_and_confirm(_mechanic)
 	await wait_seconds(_SETTLE)
-	assert_eq(_mechanic.get_placed_count(), 0)
+	assert_eq(_mechanic.get_placed_total(), 0)
+
+
+func test_forest_bridge_next_level_generates_new_puzzle() -> void:
+	SaveManager.save_progress("forest", 9)
+	var world: Node2D = add_child_autofree(_make_world())
+	var mechanic: Node2D = world.get_node("BridgeLayer/PlacementMechanic")
+	var before := [mechanic.get_target_length(), _pile_lengths(mechanic)]
+	_fill_and_confirm(mechanic)
+	await wait_seconds(_SETTLE)
+	assert_eq(_level_index(world), 9)
+	assert_ne([mechanic.get_target_length(), _pile_lengths(mechanic)], before)
 
 
 func test_forest_bridge_level_does_not_advance_until_walk_animation_finishes() -> void:
 	_fill_and_confirm(_mechanic)
-	assert_eq(_mechanic.target_count, 1)
+	assert_eq(_level_index(_world), 0)
 	assert_eq(_world.get_node("AnimationPlayer").current_animation, "walk_across")
 	await wait_seconds(_SETTLE)
-	assert_eq(_mechanic.target_count, 2)
+	assert_eq(_level_index(_world), 1)
 
 
 func test_forest_bridge_mechanic_not_interactive_during_walk() -> void:
@@ -83,29 +143,36 @@ func test_forest_bridge_mechanic_not_interactive_during_walk() -> void:
 
 
 func test_forest_bridge_incorrect_does_not_advance_level() -> void:
-	_mechanic.confirm()
+	_drop_one_short_and_confirm(_mechanic)
 	await wait_seconds(_SETTLE)
-	assert_eq(_mechanic.target_count, 1)
+	assert_eq(_level_index(_world), 0)
 
 
 func test_forest_bridge_retry_prompt_visible_after_incorrect() -> void:
-	_mechanic.confirm()
+	_drop_one_short_and_confirm(_mechanic)
 	assert_false(_retry.visible)
 	await wait_seconds(_SETTLE)
 	assert_true(_retry.visible)
 
 
 func test_forest_bridge_retry_prompt_hidden_and_mechanic_reset_on_retry_pressed() -> void:
-	_mechanic.target_count = 2
-	_mechanic.reset()
-	_mechanic.place()
-	_mechanic.confirm()
+	_drop_one_short_and_confirm(_mechanic)
 	await wait_seconds(_SETTLE)
 	_retry.pressed.emit()
 	assert_false(_retry.visible)
-	assert_eq(_mechanic.get_placed_count(), 0)
+	assert_eq(_mechanic.get_placed_total(), 0)
 	assert_eq(_mechanic.modulate.a, 1.0)
 	assert_false(_mechanic.get_node("GoButton").disabled)
+
+
+func test_forest_bridge_retry_keeps_same_puzzle() -> void:
+	var target: int = _mechanic.get_target_length()
+	var lengths := _pile_lengths(_mechanic)
+	_drop_one_short_and_confirm(_mechanic)
+	await wait_seconds(_SETTLE)
+	_retry.pressed.emit()
+	assert_eq(_mechanic.get_target_length(), target)
+	assert_eq(_pile_lengths(_mechanic), lengths)
 
 
 func test_forest_bridge_world_complete_emitted_after_last_level_animation() -> void:
@@ -121,8 +188,8 @@ func test_forest_bridge_world_complete_emitted_after_last_level_animation() -> v
 
 func test_forest_bridge_world_complete_emits_after_all_levels() -> void:
 	watch_signals(_world)
-	for count in _LEVEL_COUNTS:
-		assert_eq(_mechanic.target_count, count)
+	for i in 10:
+		assert_true(_bridge_length_in_range(i, _mechanic.get_target_length()), "level %d" % i)
 		_fill_and_confirm(_mechanic)
 		await wait_seconds(_SETTLE)
 	assert_signal_emitted(_world, "world_complete")
@@ -131,8 +198,7 @@ func test_forest_bridge_world_complete_emits_after_all_levels() -> void:
 func test_forest_bridge_resumes_from_saved_level() -> void:
 	SaveManager.save_progress("forest", 3)
 	var world: Node2D = add_child_autofree(_make_world())
-	var mechanic: Node2D = world.get_node("BridgeLayer/PlacementMechanic")
-	assert_eq(mechanic.target_count, 2)
+	assert_eq(_level_index(world), 2)
 
 
 func test_forest_bridge_correct_saves_next_level() -> void:

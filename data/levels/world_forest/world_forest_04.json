@@ -2,7 +2,10 @@
   "id": "world_forest_04",
   "world": "forest",
   "mechanic": "placement",
-  "target_count": 3,
+  "bridge_length": { "min": 7, "max": 11 },
+  "plank_length": { "min": 2, "max": 6 },
+  "plank_count": 5,
+  "max_solutions": 2,
   "narrative_key": "forest_bridge_04",
-  "skill_tags": ["counting", "one-to-one-correspondence"]
+  "skill_tags": ["addition", "number-composition"]
 }

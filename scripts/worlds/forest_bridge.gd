@@ -5,9 +5,12 @@ signal world_complete
 
 ## Seconds the celebration plays at home before the next level loads.
 @export var celebrate_duration: float = 1.5
+## Seed for puzzle generation. 0 picks a random seed, so every run gets different puzzles.
+@export var puzzle_seed: int = 0
 
 var _levels: Array[Dictionary] = []
 var _current_index: int = 0
+var _rng := RandomNumberGenerator.new()
 
 @onready var _mechanic: Node2D = $BridgeLayer/PlacementMechanic
 @onready var _character: AnimatedSprite2D = $Character
@@ -18,6 +21,10 @@ var _current_index: int = 0
 
 func _ready() -> void:
 	_levels = LevelLoader.get_levels_for_world("forest")
+	if puzzle_seed == 0:
+		_rng.randomize()
+	else:
+		_rng.seed = puzzle_seed
 	_mechanic.correct.connect(_on_correct)
 	_mechanic.incorrect.connect(_on_incorrect)
 	_retry_prompt.pressed.connect(_on_retry_pressed)
@@ -29,8 +36,8 @@ func _ready() -> void:
 func _load_level(index: int) -> void:
 	_current_index = index
 	_restore_stage()
-	_mechanic.target_count = _levels[index]["target_count"]
-	_mechanic.reset()
+	var puzzle: Dictionary = PlankPuzzleGenerator.generate(_levels[index], _rng)
+	_mechanic.setup(puzzle["bridge_length"], puzzle["plank_lengths"])
 	_mechanic.set_interactive(true)
 
 

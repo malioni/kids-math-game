@@ -2,6 +2,12 @@
 
 > GitHub issue: not yet filed. Builds on issue #7 (merged to `main` as #15).
 
+> **Revision (2026-10-08, during implementation).** Rendering levels 5 and 10 showed puzzles where the answer used all planks but one (e.g. 8+6+6+6+7+6+6 = 45 with a single decoy), so the child only had to spot the odd plank out. Two generator changes, tested over 10,000 generations:
+> 1. **At least ⌈plank_count ÷ 3⌉ decoys.** Every solution (not just the intended one) may use at most `plank_count − ⌈plank_count ÷ 3⌉` planks. At level 10 that means at least 3 of the 8 planks are unused.
+> 2. **Varied split.** Each solution part is drawn uniformly within the range that keeps the remaining parts feasible, instead of spreading units one at a time (which bunched every part around the mean).
+>
+> `MAX_ATTEMPTS` rises from 200 to 500 (worst case seen: 56 attempts). Average generation time is at most 1.25 ms per puzzle (level 10).
+
 ## Feature
 Replace "drop N planks into N slots" with an addition puzzle: each level generates a bridge of length *L* (shown on a sign) and a pile of numbered planks drawn to scale, and the child must lay planks end to end that sum to exactly *L* before pressing Go.
 
@@ -52,7 +58,7 @@ A Python prototype of the algorithm in Step 1, run 500× per level against the d
 | 5 | 0 | 7 | 1280 | 80–480 |
 | 10 | 0 | 18 | 1340 | 54–266 |
 
-All levels generate on the first few attempts; `MAX_ATTEMPTS = 200` is a wide margin. Narrowest plank is 54 px — wide enough for a two-digit label and a small finger.
+All levels generate on the first few attempts. (Superseded by the 2026-10-08 revision above: with the decoy rule, the worst case is 56 attempts, so `MAX_ATTEMPTS` = 500.) Narrowest plank is 54 px — wide enough for a two-digit label and a small finger.
 
 ---
 
@@ -102,7 +108,7 @@ No new autoloads.
 `scripts/mechanics/plank_puzzle_generator.gd` — `class_name PlankPuzzleGenerator extends RefCounted`, static functions only.
 
 ```gdscript
-const MAX_ATTEMPTS := 200
+const MAX_ATTEMPTS := 500
 const MAX_PILE_RATIO := 2.0
 
 ## Returns {"bridge_length": int, "plank_lengths": Array[int]} (lengths shuffled).
@@ -113,11 +119,11 @@ static func count_solutions(plank_lengths: Array[int], target: int) -> int
 
 `generate()` loop (up to `MAX_ATTEMPTS`):
 1. `L = rng.randi_range(bridge_length.min, bridge_length.max)`
-2. Solution size `k` uniformly in `[max(2, ceil(L / plank_max)), min(plank_count - 1, floor(L / plank_min))]`; if the range is empty, retry
-3. Split *L* into `k` parts: start each at `plank_min`, then add 1 to a random part below `plank_max` until the parts sum to *L*
+2. Solution size `k` uniformly in `[max(2, ceil(L / plank_max)), min(plank_count - ceil(plank_count / 3), floor(L / plank_min))]`; if the range is empty, retry
+3. Split *L* into `k` parts: draw each part uniformly from the range that keeps the remaining parts within `[plank_min, plank_max]`; the last part takes what's left
 4. Decoys: `plank_count - k` lengths uniform in `[plank_min, min(plank_max, L - 1)]`
 5. Reject if `sum(all) > MAX_PILE_RATIO × L`
-6. Reject unless `1 <= count_solutions(all, L) <= max_solutions`
+6. Reject unless `1 <= count_solutions(all, L) <= max_solutions` and no solution uses more than the `k` upper bound from step 2
 7. Shuffle with `rng` and return
 
 If every attempt fails: `push_error` and return the solution parts from the last attempt with no decoys (always solvable). `count_solutions` enumerates all subsets by bitmask (`plank_count` ≤ 10 → ≤ 1024 subsets), collects sorted length arrays that sum to the target in a Dictionary used as a set, and returns its size.
@@ -277,6 +283,7 @@ test_generate_plank_lengths_within_range_for_all_levels
 test_generate_has_between_1_and_max_solutions_for_all_levels      (200 seeds × 10 levels)
 test_generate_no_single_plank_equals_bridge_length_for_all_levels
 test_generate_pile_total_at_most_twice_bridge_length_for_all_levels
+test_generate_at_least_a_third_of_pile_are_decoys_for_all_levels
 test_generate_impossible_params_falls_back_to_solvable_puzzle
 ```
 
