@@ -6,6 +6,6 @@
   "plank_length": { "min": 4, "max": 14 },
   "plank_count": 8,
   "max_solutions": 2,
-  "narrative_key": "forest_bridge_final",
+  "narrative_key": "forest_bridge_10",
   "skill_tags": ["addition", "number-composition"]
 }

@@ -1,0 +1,11 @@
+{
+  "id": "world_forest_11",
+  "world": "forest",
+  "mechanic": "placement",
+  "bridge_length": { "min": 29, "max": 35 },
+  "plank_length": { "min": 4, "max": 15 },
+  "plank_count": 8,
+  "max_solutions": 2,
+  "narrative_key": "forest_bridge_11",
+  "skill_tags": ["addition", "number-composition"]
+}

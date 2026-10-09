@@ -156,11 +156,12 @@ func test_placement_mechanic_reset_emits_total_changed_zero() -> void:
 	assert_signal_emitted_with_parameters(mechanic, "total_changed", [0])
 
 
-func test_placement_mechanic_pile_fits_within_three_rows_for_level_10() -> void:
-	var level: Dictionary = LevelLoader.get_levels_for_world("forest")[9]
+func test_placement_mechanic_pile_fits_within_three_rows_for_levels_10_and_20() -> void:
+	var levels: Array[Dictionary] = LevelLoader.get_levels_for_world("forest")
 	var rng := RandomNumberGenerator.new()
 	var max_y: float = mechanic.pile_row_y[-1]
-	for s in 50:
+	for s in 100:
+		var level: Dictionary = levels[9] if s < 50 else levels[19]
 		rng.seed = s
 		var puzzle := PlankPuzzleGenerator.generate(level, rng)
 		mechanic.setup(puzzle["bridge_length"], puzzle["plank_lengths"])

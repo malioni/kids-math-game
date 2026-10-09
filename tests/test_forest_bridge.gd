@@ -77,6 +77,10 @@ func _pile_lengths(mechanic: Node2D) -> Array[int]:
 	return lengths
 
 
+func _level_count() -> int:
+	return LevelLoader.get_levels_for_world("forest").size()
+
+
 func _level_index(world: Node2D) -> int:
 	return world._current_index
 
@@ -177,7 +181,7 @@ func test_forest_bridge_retry_keeps_same_puzzle() -> void:
 
 
 func test_forest_bridge_world_complete_emitted_after_last_level_animation() -> void:
-	SaveManager.save_progress("forest", 10)
+	SaveManager.save_progress("forest", _level_count())
 	var world: Node2D = add_child_autofree(_make_world())
 	var mechanic: Node2D = world.get_node("BridgeLayer/PlacementMechanic")
 	watch_signals(world)
@@ -189,7 +193,7 @@ func test_forest_bridge_world_complete_emitted_after_last_level_animation() -> v
 
 func test_forest_bridge_world_complete_emits_after_all_levels() -> void:
 	watch_signals(_world)
-	for i in 10:
+	for i in _level_count():
 		assert_true(_bridge_length_in_range(i, _mechanic.get_target_length()), "level %d" % i)
 		_fill_and_confirm(_mechanic)
 		await wait_seconds(_SETTLE)
@@ -209,7 +213,7 @@ func test_forest_bridge_correct_saves_next_level() -> void:
 
 
 func test_forest_bridge_last_level_correct_resets_progress() -> void:
-	SaveManager.save_progress("forest", 10)
+	SaveManager.save_progress("forest", _level_count())
 	var world: Node2D = add_child_autofree(_make_world())
 	_fill_and_confirm(world.get_node("BridgeLayer/PlacementMechanic"))
 	await wait_seconds(_SETTLE)
