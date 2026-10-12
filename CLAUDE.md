@@ -56,6 +56,8 @@ scripts/
   mechanics/     — Mechanic GDScript logic
   systems/       — Core systems (progression, audio, save)
   autoloads/     — Global singletons
+  worlds/        — World flow scripts (all extend WorldBase)
+  ui/            — HUD and boot scripts
 assets/
   sprites/
   audio/
@@ -94,5 +96,7 @@ Test files extend `GutTest` and use GUT assertions (`assert_eq`, `assert_signal_
 ## Adding a New World
 1. Create `data/levels/<world_name>/` with JSON level files
 2. Create `scenes/worlds/<world_name>/` with scene files
-3. Register the world in `scripts/autoloads/game_registry.gd`
-4. Compose existing mechanics from `scenes/mechanics/` — never duplicate mechanic logic
+3. Register the world in `scripts/autoloads/game_registry.gd` (id, scene, picker icon)
+4. Write the world script in `scripts/worlds/` extending `WorldBase` (level flow, save, HUD); override `_world_id()` and `_setup_level()`, call `_advance()` after the win animation
+5. Instance `scenes/ui/level_hud.tscn` as a `LevelHud` child of the world scene
+6. Compose existing mechanics from `scenes/mechanics/` — never duplicate mechanic logic

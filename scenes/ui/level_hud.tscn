@@ -1,0 +1,269 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/level_hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_close.png" id="2_close"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_star.png" id="3_star"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="4_retry"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
+bg_color = Color(1, 0.96, 0.86, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.45, 0.3, 0.18, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge_pressed"]
+bg_color = Color(1, 0.86, 0.6, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.45, 0.3, 0.18, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.98, 0.93, 0.8, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.45, 0.3, 0.18, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[node name="LevelHud" type="CanvasLayer"]
+layer = 5
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LevelBadge" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -620.0
+offset_top = -350.0
+offset_right = -420.0
+offset_bottom = -264.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_badge")
+theme_override_styles/hover = SubResource("StyleBoxFlat_badge")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_badge_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_badge")
+
+[node name="Row" type="HBoxContainer" parent="Root/LevelBadge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="WorldIcon" type="TextureRect" parent="Root/LevelBadge/Row"]
+custom_minimum_size = Vector2(70, 70)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LevelLabel" type="Label" parent="Root/LevelBadge/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.3, 0.2, 0.12, 1)
+theme_override_font_sizes/font_size = 48
+text = "1"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="CountLabel" type="Label" parent="Root/LevelBadge/Row"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.35, 0.25, 1)
+theme_override_font_sizes/font_size = 24
+text = "/20"
+vertical_alignment = 2
+
+[node name="Picker" type="Control" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="Root/Picker"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.45)
+
+[node name="Panel" type="PanelContainer" parent="Root/Picker"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -460.0
+offset_top = -282.0
+offset_right = 460.0
+offset_bottom = 282.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Margin" type="MarginContainer" parent="Root/Picker/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="Root/Picker/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TopRow" type="HBoxContainer" parent="Root/Picker/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="WorldTabs" type="HBoxContainer" parent="Root/Picker/Panel/Margin/VBox/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="CloseButton" type="TextureButton" parent="Root/Picker/Panel/Margin/VBox/TopRow"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture_normal = ExtResource("2_close")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Grid" type="GridContainer" parent="Root/Picker/Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 5
+
+[node name="Complete" type="Control" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="Root/Complete"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.45)
+
+[node name="Panel" type="Panel" parent="Root/Complete"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -290.0
+offset_right = 340.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Star" type="TextureRect" parent="Root/Complete"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -270.0
+offset_right = 100.0
+offset_bottom = -70.0
+mouse_filter = 2
+texture = ExtResource("3_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Choices" type="HBoxContainer" parent="Root/Complete"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -40.0
+offset_right = 400.0
+offset_bottom = 160.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 60
+alignment = 1
+
+[node name="RestartButton" type="TextureButton" parent="Root/Complete/Choices"]
+custom_minimum_size = Vector2(180, 180)
+layout_mode = 2
+texture_normal = ExtResource("4_retry")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="OneLabel" type="Label" parent="Root/Complete/Choices/RestartButton"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -76.0
+offset_right = 4.0
+offset_bottom = 4.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.3, 0.2, 0.12, 1)
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 64
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1

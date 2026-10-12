@@ -1,0 +1,230 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/worlds/sky_balloons.gd" id="1_sky"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/bg_sky.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/cloud.png" id="3_cloud"]
+[ext_resource type="PackedScene" path="res://scenes/mechanics/balloon_pop_mechanic.tscn" id="4_mech"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/basket.png" id="5_basket"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_idle.png" id="8_idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_celebrate.png" id="6_cel"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_fall.png" id="7_fall"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="9_retry"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="10_hud"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle_0"]
+atlas = ExtResource("8_idle")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle_1"]
+atlas = ExtResource("8_idle")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle_2"]
+atlas = ExtResource("8_idle")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle_3"]
+atlas = ExtResource("8_idle")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_celebrate_0"]
+atlas = ExtResource("6_cel")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_celebrate_1"]
+atlas = ExtResource("6_cel")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_celebrate_2"]
+atlas = ExtResource("6_cel")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_celebrate_3"]
+atlas = ExtResource("6_cel")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fall_0"]
+atlas = ExtResource("7_fall")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fall_1"]
+atlas = ExtResource("7_fall")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fall_2"]
+atlas = ExtResource("7_fall")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fox"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle_3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_celebrate_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_celebrate_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_celebrate_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_celebrate_3")
+}],
+"loop": true,
+"name": &"celebrate",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fall_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fall_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fall_2")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 8.0
+}]
+
+[sub_resource type="Gradient" id="Gradient_conf"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.82, 0.47, 1, 0.92, 0.4, 0.45, 1, 0.4, 0.6, 0.95, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_conf"]
+gradient = SubResource("Gradient_conf")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_conf"]
+direction = Vector3(0, -1, 0)
+spread = 80.0
+initial_velocity_min = 200.0
+initial_velocity_max = 380.0
+gravity = Vector3(0, 400, 0)
+scale_min = 4.0
+scale_max = 8.0
+color_ramp = SubResource("GradientTexture1D_conf")
+
+[node name="SkyBalloons" type="Node2D"]
+script = ExtResource("1_sky")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(640, 360)
+texture = ExtResource("2_bg")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="Clouds" type="Node2D" parent="."]
+
+[node name="Cloud1" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.7)
+position = Vector2(120, 80)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_cloud")
+
+[node name="Cloud2" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(980, 30)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("3_cloud")
+
+[node name="Cloud3" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.6)
+position = Vector2(420, 300)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_cloud")
+
+[node name="Cloud4" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.75)
+position = Vector2(1180, 420)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("3_cloud")
+
+[node name="Cloud5" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.85)
+position = Vector2(200, 560)
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("3_cloud")
+
+[node name="Cloud6" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.7)
+position = Vector2(860, 700)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_cloud")
+
+[node name="Cloud7" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(-100, 300)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("3_cloud")
+
+[node name="Cloud8" type="Sprite2D" parent="Clouds"]
+modulate = Color(1, 1, 1, 0.7)
+position = Vector2(1400, 120)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_cloud")
+
+[node name="Rig" type="Node2D" parent="."]
+position = Vector2(640, 486)
+
+[node name="BalloonPopMechanic" parent="Rig" instance=ExtResource("4_mech")]
+
+[node name="Character" type="AnimatedSprite2D" parent="Rig"]
+position = Vector2(0, -26)
+scale = Vector2(1.3, 1.3)
+sprite_frames = SubResource("SpriteFrames_fox")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="Basket" type="Sprite2D" parent="Rig"]
+position = Vector2(0, 45)
+texture = ExtResource("5_basket")
+
+[node name="CelebrationParticles" type="GPUParticles2D" parent="."]
+position = Vector2(640, 300)
+emitting = false
+amount = 80
+lifetime = 1.2
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_conf")
+
+[node name="RetryPrompt" type="CanvasLayer" parent="."]
+
+[node name="RetryIcon" type="TextureButton" parent="RetryPrompt"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = -80.0
+offset_right = 80.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("9_retry")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="LevelHud" parent="." instance=ExtResource("10_hud")]

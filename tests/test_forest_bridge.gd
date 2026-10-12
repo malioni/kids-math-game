@@ -247,3 +247,54 @@ func test_forest_bridge_fox_does_not_fall_before_reaching_plank_end() -> void:
 	await wait_seconds(0.1)
 	assert_eq(character.position.y, 340.0)
 	assert_ne(world.get_node("AnimationPlayer").current_animation, "bridge_collapse")
+
+
+func test_forest_bridge_hud_shows_current_level() -> void:
+	var hud: LevelHud = _world.get_node("LevelHud")
+	assert_eq(hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "1")
+	_fill_and_confirm(_mechanic)
+	await wait_seconds(_SETTLE)
+	assert_eq(hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "2")
+
+
+func test_forest_bridge_picking_a_level_loads_it_and_saves() -> void:
+	_world.get_node("LevelHud").level_chosen.emit("forest", 7)
+	assert_eq(_level_index(_world), 7)
+	assert_true(_bridge_length_in_range(7, _mechanic.get_target_length()))
+	assert_eq(SaveManager.load_progress("forest"), 8)
+
+
+func test_forest_bridge_picking_a_lower_level_lowers_the_save() -> void:
+	SaveManager.save_progress("forest", 12)
+	var world: Node2D = add_child_autofree(_make_world())
+	world.get_node("LevelHud").level_chosen.emit("forest", 1)
+	assert_eq(SaveManager.load_progress("forest"), 2)
+
+
+func test_forest_bridge_picking_a_level_mid_walk_does_not_advance_twice() -> void:
+	_fill_and_confirm(_mechanic)
+	_world.get_node("LevelHud").level_chosen.emit("forest", 5)
+	await wait_seconds(_SETTLE)
+	assert_eq(_level_index(_world), 5)
+	assert_false(_mechanic.get_node("GoButton").disabled)
+
+
+func test_forest_bridge_picking_a_level_mid_fall_hides_retry() -> void:
+	_drop_one_short_and_confirm(_mechanic)
+	_world.get_node("LevelHud").level_chosen.emit("forest", 3)
+	await wait_seconds(_SETTLE)
+	assert_false(_retry.visible)
+	assert_eq(_world.get_node("Character").position, Vector2(150, 340))
+
+
+func test_forest_bridge_last_level_shows_restart_which_goes_to_level_1() -> void:
+	SaveManager.save_progress("forest", _level_count())
+	var world: Node2D = add_child_autofree(_make_world())
+	var hud: LevelHud = world.get_node("LevelHud")
+	_fill_and_confirm(world.get_node("BridgeLayer/PlacementMechanic"))
+	await wait_seconds(_SETTLE)
+	assert_true(hud.is_world_complete_shown())
+	hud.get_node("Root/Complete/Choices/RestartButton").pressed.emit()
+	assert_eq(_level_index(world), 0)
+	assert_false(hud.is_world_complete_shown())
+	assert_eq(SaveManager.load_progress("forest"), 1)

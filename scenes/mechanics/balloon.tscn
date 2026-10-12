@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/balloon.gd" id="1_balloon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/balloon.png" id="2_balloon"]
+
+[node name="Balloon" type="Node2D"]
+script = ExtResource("1_balloon")
+
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("2_balloon")
+offset = Vector2(0, 13)
+
+[node name="ValueLabel" type="Label" parent="Body"]
+offset_left = -60.0
+offset_top = -40.0
+offset_right = 60.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.25, 1)
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 52
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/balloon_pop_mechanic.gd" id="1_mech"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/lift_badge.png" id="2_lift"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/sandbag.png" id="3_sandbag"]
+
+[node name="BalloonPopMechanic" type="Node2D"]
+script = ExtResource("1_mech")
+
+[node name="Balloons" type="Node2D" parent="."]
+
+[node name="WeightSign" type="Sprite2D" parent="."]
+position = Vector2(118, 66)
+texture = ExtResource("3_sandbag")
+
+[node name="WeightLabel" type="Label" parent="WeightSign"]
+offset_left = -46.0
+offset_top = -34.0
+offset_right = 46.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.3, 0.2, 0.1, 1)
+theme_override_font_sizes/font_size = 40
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LiftBadge" type="Sprite2D" parent="."]
+position = Vector2(0, -130)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("2_lift")
+
+[node name="LiftLabel" type="Label" parent="LiftBadge"]
+offset_left = -46.0
+offset_top = -32.0
+offset_right = 46.0
+offset_bottom = 36.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.1, 0.25, 0.45, 1)
+theme_override_font_sizes/font_size = 44
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
