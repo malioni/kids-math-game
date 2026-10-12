@@ -72,3 +72,24 @@ func test_reset_progress_unconditionally_resets_to_1() -> void:
 func test_reset_progress_works_on_missing_file() -> void:
 	SaveManager.reset_progress("forest")
 	assert_eq(SaveManager.load_progress("forest"), 1)
+
+
+func test_set_progress_can_lower_the_saved_level() -> void:
+	SaveManager.save_progress("forest", 9)
+	SaveManager.set_progress("forest", 3)
+	assert_eq(SaveManager.load_progress("forest"), 3)
+
+
+func test_load_last_world_returns_empty_when_no_save_file() -> void:
+	assert_eq(SaveManager.load_last_world(), "")
+
+
+func test_save_and_load_last_world_roundtrip() -> void:
+	SaveManager.save_last_world("sky")
+	assert_eq(SaveManager.load_last_world(), "sky")
+
+
+func test_save_last_world_preserves_progress() -> void:
+	SaveManager.save_progress("forest", 4)
+	SaveManager.save_last_world("sky")
+	assert_eq(SaveManager.load_progress("forest"), 4)

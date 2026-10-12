@@ -1,0 +1,12 @@
+{
+  "id": "world_sky_19",
+  "world": "sky",
+  "mechanic": "balloon_pop",
+  "balloon_count": 8,
+  "balloon_value": { "min": 5, "max": 14 },
+  "pop_count": { "min": 3, "max": 4 },
+  "total_max": 72,
+  "max_solutions": 2,
+  "narrative_key": "sky_balloons_19",
+  "skill_tags": ["subtraction", "number-composition"]
+}

@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_walk.png" id="9_22dpq"]
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="10_jkb70"]
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.png" id="go_icon_tex"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="level_hud_scene"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hkbu2"]
 atlas = ExtResource("6_fw6qt")
@@ -342,3 +343,5 @@ grow_vertical = 2
 texture_normal = ExtResource("10_jkb70")
 ignore_texture_size = true
 stretch_mode = 5
+
+[node name="LevelHud" parent="." instance=ExtResource("level_hud_scene")]

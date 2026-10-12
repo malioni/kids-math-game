@@ -42,6 +42,7 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 | `SortingMechanic` | Comparison | Order objects by size or quantity |
 | `MatchingMechanic` | Equivalence | Match two groups of equal size |
 | `BalanceMechanic` | Addition/subtraction | Balance a scale with groups of items |
+| `BalloonPopMechanic` | Subtraction | Pop numbered balloons until their total lift equals the basket's weight |
 
 ## World Plan
 
@@ -55,19 +56,34 @@ A small creature needs to cross a river to get home before dark. A gap blocks th
 - **Win condition:** Creature reaches home; warm celebratory animation
 - **Fail state:** Bridge collapses, planks float away — gentle retry prompt, no penalty
 
+### World 2: Sky Balloons
+
+The fox floats in a basket under a bunch of numbered balloons (bigger number = bigger balloon). A
+sandbag on the basket shows its weight; a badge where the strings meet shows the balloons' total
+lift. The lift starts higher than the weight, so the basket keeps rising (clouds stream past,
+faster the more extra lift there is). The child pops balloons to bring the lift down to exactly the
+weight. Both numbers are on screen, so the child works out total − weight and pops that much.
+
+- **Teaches:** Subtraction (taking away the difference), number composition
+- **Mechanic:** `BalloonPopMechanic`
+- **Levels:** 20 levels, total lift under 10 at level 1 rising to about 35 at level 10 and about 70 at level 20; puzzles generated from per-level ranges
+- **Win condition:** Lift equals weight — the basket levels out, the fox celebrates
+- **Fail state:** Lift below weight — the basket falls; gentle retry with the same balloons, no penalty
+
 ### Planned Future Worlds
 
 | World | Theme | Skill focus |
 |-------|-------|-------------|
-| World 2: The Garden | Plant seeds in rows | Addition, grouping |
-| World 3: The Market | Trade items in equal groups | Multiplication intuition |
-| World 4: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
+| World 3: The Garden | Plant seeds in rows | Addition, grouping |
+| World 4: The Market | Trade items in equal groups | Multiplication intuition |
+| World 5: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
 
 ## Progression System
 
 - Tracks per-skill mastery silently using success rate per mechanic type
 - No stars, scores, or difficulty labels visible to the child
 - Narrative completion is the only visible reward (creature reaches home)
+- A level badge (world icon + level number) sits in the top-left corner; tapping it opens a picker to jump to any level of any world. After a world's last level, a star screen offers "restart from 1" or another world
 - **Parent view:** Session summaries accessible via a separate parent-only screen (PIN-gated)
 - Adaptive branching: if a child struggles at N=4, the system repeats N=3 variants before retrying
 

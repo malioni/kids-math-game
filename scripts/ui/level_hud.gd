@@ -1,0 +1,181 @@
+class_name LevelHud
+extends CanvasLayer
+
+## Level badge, level picker and world-complete screen shared by every world.
+##
+## The badge in the top-left shows the world and the current level number; tapping it opens a
+## picker with a tab per world and a button per level. After the last level, show_world_complete()
+## offers a restart from level 1 and a button for each other world. The HUD only emits signals;
+## the world decides what loading a level means.
+
+## Emitted when the player picks a level. index is 0-based, or -1 to resume a world from its save.
+signal level_chosen(world_id: String, index: int)
+## Emitted when the player taps restart on the world-complete screen.
+signal restart_requested
+
+const _CREAM := Color(1.0, 0.96, 0.86)
+const _CURRENT := Color(1.0, 0.72, 0.3)
+const _BORDER := Color(0.45, 0.3, 0.18)
+const _TEXT := Color(0.3, 0.2, 0.12)
+
+var _world_id: String = ""
+var _level_index: int = 0
+var _level_count: int = 0
+var _picker_world_id: String = ""
+
+@onready var _badge: Button = $Root/LevelBadge
+@onready var _badge_icon: TextureRect = $Root/LevelBadge/Row/WorldIcon
+@onready var _badge_level: Label = $Root/LevelBadge/Row/LevelLabel
+@onready var _badge_count: Label = $Root/LevelBadge/Row/CountLabel
+@onready var _picker: Control = $Root/Picker
+@onready var _world_tabs: HBoxContainer = $Root/Picker/Panel/Margin/VBox/TopRow/WorldTabs
+@onready var _grid: GridContainer = $Root/Picker/Panel/Margin/VBox/Grid
+@onready var _complete: Control = $Root/Complete
+@onready var _choices: HBoxContainer = $Root/Complete/Choices
+
+
+func _ready() -> void:
+	_badge.pressed.connect(open_picker)
+	$Root/Picker/Panel/Margin/VBox/TopRow/CloseButton.pressed.connect(close_picker)
+	$Root/Picker/Backdrop.gui_input.connect(_on_backdrop_input)
+	$Root/Complete/Choices/RestartButton.pressed.connect(_on_restart_pressed)
+	_picker.visible = false
+	_complete.visible = false
+
+
+## Shows the given level (0-based) of count on the badge and closes any open overlay.
+func show_level(world_id: String, index: int, count: int) -> void:
+	_world_id = world_id
+	_level_index = index
+	_level_count = count
+	_badge_level.text = str(index + 1)
+	_badge_count.text = "/%d" % count
+	_badge_icon.texture = _world_icon(world_id)
+	_picker.visible = false
+	_complete.visible = false
+
+
+## Opens the level picker on the current world's tab.
+func open_picker() -> void:
+	_complete.visible = false
+	_show_picker_world(_world_id)
+	_picker.visible = true
+
+
+## Closes the level picker without choosing a level.
+func close_picker() -> void:
+	_picker.visible = false
+
+
+## Returns true while the level picker is open.
+func is_picker_open() -> bool:
+	return _picker.visible
+
+
+## Shows the world-complete screen: restart from level 1, or go to another world.
+func show_world_complete() -> void:
+	_picker.visible = false
+	for child in _choices.get_children():
+		if child.name != "RestartButton":
+			child.queue_free()
+	for world in GameRegistry.get_worlds():
+		if world["id"] == _world_id:
+			continue
+		var button := TextureButton.new()
+		button.name = "World_%s" % world["id"]
+		button.texture_normal = load(world["icon"])
+		button.ignore_texture_size = true
+		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		button.custom_minimum_size = Vector2(180, 180)
+		button.pressed.connect(_on_choice_world_pressed.bind(world["id"]))
+		_choices.add_child(button)
+	_complete.visible = true
+
+
+## Returns true while the world-complete screen is showing.
+func is_world_complete_shown() -> bool:
+	return _complete.visible
+
+
+## Returns the level buttons currently in the picker, in level order.
+func get_level_buttons() -> Array[Node]:
+	return _grid.get_children()
+
+
+## Returns the world tab buttons in the picker, in GameRegistry order.
+func get_world_tabs() -> Array[Node]:
+	return _world_tabs.get_children()
+
+
+func _show_picker_world(world_id: String) -> void:
+	_picker_world_id = world_id
+	for child in _world_tabs.get_children():
+		_world_tabs.remove_child(child)
+		child.queue_free()
+	for world in GameRegistry.get_worlds():
+		var tab := Button.new()
+		tab.name = "Tab_%s" % world["id"]
+		tab.icon = _world_icon(world["id"])
+		tab.expand_icon = true
+		tab.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		tab.custom_minimum_size = Vector2(110, 80)
+		var selected: bool = world["id"] == world_id
+		_style_button(tab, _CURRENT if selected else _CREAM, 4 if selected else 2)
+		tab.pressed.connect(_show_picker_world.bind(world["id"]))
+		_world_tabs.add_child(tab)
+
+	for child in _grid.get_children():
+		_grid.remove_child(child)
+		child.queue_free()
+	var count: int = (
+		_level_count if world_id == _world_id else GameRegistry.get_level_count(world_id)
+	)
+	for i in count:
+		var button := Button.new()
+		button.name = "Level_%d" % (i + 1)
+		button.text = str(i + 1)
+		button.custom_minimum_size = Vector2(150, 90)
+		button.add_theme_font_size_override("font_size", 40)
+		var current: bool = world_id == _world_id and i == _level_index
+		_style_button(button, _CURRENT if current else _CREAM, 4 if current else 2)
+		button.pressed.connect(_on_level_pressed.bind(i))
+		_grid.add_child(button)
+
+
+func _on_level_pressed(index: int) -> void:
+	_picker.visible = false
+	level_chosen.emit(_picker_world_id, index)
+
+
+func _on_restart_pressed() -> void:
+	_complete.visible = false
+	restart_requested.emit()
+
+
+func _on_choice_world_pressed(world_id: String) -> void:
+	_complete.visible = false
+	level_chosen.emit(world_id, -1)
+
+
+func _on_backdrop_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		close_picker()
+
+
+func _world_icon(world_id: String) -> Texture2D:
+	var world: Dictionary = GameRegistry.get_world(world_id)
+	return load(world["icon"]) if not world.is_empty() else null
+
+
+func _style_button(button: Button, fill: Color, border_width: int) -> void:
+	for state in ["normal", "hover", "pressed", "focus"]:
+		var box := StyleBoxFlat.new()
+		box.bg_color = fill.darkened(0.08) if state == "pressed" else fill
+		box.border_color = _BORDER
+		box.set_border_width_all(border_width)
+		box.set_corner_radius_all(16)
+		box.content_margin_left = 8
+		box.content_margin_right = 8
+		button.add_theme_stylebox_override(state, box)
+	for color_name in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		button.add_theme_color_override(color_name, _TEXT)

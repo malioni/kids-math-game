@@ -8,6 +8,7 @@ const SAVE_PATH := "user://save.cfg"
 const _SECTION_PROGRESS := "progress"
 const _SECTION_META := "meta"
 const _KEY_SESSIONS := "sessions_played"
+const _KEY_LAST_WORLD := "last_world"
 
 
 ## Saves the 1-indexed level number to resume from for the given world.
@@ -41,6 +42,32 @@ func reset_progress(world: String) -> void:
 	cfg.load(SAVE_PATH)
 	cfg.set_value(_SECTION_PROGRESS, world, 1)
 	cfg.save(SAVE_PATH)
+
+
+## Unconditionally sets the 1-indexed level to resume from for the given world.
+## Use when the player picks a level themselves, so the game reopens where they left off.
+func set_progress(world: String, level: int) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	cfg.set_value(_SECTION_PROGRESS, world, maxi(level, 1))
+	cfg.save(SAVE_PATH)
+
+
+## Remembers which world was played last, so the game can reopen in it.
+func save_last_world(world: String) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	cfg.set_value(_SECTION_META, _KEY_LAST_WORLD, world)
+	cfg.save(SAVE_PATH)
+
+
+## Returns the world played last, or "" if none is saved or the file is corrupt.
+func load_last_world() -> String:
+	var cfg := ConfigFile.new()
+	if cfg.load(SAVE_PATH) != OK:
+		return ""
+	var value: Variant = cfg.get_value(_SECTION_META, _KEY_LAST_WORLD, "")
+	return value if value is String else ""
 
 
 ## Increments the total session count by one and persists it.

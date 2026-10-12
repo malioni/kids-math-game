@@ -63,21 +63,8 @@ static func count_solutions(plank_lengths: Array[int], target: int) -> int:
 
 # Returns (distinct solutions, most planks used by any one solution).
 static func _solution_stats(plank_lengths: Array[int], target: int) -> Vector2i:
-	var found := {}
-	var largest: int = 0
-	var n: int = plank_lengths.size()
-	for mask in range(1, 1 << n):
-		var subset: Array[int] = []
-		var total: int = 0
-		for i in n:
-			if mask & (1 << i):
-				subset.append(plank_lengths[i])
-				total += plank_lengths[i]
-		if total == target:
-			subset.sort()
-			found[subset] = true
-			largest = maxi(largest, subset.size())
-	return Vector2i(found.size(), largest)
+	var stats: Dictionary = SubsetSums.analyze(plank_lengths, target)
+	return Vector2i(stats["count"], stats["max_size"])
 
 
 # Picks each part uniformly within what keeps the rest feasible, which gives more varied
