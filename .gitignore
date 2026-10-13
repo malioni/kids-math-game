@@ -2,7 +2,6 @@
 .godot/
 /android/
 *.translation
-export_presets.cfg
 
 # Claude Code local state
 .claude/settings.local.json

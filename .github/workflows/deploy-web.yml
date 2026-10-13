@@ -1,0 +1,62 @@
+name: Deploy web build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.6"
+  GODOT_RELEASE: "4.6-stable"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot and export templates
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_RELEASE}"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_RELEASE}_linux.x86_64.zip"
+          unzip -q godot.zip
+          sudo install -m 0755 Godot_v${GODOT_RELEASE}_linux.x86_64 /usr/local/bin/godot
+          curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_RELEASE}_export_templates.tpz"
+          tpl_dir="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$tpl_dir"
+          unzip -q templates.tpz -d tpl_tmp
+          mv tpl_tmp/templates/* "$tpl_dir/"
+          rm -rf tpl_tmp
+
+      - name: Import assets and export web build
+        run: |
+          set -uo pipefail
+          # First pass imports assets into .godot/; it may exit non-zero on the
+          # initial run even when the import succeeds, so the status is not checked.
+          godot --headless --import --path . || true
+          mkdir -p build/web
+          godot --headless --path . --export-release "Web" build/web/index.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
