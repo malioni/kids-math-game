@@ -15,13 +15,13 @@ signal bags_changed(item: String, count: int)
 
 ## Scene instantiated for each bag.
 const BAG_SCENE := preload("res://scenes/mechanics/bag_drag.tscn")
-## Texture of the crates bags come from.
-const CRATE_TEXTURE := preload("res://assets/sprites/market/crate.png")
 
 ## Icon for each item id (String → Texture2D), shown on bags and the order slip.
 @export var item_icons: Dictionary = {}
 ## Texture shown on the Go button.
 @export var go_texture: Texture2D
+## Texture of the crates bags come from.
+@export var crate_texture: Texture2D
 ## The table top in local pixels; a bag released inside it is placed.
 @export var table_rect: Rect2 = Rect2(-380, -165, 760, 330)
 ## Local y of each item's row, top to bottom. Order i uses row i.
@@ -71,7 +71,7 @@ func reset() -> void:
 		var order: Dictionary = _orders[i]
 		_add_order_line(order)
 		var crate := Sprite2D.new()
-		crate.texture = CRATE_TEXTURE
+		crate.texture = crate_texture
 		crate.position = _crate_position(i)
 		_crates.add_child(crate)
 		_spawn_ready_bag(i)
