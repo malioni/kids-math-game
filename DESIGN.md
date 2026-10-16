@@ -81,7 +81,7 @@ Go. The number of items on the table is never shown — the child works out bags
 
 - **Teaches:** Multiplication as equal groups (and finding the missing factor)
 - **Mechanic:** `MarketMechanic`
-- **Bag sizes:** tomatoes 1–3, potatoes 4–6, carrots 7–10; the answer takes 2–10 bags, so the biggest order is 10 × 10
+- **Bag sizes:** tomatoes 2–4, potatoes 5–7, carrots 8–10 (no bags of 1, so it is never just counting); the answer takes 2–10 bags, so the biggest order is 10 × 10
 - **Levels:** 20 levels. Levels 1–5 order tomatoes; 6–10 add potatoes; 11–20 add carrots. Bag counts start low again each time a new item joins, then rise to 10 by level 20; puzzles generated from per-level ranges
 - **Win condition:** Every item on the slip matched exactly — the customer cheers
 - **Fail state:** Any item short or over — the customer throws a tomato at the table; gentle retry with the same order, no penalty

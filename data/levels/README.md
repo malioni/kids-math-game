@@ -81,9 +81,9 @@ child drags that many bags onto the table; the placed total is never shown.
   "world": "market",
   "mechanic": "market",
   "items": [
-    { "item": "tomato", "bag_size": { "min": 1, "max": 3 },  "bag_count": { "min": 2, "max": 3 } },
-    { "item": "potato", "bag_size": { "min": 4, "max": 6 },  "bag_count": { "min": 2, "max": 3 } },
-    { "item": "carrot", "bag_size": { "min": 7, "max": 10 }, "bag_count": { "min": 2, "max": 3 } }
+    { "item": "tomato", "bag_size": { "min": 2, "max": 4 },  "bag_count": { "min": 2, "max": 3 } },
+    { "item": "potato", "bag_size": { "min": 5, "max": 7 },  "bag_count": { "min": 2, "max": 3 } },
+    { "item": "carrot", "bag_size": { "min": 8, "max": 10 }, "bag_count": { "min": 2, "max": 3 } }
   ],
   "narrative_key": "market_11",
   "skill_tags": ["multiplication", "equal-groups"]
@@ -93,5 +93,5 @@ child drags that many bags onto the table; the placed total is never shown.
 |---|---|---|
 | `items` | Array | One entry per ordered item (1–3), in table-row order |
 | `items[].item` | String | `tomato`, `potato` or `carrot`; the key for the item's icon in the world scene |
-| `items[].bag_size.min/max` | int | Inclusive range for how many items one bag holds: tomato 1–3, potato 4–6, carrot 7–10 |
+| `items[].bag_size.min/max` | int | Inclusive range for how many items one bag holds: tomato 2–4, potato 5–7, carrot 8–10 |
 | `items[].bag_count.min/max` | int | Inclusive range for how many bags the answer takes (2–10) |
