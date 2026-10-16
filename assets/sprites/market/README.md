@@ -11,13 +11,14 @@ dimensions** and the scenes pick it up unchanged.
 | `crate.png` | 150×110 | Crate each item's bags come from; one per ordered item |
 | `bag.png` | 96×96 | Paper bag; leave the face blank (the bag size and item icon are drawn on top) |
 | `bag_shadow.png` | 96×96 | Shown under a bag while it is dragged |
-| `order_slip.png` | 200×230 | The customer's order; leave blank (amounts and icons are drawn on top) |
+| `order_slip.png` | 200×230 | The fox's order; leave blank (amounts and icons are drawn on top) |
 | `icon_tomato.png` | 64×64 | Tomato icon on bags and the order slip; also the thrown tomato |
 | `icon_potato.png` | 64×64 | Potato icon |
 | `icon_carrot.png` | 64×64 | Carrot icon |
-| `customer_idle.png` | 640×220 | 4 frames of 160×220, looping |
-| `customer_happy.png` | 640×220 | 4 frames, looping; plays on a correct order |
-| `customer_throw.png` | 640×220 | 4 frames, plays once on a wrong order; the tomato leaves the hand after the last frame |
 | `splat.png` | 200×200 | Tomato splat shown over the table after a throw |
+
+The fox reuses the Forest Bridge character sheets (idle, celebrate). It has no throw frames yet,
+so the throw plays the 3-frame `character_fall.png` lurch; a `character_throw.png` sheet would
+replace that.
 
 The Go and retry buttons reuse `forest_bridge/go_icon.png` and `forest_bridge/retry_icon.png`.

@@ -44,7 +44,7 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 | `MatchingMechanic` | Equivalence | Match two groups of equal size |
 | `BalanceMechanic` | Addition/subtraction | Balance a scale with groups of items |
 | `BalloonPopMechanic` | Subtraction | Pop numbered balloons until their total lift equals the basket's weight |
-| `MarketMechanic` | Multiplication | Fill a customer's order with equal-sized bags from crates that never run out |
+| `MarketMechanic` | Multiplication | Fill the fox's order with equal-sized bags from crates that never run out |
 
 ## World Plan
 
@@ -74,17 +74,17 @@ weight. Both numbers are on screen, so the child works out total − weight and 
 
 ### World 3: The Market
 
-A customer at a market stall holds up an order slip: an amount and a picture of each item they
-want (e.g. 12 tomatoes). Each ordered item has a crate of equal-sized bags, each bag showing how
-many it holds (e.g. 4 tomatoes). The child drags bags onto the table, one row per item, and presses
+The fox shops at a market stall and holds up an order slip: an amount and a picture of each item
+it wants (e.g. 12 tomatoes). Each ordered item has a crate of equal-sized bags, each bag showing how
+many it holds (e.g. 4 tomatoes). The child drags or taps bags onto the table, one row per item, and presses
 Go. The number of items on the table is never shown — the child works out bags × bag size.
 
 - **Teaches:** Multiplication as equal groups (and finding the missing factor)
 - **Mechanic:** `MarketMechanic`
 - **Bag sizes:** tomatoes 2–4, potatoes 5–7, carrots 8–10 (no bags of 1, so it is never just counting); the answer takes 2–10 bags, so the biggest order is 10 × 10
 - **Levels:** 20 levels. Levels 1–5 order tomatoes; 6–10 add potatoes; 11–20 add carrots. Bag counts start low again each time a new item joins, then rise to 10 by level 20; puzzles generated from per-level ranges
-- **Win condition:** Every item on the slip matched exactly — the customer cheers
-- **Fail state:** Any item short or over — the customer throws a tomato at the table; gentle retry with the same order, no penalty
+- **Win condition:** Every item on the slip matched exactly — the fox cheers
+- **Fail state:** Any item short or over — the fox throws a tomato at the table; gentle retry with the same order, no penalty
 
 ### Planned Future Worlds
 

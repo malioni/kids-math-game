@@ -130,12 +130,27 @@ func test_market_mechanic_tap_middle_bag_closes_the_gap() -> void:
 	assert_almost_eq(_mechanic.get_placed_bags("tomato")[1].position.x, second_x, 0.5)
 
 
-func test_market_mechanic_tap_ready_bag_does_nothing() -> void:
+func test_market_mechanic_tap_crate_bag_places_it_and_refills_crate() -> void:
+	_three_item_order()
+	var bag: BagDrag = _mechanic.get_ready_bag("potato")
+	watch_signals(_mechanic)
+	bag.tapped.emit()
+	assert_eq(_mechanic.get_placed_bags("potato"), [bag])
+	assert_true(bag.is_placed)
+	assert_ne(_mechanic.get_ready_bag("potato"), bag)
+	assert_signal_emitted_with_parameters(_mechanic, "bags_changed", ["potato", 1])
+	await wait_seconds(SETTLE)
+	assert_almost_eq(bag.position.y, _mechanic.row_y[1], 0.5)
+
+
+func test_market_mechanic_tap_crate_bag_on_full_row_leaves_it_in_crate() -> void:
 	_one_tomato_order()
+	_place("tomato", _mechanic.max_bags_per_row)
 	var bag: BagDrag = _mechanic.get_ready_bag("tomato")
 	bag.tapped.emit()
 	assert_eq(_mechanic.get_ready_bag("tomato"), bag)
-	assert_eq(_mechanic.get_placed_count("tomato"), 0)
+	assert_false(bag.is_placed)
+	assert_eq(_mechanic.get_placed_count("tomato"), _mechanic.max_bags_per_row)
 
 
 func test_market_mechanic_row_full_bounces_extra_bag() -> void:

@@ -73,7 +73,7 @@ total − weight.
 ## Market level schema (world_market)
 
 Market levels store a range per ordered item. `MarketPuzzleGenerator` picks each item's bag size
-and how many bags the answer takes, and the customer orders bag size × bag count of that item. The
+and how many bags the answer takes, and the fox orders bag size × bag count of that item. The
 child drags that many bags onto the table; the placed total is never shown.
 
 {
