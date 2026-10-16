@@ -119,6 +119,17 @@ func test_market_mechanic_tap_placed_bag_removes_it() -> void:
 	assert_eq(_mechanic.get_node("Leaving").get_child_count(), 0)
 
 
+func test_market_mechanic_tap_middle_bag_closes_the_gap() -> void:
+	_one_tomato_order()
+	_place("tomato", 3)
+	await wait_seconds(SETTLE)
+	var bags: Array[BagDrag] = _mechanic.get_placed_bags("tomato")
+	var second_x: float = bags[1].position.x
+	bags[1].tapped.emit()
+	await wait_seconds(SETTLE)
+	assert_almost_eq(_mechanic.get_placed_bags("tomato")[1].position.x, second_x, 0.5)
+
+
 func test_market_mechanic_tap_ready_bag_does_nothing() -> void:
 	_one_tomato_order()
 	var bag: BagDrag = _mechanic.get_ready_bag("tomato")
