@@ -1,10 +1,10 @@
 extends WorldBase
 
-## World 3: a customer orders an amount of produce, and the child fills it with equal-sized bags.
-## A right order makes the customer cheer; a wrong one gets a tomato thrown at the table.
+## World 3: the fox orders an amount of produce, and the child fills the order with equal-sized
+## bags. A right order makes the fox cheer; a wrong one gets a tomato thrown at the table.
 
-# Where the tomato leaves the customer's hand, relative to the customer.
-const _HAND_OFFSET := Vector2(70, -90)
+# Where the tomato leaves the fox's paw, relative to the fox.
+const _HAND_OFFSET := Vector2(50, -20)
 
 ## Seconds the thrown tomato takes to reach the table.
 @export var throw_duration: float = 0.5
@@ -14,7 +14,7 @@ const _HAND_OFFSET := Vector2(70, -90)
 var _throw_tween: Tween
 
 @onready var _mechanic: MarketMechanic = $MarketMechanic
-@onready var _customer: AnimatedSprite2D = $Customer
+@onready var _character: AnimatedSprite2D = $Character
 @onready var _flying_tomato: Sprite2D = $FlyingTomato
 @onready var _splat: Sprite2D = $Splat
 @onready var _particles: GPUParticles2D = $CelebrationParticles
@@ -45,13 +45,13 @@ func _restore_stage() -> void:
 	_retry_prompt.visible = false
 	_flying_tomato.visible = false
 	_splat.visible = false
-	_customer.play("idle")
+	_character.play("idle")
 
 
 func _on_correct() -> void:
 	var load_count: int = _load_count
 	_mechanic.set_interactive(false)
-	_customer.play("celebrate")
+	_character.play("celebrate")
 	_particles.restart()
 	await get_tree().create_timer(celebrate_duration).timeout
 	if load_count != _load_count:
@@ -62,11 +62,11 @@ func _on_correct() -> void:
 func _on_incorrect() -> void:
 	var load_count: int = _load_count
 	_mechanic.set_interactive(false)
-	_customer.play("throw")
-	await _customer.animation_finished
+	_character.play("throw")
+	await _character.animation_finished
 	if load_count != _load_count:
 		return
-	_flying_tomato.position = _customer.position + _HAND_OFFSET
+	_flying_tomato.position = _character.position + _HAND_OFFSET
 	_flying_tomato.scale = Vector2(0.6, 0.6)
 	_flying_tomato.rotation = 0.0
 	_flying_tomato.visible = true
@@ -79,7 +79,7 @@ func _on_incorrect() -> void:
 		return
 	_flying_tomato.visible = false
 	_splat.visible = true
-	_customer.play("idle")
+	_character.play("idle")
 	await get_tree().create_timer(splat_duration).timeout
 	if load_count != _load_count:
 		return

@@ -4,7 +4,7 @@ const SCENE := preload("res://scenes/worlds/market/market.tscn")
 const _SAVE_PATH := "user://save.cfg"
 const _SEED := 1234
 const _SETTLE := 0.3
-# The throw animation is 4 frames at 8 fps, then the tomato flies and the splat shows.
+# The throw animation is 3 frames at 6 fps, then the tomato flies and the splat shows.
 const _THROW_SETTLE := 0.9
 
 var _world: Node2D
@@ -73,14 +73,14 @@ func test_market_correct_advances_to_next_level() -> void:
 	assert_eq(SaveManager.load_progress("market"), 2)
 
 
-func test_market_correct_customer_celebrates() -> void:
+func test_market_correct_fox_celebrates() -> void:
 	_solve(_mechanic)
-	assert_eq(_world.get_node("Customer").animation, &"celebrate")
+	assert_eq(_world.get_node("Character").animation, &"celebrate")
 
 
-func test_market_incorrect_customer_throws() -> void:
+func test_market_incorrect_fox_throws() -> void:
 	_mechanic.confirm()
-	assert_eq(_world.get_node("Customer").animation, &"throw")
+	assert_eq(_world.get_node("Character").animation, &"throw")
 
 
 func test_market_incorrect_shows_retry_after_throw() -> void:

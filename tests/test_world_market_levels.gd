@@ -2,9 +2,9 @@ extends GutTest
 
 const REQUIRED_FIELDS := ["id", "world", "mechanic", "items", "narrative_key", "skill_tags"]
 const BAG_SIZES := {
-	"tomato": Vector2i(1, 3),
-	"potato": Vector2i(4, 6),
-	"carrot": Vector2i(7, 10),
+	"tomato": Vector2i(2, 4),
+	"potato": Vector2i(5, 7),
+	"carrot": Vector2i(8, 10),
 }
 
 var _levels: Array[Dictionary]

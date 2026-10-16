@@ -238,7 +238,8 @@ Hardest possible order: 10 bags of 10 carrots = 100.
 - `test_market_mechanic_drop_off_table_bounces_back_and_places_nothing`
 - `test_market_mechanic_drop_emits_bags_changed_with_count`
 - `test_market_mechanic_tap_placed_bag_removes_it`
-- `test_market_mechanic_tap_ready_bag_does_nothing`
+- `test_market_mechanic_tap_crate_bag_places_it_and_refills_crate`
+- `test_market_mechanic_tap_crate_bag_on_full_row_leaves_it_in_crate`
 - `test_market_mechanic_row_full_bounces_extra_bag`
 - `test_market_mechanic_crowded_row_stays_within_row_bounds`
 - `test_market_mechanic_confirm_exact_single_item_emits_correct`

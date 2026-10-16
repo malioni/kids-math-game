@@ -16,9 +16,6 @@ const TOMATO := Color(0.88, 0.22, 0.18)
 const LEAF := Color(0.3, 0.62, 0.25)
 const POTATO := Color(0.7, 0.52, 0.32)
 const CARROT := Color(0.95, 0.52, 0.12)
-const SKIN := Color(0.96, 0.78, 0.62)
-const SHIRT := Color(0.3, 0.5, 0.8)
-const APRON := Color(0.95, 0.95, 0.9)
 const OUTLINE := Color(0.24, 0.15, 0.09)
 
 
@@ -33,9 +30,6 @@ func _init() -> void:
 	_save(_tomato(64), OUT + "icon_tomato.png")
 	_save(_potato(64), OUT + "icon_potato.png")
 	_save(_carrot(64), OUT + "icon_carrot.png")
-	_save(_customer_sheet("idle"), OUT + "customer_idle.png")
-	_save(_customer_sheet("happy"), OUT + "customer_happy.png")
-	_save(_customer_sheet("throw"), OUT + "customer_throw.png")
 	_save(_splat(), OUT + "splat.png")
 	_save(_world_icon(), UI_OUT + "icon_world_market.png")
 	quit()
@@ -174,45 +168,6 @@ func _carrot(size: int) -> Image:
 	_triangle(image, Vector2(22, 17) * s, Vector2(32, 17) * s, Vector2(22, 2) * s, LEAF)
 	_triangle(image, Vector2(30, 17) * s, Vector2(40, 17) * s, Vector2(42, 2) * s, LEAF)
 	return image
-
-
-# Four 160×220 frames; the body bobs by a couple of pixels so the loop reads as alive.
-func _customer_sheet(pose: String) -> Image:
-	var image := _blank(640, 220)
-	for frame in 4:
-		var ox: int = frame * 160
-		var bob: int = [0, 2, 4, 2][frame]
-		_customer(image, ox, bob, pose, frame)
-	return image
-
-
-func _customer(image: Image, ox: int, bob: int, pose: String, frame: int) -> void:
-	var cx: float = ox + 80.0
-	_outlined_rect(image, Rect2i(ox + 50, 90 + bob, 60, 100), SHIRT)
-	_rect(image, Rect2i(ox + 58, 110 + bob, 44, 76), APRON)
-	_outlined_rect(image, Rect2i(ox + 56, 186, 18, 32), WOOD_DARK)
-	_outlined_rect(image, Rect2i(ox + 86, 186, 18, 32), WOOD_DARK)
-	_outlined_ellipse(image, Vector2(cx, 60 + bob), Vector2(30, 30), SKIN)
-	_ellipse(image, Vector2(cx - 10, 56 + bob), Vector2(3, 4), OUTLINE)
-	_ellipse(image, Vector2(cx + 10, 56 + bob), Vector2(3, 4), OUTLINE)
-	_ellipse(image, Vector2(cx, 34 + bob), Vector2(30, 10), Color(0.45, 0.28, 0.15))
-	match pose:
-		"idle":
-			_rect(image, Rect2i(ox + 70, 74 + bob, 20, 4), OUTLINE)
-			_outlined_rect(image, Rect2i(ox + 34, 96 + bob, 16, 70), SHIRT)
-			_outlined_rect(image, Rect2i(ox + 110, 96 + bob, 16, 70), SHIRT)
-		"happy":
-			_ellipse(image, Vector2(cx, 74 + bob), Vector2(12, 7), OUTLINE)
-			_outlined_rect(image, Rect2i(ox + 30, 20 + bob, 16, 76), SHIRT)
-			_outlined_rect(image, Rect2i(ox + 114, 20 + bob, 16, 76), SHIRT)
-		"throw":
-			_ellipse(image, Vector2(cx, 76), Vector2(8, 4), OUTLINE)
-			_outlined_rect(image, Rect2i(ox + 34, 96, 16, 70), SHIRT)
-			# The throwing arm swings from behind the head forward over the frames.
-			var arm_y: int = [30, 50, 80, 96][frame]
-			_outlined_rect(image, Rect2i(ox + 110, arm_y, 46, 16), SHIRT)
-			if frame < 2:
-				_outlined_ellipse(image, Vector2(ox + 150, arm_y + 4), Vector2(9, 8), TOMATO)
 
 
 func _splat() -> Image:

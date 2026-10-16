@@ -2,9 +2,9 @@ class_name MarketMechanic
 extends Node2D
 
 ## A market table. An order slip shows how many of each item the customer wants; each ordered item
-## has a crate of equal-sized bags that never runs out. The player drags bags onto the table (one
-## row per item) and presses Go. The number of items placed is never shown, so the player has to
-## work out bags × bag size themselves.
+## has a crate of equal-sized bags that never runs out. The player drags or taps bags onto the
+## table (one row per item), taps a placed bag to take it off, and presses Go. The number of items
+## placed is never shown, so the player has to work out bags × bag size themselves.
 
 ## Emitted when confirm() is called and every item's placed bags hold exactly the ordered quantity.
 signal correct
@@ -162,21 +162,31 @@ func _spawn_ready_bag(row: int) -> void:
 
 
 func _on_bag_dropped(release_position: Vector2, bag: BagDrag) -> void:
-	var row: int = _row_of(bag.item)
 	var over_table: bool = table_rect.has_point(to_local(release_position))
-	if not over_table or get_placed_count(bag.item) >= max_bags_per_row:
+	if not over_table or not _place(bag):
 		bag.bounce_back()
-		return
+
+
+func _on_bag_tapped(bag: BagDrag) -> void:
+	if bag.is_placed:
+		_remove(bag)
+	else:
+		_place(bag)
+
+
+func _place(bag: BagDrag) -> bool:
+	var row: int = _row_of(bag.item)
+	if get_placed_count(bag.item) >= max_bags_per_row:
+		return false
 	bag.is_placed = true
 	bag.reparent(_placed_bags)
 	_relayout_row(row)
 	_spawn_ready_bag(row)
 	bags_changed.emit(bag.item, get_placed_count(bag.item))
+	return true
 
 
-func _on_bag_tapped(bag: BagDrag) -> void:
-	if not bag.is_placed:
-		return
+func _remove(bag: BagDrag) -> void:
 	var row: int = _row_of(bag.item)
 	bag.interactive = false
 	bag.reparent(_leaving)
