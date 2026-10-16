@@ -20,6 +20,11 @@ const WORLDS: Array[Dictionary] = [
 		"scene": "res://scenes/worlds/sky_balloons/sky_balloons.tscn",
 		"icon": "res://assets/sprites/ui/icon_world_sky.png",
 	},
+	{
+		"id": "market",
+		"scene": "res://scenes/worlds/market/market.tscn",
+		"icon": "res://assets/sprites/ui/icon_world_market.png",
+	},
 ]
 
 var _requested_levels := {}

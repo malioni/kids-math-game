@@ -28,6 +28,7 @@ A tablet game for children aged 4–7 where mathematical concepts are the physic
 | Number sense & counting | One-to-one correspondence, cardinality |
 | Quantity comparison | More, less, equal |
 | Addition & subtraction | Combining and removing groups |
+| Multiplication (equal groups) | Counting in equal groups, groups × group size |
 | Pattern recognition | Repeating sequences, odd-one-out |
 | Spatial reasoning | Shapes, positions, rotations, sequences |
 
@@ -43,6 +44,7 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 | `MatchingMechanic` | Equivalence | Match two groups of equal size |
 | `BalanceMechanic` | Addition/subtraction | Balance a scale with groups of items |
 | `BalloonPopMechanic` | Subtraction | Pop numbered balloons until their total lift equals the basket's weight |
+| `MarketMechanic` | Multiplication | Fill a customer's order with equal-sized bags from crates that never run out |
 
 ## World Plan
 
@@ -70,12 +72,25 @@ weight. Both numbers are on screen, so the child works out total − weight and 
 - **Win condition:** Lift equals weight — the basket levels out, the fox celebrates
 - **Fail state:** Lift below weight — the basket falls; gentle retry with the same balloons, no penalty
 
+### World 3: The Market
+
+A customer at a market stall holds up an order slip: an amount and a picture of each item they
+want (e.g. 12 tomatoes). Each ordered item has a crate of equal-sized bags, each bag showing how
+many it holds (e.g. 4 tomatoes). The child drags bags onto the table, one row per item, and presses
+Go. The number of items on the table is never shown — the child works out bags × bag size.
+
+- **Teaches:** Multiplication as equal groups (and finding the missing factor)
+- **Mechanic:** `MarketMechanic`
+- **Bag sizes:** tomatoes 1–3, potatoes 4–6, carrots 7–10; the answer takes 2–10 bags, so the biggest order is 10 × 10
+- **Levels:** 20 levels. Levels 1–5 order tomatoes; 6–10 add potatoes; 11–20 add carrots. Bag counts start low again each time a new item joins, then rise to 10 by level 20; puzzles generated from per-level ranges
+- **Win condition:** Every item on the slip matched exactly — the customer cheers
+- **Fail state:** Any item short or over — the customer throws a tomato at the table; gentle retry with the same order, no penalty
+
 ### Planned Future Worlds
 
 | World | Theme | Skill focus |
 |-------|-------|-------------|
-| World 3: The Garden | Plant seeds in rows | Addition, grouping |
-| World 4: The Market | Trade items in equal groups | Multiplication intuition |
+| World 4: The Garden | Plant seeds in rows | Addition, grouping |
 | World 5: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
 
 ## Progression System

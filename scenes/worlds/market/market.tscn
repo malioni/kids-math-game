@@ -1,0 +1,199 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/worlds/market.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/bg_market.png" id="bg"]
+[ext_resource type="PackedScene" path="res://scenes/mechanics/market_mechanic.tscn" id="mechanic"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/icon_tomato.png" id="tomato"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/icon_potato.png" id="potato"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/icon_carrot.png" id="carrot"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.png" id="go_icon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="retry_icon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/splat.png" id="splat"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/customer_idle.png" id="customer_idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/customer_happy.png" id="customer_happy"]
+[ext_resource type="Texture2D" path="res://assets/sprites/market/customer_throw.png" id="customer_throw"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="level_hud_scene"]
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_0"]
+atlas = ExtResource("customer_idle")
+region = Rect2(0, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_1"]
+atlas = ExtResource("customer_idle")
+region = Rect2(160, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_2"]
+atlas = ExtResource("customer_idle")
+region = Rect2(320, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_3"]
+atlas = ExtResource("customer_idle")
+region = Rect2(480, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_0"]
+atlas = ExtResource("customer_happy")
+region = Rect2(0, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_1"]
+atlas = ExtResource("customer_happy")
+region = Rect2(160, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_2"]
+atlas = ExtResource("customer_happy")
+region = Rect2(320, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_3"]
+atlas = ExtResource("customer_happy")
+region = Rect2(480, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_throw_0"]
+atlas = ExtResource("customer_throw")
+region = Rect2(0, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_throw_1"]
+atlas = ExtResource("customer_throw")
+region = Rect2(160, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_throw_2"]
+atlas = ExtResource("customer_throw")
+region = Rect2(320, 0, 160, 220)
+
+[sub_resource type="AtlasTexture" id="Atlas_throw_3"]
+atlas = ExtResource("customer_throw")
+region = Rect2(480, 0, 160, 220)
+
+[sub_resource type="SpriteFrames" id="CustomerFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_3")
+}],
+"loop": true,
+"name": &"celebrate",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Atlas_throw_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_throw_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_throw_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_throw_3")
+}],
+"loop": false,
+"name": &"throw",
+"speed": 8.0
+}]
+
+[sub_resource type="Gradient" id="Gradient_confetti"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.82, 0.47, 1, 0.88, 0.22, 0.18, 1, 0.95, 0.52, 0.12, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_confetti"]
+gradient = SubResource("Gradient_confetti")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_confetti"]
+direction = Vector3(0, -1, 0)
+spread = 60.0
+initial_velocity_min = 200.0
+initial_velocity_max = 350.0
+gravity = Vector3(0, 400, 0)
+scale_min = 4.0
+scale_max = 8.0
+color_ramp = SubResource("GradientTexture1D_confetti")
+
+[node name="Market" type="Node2D"]
+script = ExtResource("script")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(640, 360)
+texture = ExtResource("bg")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="Customer" type="AnimatedSprite2D" parent="."]
+position = Vector2(160, 470)
+sprite_frames = SubResource("CustomerFrames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="MarketMechanic" parent="." instance=ExtResource("mechanic")]
+position = Vector2(670, 420)
+item_icons = {
+"carrot": ExtResource("carrot"),
+"potato": ExtResource("potato"),
+"tomato": ExtResource("tomato")
+}
+go_texture = ExtResource("go_icon")
+
+[node name="Splat" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(670, 420)
+texture = ExtResource("splat")
+
+[node name="FlyingTomato" type="Sprite2D" parent="."]
+visible = false
+z_index = 20
+texture = ExtResource("tomato")
+
+[node name="CelebrationParticles" type="GPUParticles2D" parent="."]
+position = Vector2(160, 330)
+emitting = false
+amount = 60
+lifetime = 1.2
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_confetti")
+
+[node name="RetryPrompt" type="CanvasLayer" parent="."]
+
+[node name="RetryIcon" type="TextureButton" parent="RetryPrompt"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = -80.0
+offset_right = 80.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("retry_icon")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="LevelHud" parent="." instance=ExtResource("level_hud_scene")]
