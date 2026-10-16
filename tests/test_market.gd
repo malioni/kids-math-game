@@ -73,6 +73,16 @@ func test_market_correct_advances_to_next_level() -> void:
 	assert_eq(SaveManager.load_progress("market"), 2)
 
 
+func test_market_correct_customer_celebrates() -> void:
+	_solve(_mechanic)
+	assert_eq(_world.get_node("Customer").animation, &"celebrate")
+
+
+func test_market_incorrect_customer_throws() -> void:
+	_mechanic.confirm()
+	assert_eq(_world.get_node("Customer").animation, &"throw")
+
+
 func test_market_incorrect_shows_retry_after_throw() -> void:
 	_mechanic.confirm()
 	assert_false(_retry.visible)
