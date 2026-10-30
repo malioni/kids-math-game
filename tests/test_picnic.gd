@@ -89,6 +89,15 @@ func test_picnic_incorrect_fox_sad_and_retry_shown() -> void:
 	assert_eq(_world._current_index, 0)
 
 
+func test_picnic_sad_animation_uses_sad_sheet_and_loops() -> void:
+	var frames: SpriteFrames = _world.get_node("Character").sprite_frames
+	assert_eq(frames.get_frame_count("sad"), 4)
+	assert_true(frames.get_animation_loop("sad"))
+	var first: AtlasTexture = frames.get_frame_texture("sad", 0)
+	assert_eq(first.atlas.resource_path, "res://assets/sprites/forest_bridge/character_sad.png")
+	assert_eq(_mechanic.guest_frames, frames, "friends share the fox's frames, so they cry too")
+
+
 func test_picnic_retry_keeps_same_orders_and_clears_plate() -> void:
 	var orders: Array[Dictionary] = _mechanic.get_orders().duplicate(true)
 	_place("strawberry", 1)
