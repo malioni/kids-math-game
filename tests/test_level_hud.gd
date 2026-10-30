@@ -153,12 +153,51 @@ func test_level_hud_current_difficulty_button_is_highlighted() -> void:
 	assert_eq(hard.bg_color, Color(1.0, 0.72, 0.3))
 
 
-func test_level_hud_shuffle_tab_emits_shuffle_requested_and_closes() -> void:
+func test_level_hud_shuffle_tab_shows_shuffle_page_instead_of_levels() -> void:
 	hud.open_picker()
+	assert_false(hud.is_shuffle_page_shown())
 	watch_signals(hud)
 	hud.get_shuffle_tab().pressed.emit()
-	assert_signal_emitted(hud, "shuffle_requested")
+	await wait_frames(1)
+	assert_true(hud.is_shuffle_page_shown())
+	assert_true(hud.is_picker_open())
+	assert_eq(hud.get_level_buttons().size(), 0)
+	assert_signal_not_emitted(hud, "shuffle_requested")
+
+
+func test_level_hud_shuffle_continue_emits_not_from_start_and_closes() -> void:
+	hud.open_picker()
+	hud.get_shuffle_tab().pressed.emit()
+	watch_signals(hud)
+	hud.get_shuffle_buttons()[0].pressed.emit()
+	assert_signal_emitted_with_parameters(hud, "shuffle_requested", [false])
 	assert_false(hud.is_picker_open())
+
+
+func test_level_hud_shuffle_start_over_emits_from_start_and_closes() -> void:
+	hud.open_picker()
+	hud.get_shuffle_tab().pressed.emit()
+	watch_signals(hud)
+	hud.get_shuffle_buttons()[1].pressed.emit()
+	assert_signal_emitted_with_parameters(hud, "shuffle_requested", [true])
+	assert_false(hud.is_picker_open())
+
+
+func test_level_hud_picker_opens_on_shuffle_page_while_shuffling() -> void:
+	GameRegistry.set_shuffle(true)
+	hud.open_picker()
+	assert_true(hud.is_shuffle_page_shown())
+	var style: StyleBoxFlat = hud.get_shuffle_tab().get_theme_stylebox("normal")
+	assert_eq(style.bg_color, Color(1.0, 0.72, 0.3))
+
+
+func test_level_hud_world_tab_from_shuffle_page_shows_its_levels() -> void:
+	GameRegistry.set_shuffle(true)
+	hud.open_picker()
+	hud.get_node("Root/Picker/Panel/Margin/VBox/TopRow/WorldTabs/Tab_sky").pressed.emit()
+	await wait_frames(1)
+	assert_false(hud.is_shuffle_page_shown())
+	assert_eq(hud.get_level_buttons().size(), 10)
 
 
 func test_level_hud_badge_shows_shuffle_icon_only_while_shuffling() -> void:
