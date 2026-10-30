@@ -95,3 +95,31 @@ child drags that many bags onto the table; the placed total is never shown.
 | `items[].item` | String | `tomato`, `potato` or `carrot`; the key for the item's icon in the world scene |
 | `items[].bag_size.min/max` | int | Inclusive range for how many items one bag holds: tomato 2–4, potato 5–7, carrot 8–10 |
 | `items[].bag_count.min/max` | int | Inclusive range for how many bags the answer takes (2–10) |
+
+## Picnic level schema (world_picnic)
+
+Picnic levels store a plate range and a share range per fruit. `SharingPuzzleGenerator` picks how
+many plates there are (the fox's included) and how many of each fruit every plate should get; each
+basket holds plates × share. The child puts one share on the fox's plate and the baskets deal the
+same to everyone else; the fox's amount is never shown.
+
+{
+  "id": "world_picnic_11",
+  "world": "picnic",
+  "mechanic": "sharing",
+  "plates": { "min": 2, "max": 2 },
+  "items": [
+    { "item": "strawberry", "share": { "min": 2, "max": 3 } },
+    { "item": "apple", "share": { "min": 2, "max": 3 } },
+    { "item": "banana", "share": { "min": 2, "max": 3 } }
+  ],
+  "narrative_key": "picnic_11",
+  "skill_tags": ["division", "fair-sharing"]
+}
+
+| Field | Type | Description |
+|---|---|---|
+| `plates.min/max` | int | Inclusive range for the number of plates, the fox's included (2–5) |
+| `items` | Array | One entry per fruit (1–3), in plate-row order |
+| `items[].item` | String | `strawberry`, `apple` or `banana`; the key for the fruit's icon in the world scene |
+| `items[].share.min/max` | int | Inclusive range for how many of that fruit each plate should get (2–10) |

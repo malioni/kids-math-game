@@ -45,6 +45,7 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 | `BalanceMechanic` | Addition/subtraction | Balance a scale with groups of items |
 | `BalloonPopMechanic` | Subtraction | Pop numbered balloons until their total lift equals the basket's weight |
 | `MarketMechanic` | Multiplication | Fill the fox's order with equal-sized bags from crates that never run out |
+| `SharingMechanic` | Division | Fill the fox's plate so the baskets can share the same amount with every friend |
 
 ## World Plan
 
@@ -86,12 +87,26 @@ Go. The number of items on the table is never shown — the child works out bags
 - **Win condition:** Every item on the slip matched exactly — the fox cheers
 - **Fail state:** Any item short or over — the fox throws a tomato at the table; gentle retry with the same order, no penalty
 
+### World 4: The Picnic
+
+The fox has a picnic with friends, each at their own plate. Each fruit has a basket showing only
+how many it holds (e.g. 12 strawberries). The child drags or taps fruit onto the fox's plate, one
+row per fruit, and presses Go. The baskets then deal the fox's amount to every friend in turn. The
+fox's amount is never shown — the child works out total ÷ plates.
+
+- **Teaches:** Division as fair sharing
+- **Mechanic:** `SharingMechanic`
+- **Plates and shares:** 2–5 plates (the fox's included); every plate should get 2–10 of each fruit, so the biggest basket is 50
+- **Levels:** 20 levels. Levels 1–5 share strawberries; 6–10 add apples; 11–20 add bananas. Plates and shares start low again each time a new fruit joins, then rise to 5 plates of up to 10 by level 20; puzzles generated from per-level ranges
+- **Win condition:** Every plate gets the same of every fruit and the baskets are empty — everyone cheers
+- **Fail state:** Too much and the last friends come up short (they look sad); too little and fruit is left in the basket. The fox is sad; gentle retry with the same baskets, no penalty
+
 ### Planned Future Worlds
 
 | World | Theme | Skill focus |
 |-------|-------|-------------|
-| World 4: The Garden | Plant seeds in rows | Addition, grouping |
-| World 5: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
+| World 5: The Garden | Plant seeds in rows | Addition, grouping |
+| World 6: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
 
 ## Progression System
 

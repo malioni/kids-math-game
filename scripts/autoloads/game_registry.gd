@@ -25,6 +25,11 @@ const WORLDS: Array[Dictionary] = [
 		"scene": "res://scenes/worlds/market/market.tscn",
 		"icon": "res://assets/sprites/ui/icon_world_market.png",
 	},
+	{
+		"id": "picnic",
+		"scene": "res://scenes/worlds/picnic/picnic.tscn",
+		"icon": "res://assets/sprites/ui/icon_world_picnic.png",
+	},
 ]
 
 var _requested_levels := {}

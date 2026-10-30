@@ -1,0 +1,12 @@
+{
+  "id": "world_picnic_08",
+  "world": "picnic",
+  "mechanic": "sharing",
+  "plates": { "min": 3, "max": 3 },
+  "items": [
+    { "item": "strawberry", "share": { "min": 2, "max": 5 } },
+    { "item": "apple", "share": { "min": 2, "max": 5 } }
+  ],
+  "narrative_key": "picnic_08",
+  "skill_tags": ["division", "fair-sharing"]
+}
