@@ -98,7 +98,7 @@ func test_sky_balloons_correct_levels_out_then_advances() -> void:
 	await wait_seconds(_SETTLE)
 	assert_eq(_world._current_index, 1)
 	assert_true(_world.is_rising())
-	assert_eq(SaveManager.load_progress("sky"), 2)
+	assert_eq(SaveManager.load_progress("sky:easy"), 2)
 
 
 func test_sky_balloons_too_many_pops_falls_and_shows_retry() -> void:
@@ -128,7 +128,7 @@ func test_sky_balloons_retry_restores_same_puzzle() -> void:
 func test_sky_balloons_picking_a_level_loads_it_and_saves() -> void:
 	_hud.level_chosen.emit("sky", 6)
 	assert_eq(_world._current_index, 6)
-	assert_eq(SaveManager.load_progress("sky"), 7)
+	assert_eq(SaveManager.load_progress("sky:easy"), 7)
 	assert_eq(_hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "7")
 
 
@@ -142,7 +142,7 @@ func test_sky_balloons_picking_a_level_mid_fall_cancels_the_fall() -> void:
 
 
 func test_sky_balloons_last_level_shows_world_complete_and_restart_goes_to_level_1() -> void:
-	SaveManager.save_progress("sky", 20)
+	SaveManager.save_progress("sky:easy", 10)
 	var world: Node2D = add_child_autofree(_make_world())
 	var hud: LevelHud = world.get_node("LevelHud")
 	watch_signals(world)
@@ -150,14 +150,14 @@ func test_sky_balloons_last_level_shows_world_complete_and_restart_goes_to_level
 	await wait_seconds(_SETTLE)
 	assert_signal_emitted(world, "world_complete")
 	assert_true(hud.is_world_complete_shown())
-	assert_eq(SaveManager.load_progress("sky"), 1)
+	assert_eq(SaveManager.load_progress("sky:easy"), 1)
 	hud.get_node("Root/Complete/Choices/RestartButton").pressed.emit()
 	assert_eq(world._current_index, 0)
 	assert_false(hud.is_world_complete_shown())
 
 
 func test_sky_balloons_requested_level_overrides_save() -> void:
-	SaveManager.save_progress("sky", 10)
+	SaveManager.save_progress("sky:easy", 10)
 	GameRegistry.request_level("sky", 3)
 	var world: Node2D = add_child_autofree(_make_world())
 	assert_eq(world._current_index, 3)
@@ -168,8 +168,11 @@ func test_sky_balloons_remembers_it_was_played_last() -> void:
 
 
 func test_sky_balloons_every_level_solvable_in_order() -> void:
-	for i in LevelLoader.get_levels_for_world("sky").size():
-		assert_eq(_world._current_index, i)
-		_solve(_mechanic)
-		await wait_seconds(_SETTLE)
-	assert_true(_hud.is_world_complete_shown())
+	for difficulty in LevelLoader.DIFFICULTIES:
+		_hud.difficulty_chosen.emit(difficulty)
+		var level_range: Vector2i = LevelLoader.get_difficulty_range(difficulty)
+		for i in range(level_range.x, level_range.y + 1):
+			assert_eq(_world._current_index, i, difficulty)
+			_solve(_mechanic)
+			await wait_seconds(_SETTLE)
+		assert_true(_hud.is_world_complete_shown(), difficulty)

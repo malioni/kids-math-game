@@ -113,7 +113,9 @@ fox's amount is never shown — the child works out total ÷ plates.
 - Tracks per-skill mastery silently using success rate per mechanic type
 - No stars, scores, or difficulty labels visible to the child
 - Narrative completion is the only visible reward (creature reaches home)
-- A level badge (world icon + level number) sits in the top-left corner; tapping it opens a picker to jump to any level of any world. After a world's last level, a star screen offers "restart from 1" or another world
+- A level badge (world icon + level number) sits in the top-left corner; tapping it opens a picker to jump to any level of any world. After the last level of the difficulty, a star screen offers a restart from the difficulty's first level or another world
+- **Difficulty:** every world's levels split into Easy (1–10) and Hard (11–20) (`data/levels/difficulty.json`). A grown-up picks it with two icon buttons in the picker (a hill and a mountain); it applies to every world, and progress is kept separately per difficulty. The child-facing badge never shows it
+- **Shuffle:** a shuffle tab in the picker plays a random world after every win, always that world's next unplayed level of the current difficulty. Shuffle keeps its own place in each world; when every world's levels are played the star screen shows and restart starts a fresh shuffle. Picking a level leaves shuffle
 - **Parent view:** Session summaries accessible via a separate parent-only screen (PIN-gated)
 - Adaptive branching: if a child struggles at N=4, the system repeats N=3 variants before retrying
 

@@ -1,0 +1,4 @@
+{
+  "easy": { "first": 1, "last": 10 },
+  "hard": { "first": 11, "last": 20 }
+}

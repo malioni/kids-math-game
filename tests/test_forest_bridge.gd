@@ -6,6 +6,9 @@ const _SEED := 1234
 # AnimationPlayer speed-up so walk_across (2 s) and bridge_collapse (1 s) finish quickly.
 const _ANIM_SPEED := 20.0
 const _SETTLE := 0.3
+const _KEY := "forest:easy"
+# Levels in the easy range (the default difficulty).
+const _EASY_LEVELS := 10
 
 var _world: Node2D
 var _mechanic: Node2D
@@ -77,10 +80,6 @@ func _pile_lengths(mechanic: Node2D) -> Array[int]:
 	return lengths
 
 
-func _level_count() -> int:
-	return LevelLoader.get_levels_for_world("forest").size()
-
-
 func _level_index(world: Node2D) -> int:
 	return world._current_index
 
@@ -122,7 +121,7 @@ func test_forest_bridge_correct_resets_placed_total() -> void:
 
 
 func test_forest_bridge_next_level_generates_new_puzzle() -> void:
-	SaveManager.save_progress("forest", 9)
+	SaveManager.save_progress(_KEY, 9)
 	var world: Node2D = add_child_autofree(_make_world())
 	var mechanic: Node2D = world.get_node("BridgeLayer/PlacementMechanic")
 	var before := [mechanic.get_target_length(), _pile_lengths(mechanic)]
@@ -181,7 +180,7 @@ func test_forest_bridge_retry_keeps_same_puzzle() -> void:
 
 
 func test_forest_bridge_world_complete_emitted_after_last_level_animation() -> void:
-	SaveManager.save_progress("forest", _level_count())
+	SaveManager.save_progress(_KEY, _EASY_LEVELS)
 	var world: Node2D = add_child_autofree(_make_world())
 	var mechanic: Node2D = world.get_node("BridgeLayer/PlacementMechanic")
 	watch_signals(world)
@@ -193,7 +192,7 @@ func test_forest_bridge_world_complete_emitted_after_last_level_animation() -> v
 
 func test_forest_bridge_world_complete_emits_after_all_levels() -> void:
 	watch_signals(_world)
-	for i in _level_count():
+	for i in _EASY_LEVELS:
 		assert_true(_bridge_length_in_range(i, _mechanic.get_target_length()), "level %d" % i)
 		_fill_and_confirm(_mechanic)
 		await wait_seconds(_SETTLE)
@@ -201,7 +200,7 @@ func test_forest_bridge_world_complete_emits_after_all_levels() -> void:
 
 
 func test_forest_bridge_resumes_from_saved_level() -> void:
-	SaveManager.save_progress("forest", 3)
+	SaveManager.save_progress(_KEY, 3)
 	var world: Node2D = add_child_autofree(_make_world())
 	assert_eq(_level_index(world), 2)
 
@@ -209,15 +208,15 @@ func test_forest_bridge_resumes_from_saved_level() -> void:
 func test_forest_bridge_correct_saves_next_level() -> void:
 	_fill_and_confirm(_mechanic)
 	await wait_seconds(_SETTLE)
-	assert_eq(SaveManager.load_progress("forest"), 2)
+	assert_eq(SaveManager.load_progress(_KEY), 2)
 
 
 func test_forest_bridge_last_level_correct_resets_progress() -> void:
-	SaveManager.save_progress("forest", _level_count())
+	SaveManager.save_progress(_KEY, _EASY_LEVELS)
 	var world: Node2D = add_child_autofree(_make_world())
 	_fill_and_confirm(world.get_node("BridgeLayer/PlacementMechanic"))
 	await wait_seconds(_SETTLE)
-	assert_eq(SaveManager.load_progress("forest"), 1)
+	assert_eq(SaveManager.load_progress(_KEY), 1)
 
 
 func test_forest_bridge_incorrect_fox_falls_where_planks_end() -> void:
@@ -261,14 +260,14 @@ func test_forest_bridge_picking_a_level_loads_it_and_saves() -> void:
 	_world.get_node("LevelHud").level_chosen.emit("forest", 7)
 	assert_eq(_level_index(_world), 7)
 	assert_true(_bridge_length_in_range(7, _mechanic.get_target_length()))
-	assert_eq(SaveManager.load_progress("forest"), 8)
+	assert_eq(SaveManager.load_progress(_KEY), 8)
 
 
 func test_forest_bridge_picking_a_lower_level_lowers_the_save() -> void:
-	SaveManager.save_progress("forest", 12)
+	SaveManager.save_progress(_KEY, 9)
 	var world: Node2D = add_child_autofree(_make_world())
 	world.get_node("LevelHud").level_chosen.emit("forest", 1)
-	assert_eq(SaveManager.load_progress("forest"), 2)
+	assert_eq(SaveManager.load_progress(_KEY), 2)
 
 
 func test_forest_bridge_picking_a_level_mid_walk_does_not_advance_twice() -> void:
@@ -288,7 +287,7 @@ func test_forest_bridge_picking_a_level_mid_fall_hides_retry() -> void:
 
 
 func test_forest_bridge_last_level_shows_restart_which_goes_to_level_1() -> void:
-	SaveManager.save_progress("forest", _level_count())
+	SaveManager.save_progress(_KEY, _EASY_LEVELS)
 	var world: Node2D = add_child_autofree(_make_world())
 	var hud: LevelHud = world.get_node("LevelHud")
 	_fill_and_confirm(world.get_node("BridgeLayer/PlacementMechanic"))
@@ -297,4 +296,4 @@ func test_forest_bridge_last_level_shows_restart_which_goes_to_level_1() -> void
 	hud.get_node("Root/Complete/Choices/RestartButton").pressed.emit()
 	assert_eq(_level_index(world), 0)
 	assert_false(hud.is_world_complete_shown())
-	assert_eq(SaveManager.load_progress("forest"), 1)
+	assert_eq(SaveManager.load_progress(_KEY), 1)
