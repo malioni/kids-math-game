@@ -13,6 +13,16 @@ Each world folder contains a `levels.json` — a JSON array of level IDs in inte
 
 ["world_forest_01", "world_forest_02"]
 
+## difficulty.json
+
+`data/levels/difficulty.json` splits every world's levels into difficulties (1-indexed, inclusive).
+The player picks one in the level picker; only that range is played.
+
+{
+  "easy": { "first": 1, "last": 10 },
+  "hard": { "first": 11, "last": 20 }
+}
+
 ## Level file schema
 
 Placement levels don't store a fixed puzzle. They store ranges, and

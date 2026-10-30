@@ -32,8 +32,19 @@ const WORLDS: Array[Dictionary] = [
 	},
 ]
 
+## When false, go_to_world() records the world in last_world_request instead of changing scene.
+## Tests turn it off so a world switch doesn't replace the test runner's scene.
+var change_scenes: bool = true
+## The world the last go_to_world() call asked for.
+var last_world_request: String = ""
+
 var _requested_levels := {}
 var _level_counts := {}
+var _rng := RandomNumberGenerator.new()
+
+
+func _ready() -> void:
+	_rng.randomize()
 
 
 func _notification(what: int) -> void:
@@ -70,7 +81,9 @@ func go_to_world(world_id: String, level_index: int = -1) -> void:
 		return
 	if level_index >= 0:
 		request_level(world_id, level_index)
-	get_tree().change_scene_to_file(world["scene"])
+	last_world_request = world_id
+	if change_scenes:
+		get_tree().change_scene_to_file(world["scene"])
 
 
 ## Asks the given world to start at level_index (0-based) the next time it loads, instead of
@@ -91,4 +104,62 @@ func start_last_world() -> void:
 	var world_id: String = SaveManager.load_last_world()
 	if get_world(world_id).is_empty():
 		world_id = WORLDS[0]["id"]
+	go_to_world(world_id)
+
+
+## Returns the game-wide difficulty, "easy" or "hard".
+func get_difficulty() -> String:
+	return SaveManager.load_difficulty()
+
+
+## Sets and saves the game-wide difficulty, "easy" or "hard".
+func set_difficulty(difficulty: String) -> void:
+	SaveManager.save_difficulty(difficulty)
+
+
+## Returns true while the game is in shuffle mode.
+func is_shuffle() -> bool:
+	return SaveManager.load_play_mode() == "shuffle"
+
+
+## Turns shuffle mode on or off and saves it, so the game reopens in the same mode.
+func set_shuffle(enabled: bool) -> void:
+	SaveManager.save_play_mode("shuffle" if enabled else "worlds")
+
+
+## Returns the 0-based first and last level index (x and y) of the current difficulty.
+func get_level_range() -> Vector2i:
+	return LevelLoader.get_difficulty_range(get_difficulty())
+
+
+## Returns the 0-based index of the given world's next shuffle level at the current difficulty.
+## It is past get_level_range().y once shuffle has played all of that world's levels.
+func shuffle_next_index(world_id: String) -> int:
+	var key: String = SaveManager.progress_key(world_id, get_difficulty(), true)
+	return maxi(SaveManager.load_progress(key) - 1, get_level_range().x)
+
+
+## Returns a random world that still has shuffle levels left at the current difficulty, or "" if
+## shuffle has played every world's levels.
+func next_shuffle_world() -> String:
+	var next_levels := {}
+	for world in WORLDS:
+		next_levels[world["id"]] = shuffle_next_index(world["id"])
+	return ShufflePicker.pick(next_levels, get_level_range().y, _rng)
+
+
+## Clears shuffle's place in every world at the current difficulty.
+func reset_shuffle() -> void:
+	for world in WORLDS:
+		SaveManager.reset_progress(SaveManager.progress_key(world["id"], get_difficulty(), true))
+
+
+## Turns shuffle on and goes to a random world with levels left, starting a fresh shuffle first if
+## every world's levels have been played.
+func start_shuffle() -> void:
+	set_shuffle(true)
+	var world_id: String = next_shuffle_world()
+	if world_id == "":
+		reset_shuffle()
+		world_id = next_shuffle_world()
 	go_to_world(world_id)

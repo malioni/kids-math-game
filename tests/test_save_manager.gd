@@ -93,3 +93,49 @@ func test_save_last_world_preserves_progress() -> void:
 	SaveManager.save_progress("forest", 4)
 	SaveManager.save_last_world("sky")
 	assert_eq(SaveManager.load_progress("forest"), 4)
+
+
+func test_save_manager_progress_key_formats_world_difficulty_and_shuffle() -> void:
+	assert_eq(SaveManager.progress_key("forest", "easy"), "forest:easy")
+	assert_eq(SaveManager.progress_key("sky", "hard", true), "shuffle:sky:hard")
+
+
+func test_save_manager_difficulty_defaults_to_easy_and_roundtrips() -> void:
+	assert_eq(SaveManager.load_difficulty(), "easy")
+	SaveManager.save_difficulty("hard")
+	assert_eq(SaveManager.load_difficulty(), "hard")
+
+
+func test_save_manager_invalid_difficulty_loads_as_easy() -> void:
+	SaveManager.save_difficulty("impossible")
+	assert_eq(SaveManager.load_difficulty(), "easy")
+
+
+func test_save_manager_play_mode_defaults_to_worlds_and_roundtrips() -> void:
+	assert_eq(SaveManager.load_play_mode(), "worlds")
+	SaveManager.save_play_mode("shuffle")
+	assert_eq(SaveManager.load_play_mode(), "shuffle")
+
+
+func test_save_manager_migrate_progress_low_level_moves_to_easy() -> void:
+	SaveManager.set_progress("forest", 7)
+	SaveManager.migrate_progress(["forest", "sky"])
+	assert_eq(SaveManager.load_progress("forest:easy"), 7)
+	assert_eq(SaveManager.load_progress("forest:hard"), 1)
+	var cfg := ConfigFile.new()
+	cfg.load(_SAVE_PATH)
+	assert_false(cfg.has_section_key("progress", "forest"))
+
+
+func test_save_manager_migrate_progress_high_level_moves_to_hard() -> void:
+	SaveManager.set_progress("sky", 14)
+	SaveManager.migrate_progress(["forest", "sky"])
+	assert_eq(SaveManager.load_progress("sky:easy"), 1)
+	assert_eq(SaveManager.load_progress("sky:hard"), 14)
+
+
+func test_save_manager_migrate_progress_leaves_new_keys_alone() -> void:
+	SaveManager.set_progress("forest:easy", 4)
+	SaveManager.set_progress("forest", 9)
+	SaveManager.migrate_progress(["forest"])
+	assert_eq(SaveManager.load_progress("forest:easy"), 4)

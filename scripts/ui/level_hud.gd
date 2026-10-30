@@ -3,15 +3,20 @@ extends CanvasLayer
 
 ## Level badge, level picker and world-complete screen shared by every world.
 ##
-## The badge in the top-left shows the world and the current level number; tapping it opens a
-## picker with a tab per world and a button per level. After the last level, show_world_complete()
-## offers a restart from level 1 and a button for each other world. The HUD only emits signals;
-## the world decides what loading a level means.
+## The badge in the top-left shows the world and the current level number (with a shuffle icon in
+## shuffle mode); tapping it opens a picker with a tab per world, a shuffle tab, a button per level
+## of the current difficulty, and Easy/Hard buttons. After the last level, show_world_complete()
+## offers a restart and a button for each other world. The HUD only emits signals; the world
+## decides what loading a level means.
 
 ## Emitted when the player picks a level. index is 0-based, or -1 to resume a world from its save.
 signal level_chosen(world_id: String, index: int)
 ## Emitted when the player taps restart on the world-complete screen.
 signal restart_requested
+## Emitted when the player picks a difficulty in the picker: "easy" or "hard".
+signal difficulty_chosen(difficulty: String)
+## Emitted when the player taps the shuffle tab in the picker.
+signal shuffle_requested
 
 const _CREAM := Color(1.0, 0.96, 0.86)
 const _CURRENT := Color(1.0, 0.72, 0.3)
@@ -32,6 +37,10 @@ var _picker_world_id: String = ""
 @onready var _grid: GridContainer = $Root/Picker/Panel/Margin/VBox/Grid
 @onready var _complete: Control = $Root/Complete
 @onready var _choices: HBoxContainer = $Root/Complete/Choices
+@onready var _shuffle_icon: TextureRect = $Root/LevelBadge/ShuffleIcon
+@onready var _easy_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/EasyButton
+@onready var _hard_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/HardButton
+@onready var _restart_label: Label = $Root/Complete/Choices/RestartButton/OneLabel
 
 
 func _ready() -> void:
@@ -39,6 +48,8 @@ func _ready() -> void:
 	$Root/Picker/Panel/Margin/VBox/TopRow/CloseButton.pressed.connect(close_picker)
 	$Root/Picker/Backdrop.gui_input.connect(_on_backdrop_input)
 	$Root/Complete/Choices/RestartButton.pressed.connect(_on_restart_pressed)
+	_easy_button.pressed.connect(_on_difficulty_pressed.bind("easy"))
+	_hard_button.pressed.connect(_on_difficulty_pressed.bind("hard"))
 	_picker.visible = false
 	_complete.visible = false
 
@@ -51,6 +62,7 @@ func show_level(world_id: String, index: int, count: int) -> void:
 	_badge_level.text = str(index + 1)
 	_badge_count.text = "/%d" % count
 	_badge_icon.texture = _world_icon(world_id)
+	_shuffle_icon.visible = GameRegistry.is_shuffle()
 	_picker.visible = false
 	_complete.visible = false
 
@@ -59,6 +71,9 @@ func show_level(world_id: String, index: int, count: int) -> void:
 func open_picker() -> void:
 	_complete.visible = false
 	_show_picker_world(_world_id)
+	var difficulty: String = GameRegistry.get_difficulty()
+	_style_button(_easy_button, _CURRENT if difficulty == "easy" else _CREAM, 4)
+	_style_button(_hard_button, _CURRENT if difficulty == "hard" else _CREAM, 4)
 	_picker.visible = true
 
 
@@ -72,14 +87,18 @@ func is_picker_open() -> bool:
 	return _picker.visible
 
 
-## Shows the world-complete screen: restart from level 1, or go to another world.
+## Shows the world-complete screen: restart (from the difficulty's first level, or a fresh shuffle
+## in shuffle mode), or go to another world (any world in shuffle mode).
 func show_world_complete() -> void:
+	var shuffle: bool = GameRegistry.is_shuffle()
+	_restart_label.text = str(GameRegistry.get_level_range().x + 1)
+	_restart_label.visible = not shuffle
 	_picker.visible = false
 	for child in _choices.get_children():
 		if child.name != "RestartButton":
 			child.queue_free()
 	for world in GameRegistry.get_worlds():
-		if world["id"] == _world_id:
+		if world["id"] == _world_id and not shuffle:
 			continue
 		var button := TextureButton.new()
 		button.name = "World_%s" % world["id"]
@@ -97,6 +116,11 @@ func is_world_complete_shown() -> bool:
 	return _complete.visible
 
 
+## Returns the difficulty buttons in the picker: easy, then hard.
+func get_difficulty_buttons() -> Array[Button]:
+	return [_easy_button, _hard_button]
+
+
 ## Returns the level buttons currently in the picker, in level order.
 func get_level_buttons() -> Array[Node]:
 	return _grid.get_children()
@@ -104,7 +128,12 @@ func get_level_buttons() -> Array[Node]:
 
 ## Returns the world tab buttons in the picker, in GameRegistry order.
 func get_world_tabs() -> Array[Node]:
-	return _world_tabs.get_children()
+	return _world_tabs.get_children().filter(func(tab: Node) -> bool: return tab != _shuffle_tab())
+
+
+## Returns the shuffle tab in the picker (null until the picker has opened).
+func get_shuffle_tab() -> Button:
+	return _shuffle_tab()
 
 
 func _show_picker_world(world_id: String) -> void:
@@ -123,6 +152,16 @@ func _show_picker_world(world_id: String) -> void:
 		_style_button(tab, _CURRENT if selected else _CREAM, 4 if selected else 2)
 		tab.pressed.connect(_show_picker_world.bind(world["id"]))
 		_world_tabs.add_child(tab)
+	var shuffle_tab := Button.new()
+	shuffle_tab.name = "Tab_shuffle"
+	shuffle_tab.icon = preload("res://assets/sprites/ui/icon_shuffle.png")
+	shuffle_tab.expand_icon = true
+	shuffle_tab.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	shuffle_tab.custom_minimum_size = Vector2(110, 80)
+	var shuffling: bool = GameRegistry.is_shuffle()
+	_style_button(shuffle_tab, _CURRENT if shuffling else _CREAM, 4 if shuffling else 2)
+	shuffle_tab.pressed.connect(_on_shuffle_pressed)
+	_world_tabs.add_child(shuffle_tab)
 
 	for child in _grid.get_children():
 		_grid.remove_child(child)
@@ -130,7 +169,8 @@ func _show_picker_world(world_id: String) -> void:
 	var count: int = (
 		_level_count if world_id == _world_id else GameRegistry.get_level_count(world_id)
 	)
-	for i in count:
+	var level_range: Vector2i = GameRegistry.get_level_range()
+	for i in range(level_range.x, mini(level_range.y + 1, count)):
 		var button := Button.new()
 		button.name = "Level_%d" % (i + 1)
 		button.text = str(i + 1)
@@ -145,6 +185,20 @@ func _show_picker_world(world_id: String) -> void:
 func _on_level_pressed(index: int) -> void:
 	_picker.visible = false
 	level_chosen.emit(_picker_world_id, index)
+
+
+func _on_difficulty_pressed(difficulty: String) -> void:
+	_picker.visible = false
+	difficulty_chosen.emit(difficulty)
+
+
+func _on_shuffle_pressed() -> void:
+	_picker.visible = false
+	shuffle_requested.emit()
+
+
+func _shuffle_tab() -> Button:
+	return _world_tabs.get_node_or_null("Tab_shuffle")
 
 
 func _on_restart_pressed() -> void:

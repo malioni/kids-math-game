@@ -72,3 +72,15 @@ func test_get_levels_for_world_returns_levels_in_order() -> void:
 func test_get_levels_for_world_missing_index_returns_empty_array() -> void:
 	var result := LevelLoader.get_levels_for_world("nonexistent_world")
 	assert_eq(result, [])
+
+
+func test_level_loader_difficulty_range_easy_is_levels_1_to_10() -> void:
+	assert_eq(LevelLoader.get_difficulty_range("easy"), Vector2i(0, 9))
+
+
+func test_level_loader_difficulty_range_hard_is_levels_11_to_20() -> void:
+	assert_eq(LevelLoader.get_difficulty_range("hard"), Vector2i(10, 19))
+
+
+func test_level_loader_difficulty_range_unknown_falls_back_to_easy() -> void:
+	assert_eq(LevelLoader.get_difficulty_range("impossible"), Vector2i(0, 9))

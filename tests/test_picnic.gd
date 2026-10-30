@@ -70,7 +70,7 @@ func test_picnic_correct_advances_to_next_level() -> void:
 	_solve()
 	await wait_seconds(_SETTLE)
 	assert_eq(_world._current_index, 1)
-	assert_eq(SaveManager.load_progress("picnic"), 2)
+	assert_eq(SaveManager.load_progress("picnic:easy"), 2)
 
 
 func test_picnic_correct_fox_celebrates() -> void:
@@ -122,8 +122,11 @@ func test_picnic_level_change_during_deal_does_not_show_retry() -> void:
 
 
 func test_picnic_every_level_solvable_in_order() -> void:
-	for i in LevelLoader.get_levels_for_world("picnic").size():
-		assert_eq(_world._current_index, i)
-		_solve()
-		await wait_seconds(_SETTLE)
-	assert_true(_hud.is_world_complete_shown())
+	for difficulty in LevelLoader.DIFFICULTIES:
+		_hud.difficulty_chosen.emit(difficulty)
+		var level_range: Vector2i = LevelLoader.get_difficulty_range(difficulty)
+		for i in range(level_range.x, level_range.y + 1):
+			assert_eq(_world._current_index, i, difficulty)
+			_solve()
+			await wait_seconds(_SETTLE)
+		assert_true(_hud.is_world_complete_shown(), difficulty)
