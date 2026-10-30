@@ -139,6 +139,20 @@ func shuffle_next_index(world_id: String) -> int:
 	return maxi(SaveManager.load_progress(key) - 1, get_level_range().x)
 
 
+## Returns where the current shuffle is (x, 1-based: the level being played) out of every world's
+## levels at the current difficulty (y), e.g. (1, 40) at the start of a shuffle with four worlds.
+func shuffle_position() -> Vector2i:
+	var level_range: Vector2i = get_level_range()
+	var played: int = 0
+	var total: int = 0
+	for world in WORLDS:
+		var last: int = mini(level_range.y, get_level_count(world["id"]) - 1)
+		var size: int = maxi(last - level_range.x + 1, 0)
+		total += size
+		played += clampi(shuffle_next_index(world["id"]) - level_range.x, 0, size)
+	return Vector2i(mini(played + 1, total), total)
+
+
 ## Returns a random world that still has shuffle levels left at the current difficulty, or "" if
 ## shuffle has played every world's levels.
 func next_shuffle_world() -> String:

@@ -27,9 +27,29 @@ func _level_texts() -> Array:
 	return hud.get_level_buttons().map(func(b: Button) -> String: return b.text)
 
 
-func test_level_hud_badge_shows_level_number_and_count() -> void:
-	assert_eq(hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "5")
-	assert_eq(hud.get_node("Root/LevelBadge/Row/CountLabel").text, "/20")
+func _badge_text() -> String:
+	return (
+		hud.get_node("Root/LevelBadge/Row/LevelLabel").text
+		+ hud.get_node("Root/LevelBadge/Row/CountLabel").text
+	)
+
+
+func test_level_hud_badge_on_easy_counts_to_10() -> void:
+	assert_eq(_badge_text(), "5/10")
+
+
+func test_level_hud_badge_on_hard_shows_real_number_out_of_20() -> void:
+	GameRegistry.set_difficulty("hard")
+	hud.show_level("forest", 13, 20)
+	assert_eq(_badge_text(), "14/20")
+
+
+func test_level_hud_badge_in_shuffle_shows_place_in_whole_shuffle() -> void:
+	GameRegistry.set_shuffle(true)
+	SaveManager.set_progress(SaveManager.progress_key("sky", "easy", true), 4)
+	SaveManager.set_progress(SaveManager.progress_key("market", "easy", true), 3)
+	hud.show_level("sky", 3, 20)
+	assert_eq(_badge_text(), "6/%d" % (10 * GameRegistry.get_worlds().size()))
 
 
 func test_level_hud_badge_shows_world_icon() -> void:
