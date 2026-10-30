@@ -54,13 +54,14 @@ func _ready() -> void:
 	_complete.visible = false
 
 
-## Shows the given level (0-based) of count on the badge and closes any open overlay.
+## Shows the given level (0-based) of the world's count levels on the badge and closes any open
+## overlay. The badge counts to the end of the difficulty (e.g. 4/10 on easy, 14/20 on hard), or in
+## shuffle mode shows the place in the whole shuffle (e.g. 7/40).
 func show_level(world_id: String, index: int, count: int) -> void:
 	_world_id = world_id
 	_level_index = index
 	_level_count = count
-	_badge_level.text = str(index + 1)
-	_badge_count.text = "/%d" % count
+	_update_badge_numbers()
 	_badge_icon.texture = _world_icon(world_id)
 	_shuffle_icon.visible = GameRegistry.is_shuffle()
 	_picker.visible = false
@@ -233,3 +234,14 @@ func _style_button(button: Button, fill: Color, border_width: int) -> void:
 		button.add_theme_stylebox_override(state, box)
 	for color_name in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
 		button.add_theme_color_override(color_name, _TEXT)
+
+
+func _update_badge_numbers() -> void:
+	if GameRegistry.is_shuffle():
+		var position: Vector2i = GameRegistry.shuffle_position()
+		_badge_level.text = str(position.x)
+		_badge_count.text = "/%d" % position.y
+		return
+	var last: int = mini(GameRegistry.get_level_range().y + 1, _level_count)
+	_badge_level.text = str(_level_index + 1)
+	_badge_count.text = "/%d" % last

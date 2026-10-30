@@ -218,3 +218,31 @@ func test_world_modes_shuffle_tab_starts_shuffle() -> void:
 	_hud(world).shuffle_requested.emit()
 	assert_true(GameRegistry.is_shuffle())
 	assert_ne(GameRegistry.last_world_request, "")
+
+
+func _badge_text(world: Node2D) -> String:
+	var row: Node = _hud(world).get_node("Root/LevelBadge/Row")
+	return row.get_node("LevelLabel").text + row.get_node("CountLabel").text
+
+
+func test_world_modes_easy_badge_counts_to_10() -> void:
+	var world: Node2D = _make_world()
+	assert_eq(_badge_text(world), "1/10")
+	await _win(world)
+	assert_eq(_badge_text(world), "2/10")
+
+
+func test_world_modes_hard_badge_counts_11_to_20() -> void:
+	GameRegistry.set_difficulty("hard")
+	var world: Node2D = _make_world()
+	assert_eq(_badge_text(world), "11/20")
+
+
+func test_world_modes_shuffle_badge_counts_through_every_world() -> void:
+	_finish_shuffle(["sky", "market", "picnic"])
+	GameRegistry.set_shuffle(true)
+	var world: Node2D = _make_world()
+	var total: int = 10 * GameRegistry.get_worlds().size()
+	assert_eq(_badge_text(world), "31/%d" % total)
+	await _win(world)
+	assert_eq(_badge_text(world), "32/%d" % total)

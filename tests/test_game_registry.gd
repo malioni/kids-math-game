@@ -120,3 +120,24 @@ func test_game_registry_start_shuffle_resets_when_all_finished() -> void:
 	assert_ne(GameRegistry.last_world_request, "")
 	for world in GameRegistry.get_worlds():
 		assert_eq(GameRegistry.shuffle_next_index(world["id"]), 0)
+
+
+func test_game_registry_shuffle_position_counts_played_levels_across_worlds() -> void:
+	var total: int = 10 * GameRegistry.get_worlds().size()
+	assert_eq(GameRegistry.shuffle_position(), Vector2i(1, total))
+	SaveManager.set_progress(SaveManager.progress_key("forest", "easy", true), 3)
+	SaveManager.set_progress(SaveManager.progress_key("picnic", "easy", true), 2)
+	assert_eq(GameRegistry.shuffle_position(), Vector2i(4, total))
+
+
+func test_game_registry_shuffle_position_on_hard_also_starts_at_1() -> void:
+	GameRegistry.set_difficulty("hard")
+	SaveManager.set_progress(SaveManager.progress_key("sky", "hard", true), 13)
+	assert_eq(GameRegistry.shuffle_position(), Vector2i(3, 10 * GameRegistry.get_worlds().size()))
+
+
+func test_game_registry_shuffle_position_never_passes_total() -> void:
+	for world in GameRegistry.get_worlds():
+		_finish_shuffle(world["id"])
+	var position: Vector2i = GameRegistry.shuffle_position()
+	assert_eq(position.x, position.y)
