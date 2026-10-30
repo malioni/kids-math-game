@@ -39,7 +39,7 @@ func _ready() -> void:
 	_hud.level_chosen.connect(_on_level_chosen)
 	_hud.restart_requested.connect(_on_restart_requested)
 	_hud.difficulty_chosen.connect(_on_difficulty_chosen)
-	_hud.shuffle_requested.connect(GameRegistry.start_shuffle)
+	_hud.shuffle_requested.connect(_on_shuffle_requested)
 	SaveManager.save_last_world(_world_id())
 	var start_index: int = GameRegistry.take_requested_level(_world_id())
 	if start_index >= 0:
@@ -153,3 +153,12 @@ func _on_restart_requested() -> void:
 func _on_difficulty_chosen(difficulty: String) -> void:
 	GameRegistry.set_difficulty(difficulty)
 	_resume()
+
+
+func _on_shuffle_requested(from_start: bool) -> void:
+	if from_start:
+		GameRegistry.set_shuffle(true)
+		GameRegistry.reset_shuffle()
+		GameRegistry.start_shuffle()
+	elif not GameRegistry.is_shuffle():
+		GameRegistry.start_shuffle()

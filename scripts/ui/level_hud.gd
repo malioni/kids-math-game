@@ -4,8 +4,9 @@ extends CanvasLayer
 ## Level badge, level picker and world-complete screen shared by every world.
 ##
 ## The badge in the top-left shows the world and the current level number (with a shuffle icon in
-## shuffle mode); tapping it opens a picker with a tab per world, a shuffle tab, a button per level
-## of the current difficulty, and Easy/Hard buttons. After the last level, show_world_complete()
+## shuffle mode); tapping it opens a picker with a tab per world, a shuffle tab (continue the
+## shuffle, or start it over), a button per level of the current difficulty, and Easy/Hard
+## buttons. After the last level, show_world_complete()
 ## offers a restart and a button for each other world. The HUD only emits signals; the world
 ## decides what loading a level means.
 
@@ -15,8 +16,12 @@ signal level_chosen(world_id: String, index: int)
 signal restart_requested
 ## Emitted when the player picks a difficulty in the picker: "easy" or "hard".
 signal difficulty_chosen(difficulty: String)
-## Emitted when the player taps the shuffle tab in the picker.
-signal shuffle_requested
+## Emitted when the player taps continue (from_start false) or start over (from_start true) on the
+## picker's shuffle page.
+signal shuffle_requested(from_start: bool)
+
+# The picker page id of the shuffle tab.
+const _SHUFFLE_PAGE := "shuffle"
 
 const _CREAM := Color(1.0, 0.96, 0.86)
 const _CURRENT := Color(1.0, 0.72, 0.3)
@@ -41,6 +46,9 @@ var _picker_world_id: String = ""
 @onready var _easy_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/EasyButton
 @onready var _hard_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/HardButton
 @onready var _restart_label: Label = $Root/Complete/Choices/RestartButton/OneLabel
+@onready var _shuffle_page: Control = $Root/Picker/Panel/Margin/VBox/ShufflePage
+@onready var _shuffle_continue: BaseButton = _shuffle_page.get_node("ContinueButton")
+@onready var _shuffle_restart: BaseButton = _shuffle_page.get_node("RestartButton")
 
 
 func _ready() -> void:
@@ -50,6 +58,8 @@ func _ready() -> void:
 	$Root/Complete/Choices/RestartButton.pressed.connect(_on_restart_pressed)
 	_easy_button.pressed.connect(_on_difficulty_pressed.bind("easy"))
 	_hard_button.pressed.connect(_on_difficulty_pressed.bind("hard"))
+	_shuffle_continue.pressed.connect(_on_shuffle_pressed.bind(false))
+	_shuffle_restart.pressed.connect(_on_shuffle_pressed.bind(true))
 	_picker.visible = false
 	_complete.visible = false
 
@@ -68,10 +78,10 @@ func show_level(world_id: String, index: int, count: int) -> void:
 	_complete.visible = false
 
 
-## Opens the level picker on the current world's tab.
+## Opens the level picker on the current world's tab, or on the shuffle tab while shuffling.
 func open_picker() -> void:
 	_complete.visible = false
-	_show_picker_world(_world_id)
+	_show_picker_world(_SHUFFLE_PAGE if GameRegistry.is_shuffle() else _world_id)
 	var difficulty: String = GameRegistry.get_difficulty()
 	_style_button(_easy_button, _CURRENT if difficulty == "easy" else _CREAM, 4)
 	_style_button(_hard_button, _CURRENT if difficulty == "hard" else _CREAM, 4)
@@ -137,6 +147,16 @@ func get_shuffle_tab() -> Button:
 	return _shuffle_tab()
 
 
+## Returns true while the picker shows the shuffle page instead of a world's levels.
+func is_shuffle_page_shown() -> bool:
+	return _shuffle_page.visible
+
+
+## Returns the shuffle page's buttons: continue, then start over.
+func get_shuffle_buttons() -> Array[BaseButton]:
+	return [_shuffle_continue, _shuffle_restart]
+
+
 func _show_picker_world(world_id: String) -> void:
 	_picker_world_id = world_id
 	for child in _world_tabs.get_children():
@@ -159,14 +179,18 @@ func _show_picker_world(world_id: String) -> void:
 	shuffle_tab.expand_icon = true
 	shuffle_tab.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	shuffle_tab.custom_minimum_size = Vector2(110, 80)
-	var shuffling: bool = GameRegistry.is_shuffle()
-	_style_button(shuffle_tab, _CURRENT if shuffling else _CREAM, 4 if shuffling else 2)
-	shuffle_tab.pressed.connect(_on_shuffle_pressed)
+	var on_shuffle: bool = world_id == _SHUFFLE_PAGE
+	_style_button(shuffle_tab, _CURRENT if on_shuffle else _CREAM, 4 if on_shuffle else 2)
+	shuffle_tab.pressed.connect(_show_picker_world.bind(_SHUFFLE_PAGE))
 	_world_tabs.add_child(shuffle_tab)
 
 	for child in _grid.get_children():
 		_grid.remove_child(child)
 		child.queue_free()
+	_shuffle_page.visible = on_shuffle
+	_grid.visible = not on_shuffle
+	if on_shuffle:
+		return
 	var count: int = (
 		_level_count if world_id == _world_id else GameRegistry.get_level_count(world_id)
 	)
@@ -193,9 +217,9 @@ func _on_difficulty_pressed(difficulty: String) -> void:
 	difficulty_chosen.emit(difficulty)
 
 
-func _on_shuffle_pressed() -> void:
+func _on_shuffle_pressed(from_start: bool) -> void:
 	_picker.visible = false
-	shuffle_requested.emit()
+	shuffle_requested.emit(from_start)
 
 
 func _shuffle_tab() -> Button:

@@ -213,11 +213,42 @@ func test_world_modes_shuffle_finished_world_on_open_moves_on() -> void:
 	assert_ne(GameRegistry.last_world_request, "forest")
 
 
-func test_world_modes_shuffle_tab_starts_shuffle() -> void:
+func test_world_modes_shuffle_continue_starts_shuffle() -> void:
 	var world: Node2D = _make_world()
-	_hud(world).shuffle_requested.emit()
+	_hud(world).shuffle_requested.emit(false)
 	assert_true(GameRegistry.is_shuffle())
 	assert_ne(GameRegistry.last_world_request, "")
+
+
+func test_world_modes_shuffle_continue_while_shuffling_stays_put() -> void:
+	SaveManager.set_progress(_shuffle_key("forest"), 4)
+	GameRegistry.set_shuffle(true)
+	var world: Node2D = _make_world()
+	_hud(world).shuffle_requested.emit(false)
+	assert_eq(GameRegistry.last_world_request, "")
+	assert_eq(world._current_index, 3)
+	assert_eq(SaveManager.load_progress(_shuffle_key("forest")), 4)
+
+
+func test_world_modes_shuffle_start_over_clears_shuffle_progress() -> void:
+	SaveManager.set_progress(_shuffle_key("forest"), 6)
+	SaveManager.set_progress(_shuffle_key("sky"), 3)
+	SaveManager.set_progress("forest:easy", 5)
+	GameRegistry.set_shuffle(true)
+	var world: Node2D = _make_world()
+	_hud(world).shuffle_requested.emit(true)
+	assert_true(GameRegistry.is_shuffle())
+	assert_ne(GameRegistry.last_world_request, "")
+	assert_eq(GameRegistry.shuffle_position().x, 1)
+	assert_eq(SaveManager.load_progress("forest:easy"), 5, "normal progress is untouched")
+
+
+func test_world_modes_shuffle_start_over_from_worlds_mode_turns_shuffle_on() -> void:
+	SaveManager.set_progress(_shuffle_key("market"), 7)
+	var world: Node2D = _make_world()
+	_hud(world).shuffle_requested.emit(true)
+	assert_true(GameRegistry.is_shuffle())
+	assert_eq(GameRegistry.shuffle_next_index("market"), 0)
 
 
 func _badge_text(world: Node2D) -> String:
