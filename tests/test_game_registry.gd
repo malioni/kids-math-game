@@ -8,7 +8,12 @@ func test_game_registry_lists_forest_then_sky() -> void:
 
 func test_game_registry_market_world_registered_after_sky() -> void:
 	var ids: Array = GameRegistry.get_worlds().map(func(w: Dictionary) -> String: return w["id"])
-	assert_eq(ids, ["forest", "sky", "market"])
+	assert_eq(ids.slice(0, 3), ["forest", "sky", "market"])
+
+
+func test_game_registry_picnic_world_registered_after_market() -> void:
+	var ids: Array = GameRegistry.get_worlds().map(func(w: Dictionary) -> String: return w["id"])
+	assert_eq(ids, ["forest", "sky", "market", "picnic"])
 
 
 func test_game_registry_world_scenes_and_icons_exist() -> void:
@@ -28,6 +33,10 @@ func test_game_registry_level_counts_match_level_data() -> void:
 
 func test_game_registry_market_level_count_is_20() -> void:
 	assert_eq(GameRegistry.get_level_count("market"), 20)
+
+
+func test_game_registry_picnic_level_count_is_20() -> void:
+	assert_eq(GameRegistry.get_level_count("picnic"), 20)
 
 
 func test_game_registry_requested_level_is_taken_once() -> void:
