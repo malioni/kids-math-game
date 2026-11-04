@@ -8,6 +8,9 @@ extends Node2D
 ## shuffle mode a win moves on to a random world's next shuffle level instead of this world's
 ## next level; shuffle keeps its own place in each world.
 ##
+## Level changes inside the world fade through Transition (the first level is covered by the
+## scene's own fade instead). Home in the HUD goes back to the main menu.
+##
 ## A world extends this, overrides _world_id() and _setup_level(), connects its own mechanic in
 ## _ready() before calling super(), and calls _advance() once its win animation has played.
 
@@ -40,12 +43,13 @@ func _ready() -> void:
 	_hud.restart_requested.connect(_on_restart_requested)
 	_hud.difficulty_chosen.connect(_on_difficulty_chosen)
 	_hud.shuffle_requested.connect(_on_shuffle_requested)
+	_hud.home_requested.connect(GameRegistry.go_to_menu)
 	SaveManager.save_last_world(_world_id())
 	var start_index: int = GameRegistry.take_requested_level(_world_id())
 	if start_index >= 0:
-		_choose_level(start_index)
+		_choose_level(start_index, false)
 	else:
-		_resume()
+		_resume(false)
 
 
 ## Returns the world's id as registered in GameRegistry. Subclasses must override.
@@ -57,6 +61,10 @@ func _world_id() -> String:
 ## Resets the stage and sets up a fresh puzzle for the given level. Subclasses must override.
 func _setup_level(_level: Dictionary) -> void:
 	push_error("WorldBase: _setup_level() not overridden")
+
+
+func _go_to_level(index: int) -> void:
+	Transition.run(_load_level.bind(index))
 
 
 func _load_level(index: int) -> void:
@@ -79,7 +87,7 @@ func _advance() -> void:
 		_hud.show_world_complete()
 	else:
 		SaveManager.save_progress(_progress_key(), _current_index + 2)
-		_load_level(_current_index + 1)
+		_go_to_level(_current_index + 1)
 
 
 func _advance_shuffle() -> void:
@@ -89,25 +97,25 @@ func _advance_shuffle() -> void:
 		world_complete.emit()
 		_hud.show_world_complete()
 	elif next_world == _world_id():
-		_load_level(_current_index + 1)
+		_go_to_level(_current_index + 1)
 	else:
 		GameRegistry.go_to_world(next_world)
 
 
-# Loads where the current mode and difficulty left off. A world whose shuffle levels are all
-# played shows its last level while shuffle moves on to another world.
-func _resume() -> void:
+# Loads where the current mode and difficulty left off, fading unless fade is false. A world whose
+# shuffle levels are all played shows its last level while shuffle moves on to another world.
+func _resume(fade: bool = true) -> void:
 	var level_range: Vector2i = _level_range()
 	var index: int = SaveManager.load_progress(_progress_key()) - 1
 	if GameRegistry.is_shuffle() and index > level_range.y:
-		_load_level(level_range.y)
+		_show_level(level_range.y, fade)
 		GameRegistry.start_shuffle.call_deferred()
 		return
-	_load_level(clampi(index, level_range.x, level_range.y))
+	_show_level(clampi(index, level_range.x, level_range.y), fade)
 
 
 # Plays the chosen level outside shuffle, switching difficulty if the level belongs to another.
-func _choose_level(index: int) -> void:
+func _choose_level(index: int, fade: bool = true) -> void:
 	index = clampi(index, 0, _levels.size() - 1)
 	if not GameRegistry.is_shuffle():
 		var level_range: Vector2i = _level_range()
@@ -117,7 +125,14 @@ func _choose_level(index: int) -> void:
 				if index >= other.x and index <= other.y:
 					GameRegistry.set_difficulty(difficulty)
 		SaveManager.set_progress(_progress_key(), index + 1)
-	_load_level(index)
+	_show_level(index, fade)
+
+
+func _show_level(index: int, fade: bool) -> void:
+	if fade:
+		_go_to_level(index)
+	else:
+		_load_level(index)
 
 
 func _level_range() -> Vector2i:
@@ -147,7 +162,7 @@ func _on_restart_requested() -> void:
 		return
 	var first: int = _level_range().x
 	SaveManager.set_progress(_progress_key(), first + 1)
-	_load_level(first)
+	_go_to_level(first)
 
 
 func _on_difficulty_chosen(difficulty: String) -> void:

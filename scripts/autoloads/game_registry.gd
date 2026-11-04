@@ -7,8 +7,12 @@ extends Node
 ## OS quit request is routed here via [constant NOTIFICATION_WM_CLOSE_REQUEST] so the game can
 ## save state before exiting.
 
+## The main menu scene.
+const MENU_SCENE := "res://scenes/ui/main_menu.tscn"
+
 ## Every world in play order. "id" matches the world's level folder (data/levels/world_<id>/)
-## and its save key; "icon" is shown in the level picker.
+## and its save key; "icon" is shown on the world's card in the menu, the level picker and the
+## world-complete screen, and on the level badge.
 const WORLDS: Array[Dictionary] = [
 	{
 		"id": "forest",
@@ -32,11 +36,14 @@ const WORLDS: Array[Dictionary] = [
 	},
 ]
 
-## When false, go_to_world() records the world in last_world_request instead of changing scene.
-## Tests turn it off so a world switch doesn't replace the test runner's scene.
+## When false, go_to_world() and go_to_menu() only record where they were going (in
+## last_world_request and last_scene_request) instead of changing scene. Tests turn it off so a
+## world switch doesn't replace the test runner's scene.
 var change_scenes: bool = true
 ## The world the last go_to_world() call asked for.
 var last_world_request: String = ""
+## The scene path the last go_to_world() or go_to_menu() call asked for.
+var last_scene_request: String = ""
 
 var _requested_levels := {}
 var _level_counts := {}
@@ -72,8 +79,8 @@ func get_level_count(world_id: String) -> int:
 	return _level_counts[world_id]
 
 
-## Switches to the given world's scene. A level_index of 0 or more starts that level (0-based);
-## -1 lets the world resume from its saved progress.
+## Fades to the given world's scene. A level_index of 0 or more starts that level (0-based); -1
+## lets the world resume from its saved progress.
 func go_to_world(world_id: String, level_index: int = -1) -> void:
 	var world: Dictionary = get_world(world_id)
 	if world.is_empty():
@@ -82,8 +89,12 @@ func go_to_world(world_id: String, level_index: int = -1) -> void:
 	if level_index >= 0:
 		request_level(world_id, level_index)
 	last_world_request = world_id
-	if change_scenes:
-		get_tree().change_scene_to_file(world["scene"])
+	_change_scene(world["scene"])
+
+
+## Fades to the main menu. Mode, difficulty and progress are left as they are.
+func go_to_menu() -> void:
+	_change_scene(MENU_SCENE)
 
 
 ## Asks the given world to start at level_index (0-based) the next time it loads, instead of
@@ -177,3 +188,9 @@ func start_shuffle() -> void:
 		reset_shuffle()
 		world_id = next_shuffle_world()
 	go_to_world(world_id)
+
+
+func _change_scene(path: String) -> void:
+	last_scene_request = path
+	if change_scenes:
+		Transition.change_scene(path)

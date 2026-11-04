@@ -1,37 +1,31 @@
-# PLAN.md — Easy/Hard difficulty and Shuffle mode
+# PLAN.md — Main menu, world carousel and fade transitions
 
-> **Status: shipped.** Merged as #25 (2026-10-30); no feature is in progress. The next `/plan` replaces this file.
->
-> **Revisions after merge:**
-> - #26: the badge counts to the end of the difficulty (easy 1/10–10/10, hard 11/20–20/20) instead of always "/20", and in shuffle it shows the place in the whole run across every world (e.g. 7/40 with four worlds).
-> - #27: the Shuffle tab has a page of its own (continue / start, and start over, which clears shuffle's place in every world), and the picker opens on it while shuffling. `shuffle_requested` now carries `from_start: bool`.
->
-> GitHub issue: not filed. Agreed with the user in conversation (2026-10-30).
+> GitHub issue: #9 (written when the game had one world; this plan replaces its scope — update the issue when the PR opens). Agreed with the user in conversation (2026-11-03).
 
 ## Feature
-Split every world's 20 levels into Easy (1–10) and Hard (11–20), chosen once in the level picker for the whole game, and add a Shuffle mode that keeps picking a random world and plays that world's next unplayed level of the chosen difficulty.
+A start screen with Play, Shuffle and a swipeable carousel of world cards, the same carousel in place of the level picker's world tabs and the star screen's world list, a home button back to the menu, and a short fade on every level change and scene change.
 
 ---
 
 ## Scope
 
 **Included:**
-- A game-wide difficulty (`easy` / `hard`, default `easy`), saved, chosen with two buttons in the level picker
-- Difficulty level ranges stored in data (`data/levels/difficulty.json`), not in code
-- Progress saved per world **per difficulty**; one-time migration of the old per-world save
-- Playing a world: start at the difficulty's saved level; after its last level (10 or 20) the star screen shows, and restart goes back to the difficulty's first level (1 or 11)
-- Level picker shows only the current difficulty's 10 levels, with their real numbers (11–20 on hard); the badge keeps showing e.g. "14/20"
-- Picking a level outside the current difficulty (only reachable from code/tests) switches the difficulty to match
-- Shuffle mode: a Shuffle tab in the picker starts it. After every win a random world that still has unplayed levels in the current difficulty is chosen; its next shuffle level loads. Shuffle has its **own** saved place in each world, separate from normal play. When every world is done, the star screen shows; restart starts a fresh shuffle
-- Picking a specific level (or a world on the star screen) leaves shuffle mode; the mode is saved, so the game reopens in shuffle
-- A small shuffle icon on the badge while shuffling
-- Placeholder icons for shuffle, easy and hard (`tools/make_mode_icons.gd`)
+- `MainMenu` scene, opened by boot instead of the last world: a big Play button (continue where the child left off: last world, last mode, shuffle included), a Shuffle button, the fox, and the world carousel
+- `WorldCarousel`: a reusable horizontal strip of cards built from a list of `{id, icon}` items (normally `GameRegistry.WORLDS`). Snaps to one centred card; neighbours shown smaller and dimmed; swipe or arrow buttons to move; no wrap-around. Adding a world to `GameRegistry.WORLDS` adds a card everywhere with no menu code
+- The level picker's world tab row becomes a compact `WorldCarousel` (worlds + a shuffle card)
+- The star screen's row of other-world icons becomes a compact `WorldCarousel`, next to restart and a new home button
+- A home button in the picker's top row and on the star screen; it returns to the menu without changing mode or difficulty
+- `Transition` autoload: fade to a dark cover and back (0.15 s out + 0.15 s in = 0.3 s), blocking input while covered. Used for level changes inside a world (no scene reload), world switches, and menu ↔ world. The game fades in from the cover on launch
+- Tap targets of at least 100×100 px on every new button, and the picker's existing buttons raised to at least 100 px high (level buttons, close, easy/hard)
+- Placeholder art via a new headless tool: home icon, arrow, play icon, card frame, menu background
 - Tests and docs in the same PR
 
 **Out of scope:**
-- Showing difficulty to the child anywhere but the picker (DESIGN: no difficulty labels for the child — the picker is the grown-up's control)
-- Weighting shuffle towards less-played worlds, avoiding repeats of the same world
-- Changing any level's content
+- Storytelling or a world map. The carousel puts every card through one `_card_position(index)` function and scrolls a `Track` control, so a painted path can replace the straight line later without touching callers
+- Audio (postponed)
+- Difficulty on the menu (stays a grown-up control in the picker)
+- Locked worlds, per-world progress shown on cards, Android back-button handling
+- Any change to level content or mechanics
 
 ---
 
@@ -39,17 +33,26 @@ Split every world's 20 levels into Easy (1–10) and Hard (11–20), chosen once
 
 | Decision | Choice | Why |
 |---|---|---|
-| Where the split lives | `data/levels/difficulty.json`: `{"easy": {"first": 1, "last": 10}, "hard": {"first": 11, "last": 20}}`, read by `LevelLoader.get_difficulty_range()` (0-based `Vector2i`) | Level content in `data/`; every world has 20 levels |
-| Save keys | `"<world>:<difficulty>"` for normal play, `"shuffle:<world>:<difficulty>"` for shuffle; values stay 1-indexed level numbers. Helper `SaveManager.progress_key(world, difficulty, shuffle)` | Reuses the existing progress functions unchanged |
-| Migration | `SaveManager.migrate_progress()` (called by boot): an old `"<world>"` value N becomes `easy = N` if N ≤ 10, else `easy = 1, hard = N`; the old key is erased | Existing players keep their place |
-| Game-wide state | `SaveManager` stores `difficulty` and `play_mode` (`"worlds"` / `"shuffle"`) in `meta`. `GameRegistry` reads them through, never caches | One source of truth; tests reset it by deleting the save file |
-| Shuffle choice | Pure `ShufflePicker.pick(next_levels: Dictionary, last_index: int, rng) -> String` returns a uniformly random world whose next shuffle index ≤ the difficulty's last index, or `""` | Testable without scenes |
-| Same world rolled | The world loads its next level in place instead of reloading the scene | No flicker |
-| Changing difficulty | Picker emits `difficulty_chosen`; the world saves it and resumes: in worlds mode at its saved level for the new difficulty; in shuffle at its shuffle level, or the next shuffle pick if it has none left | Takes effect immediately |
-| Star screen restart label | Shows the difficulty's first level number (1 or 11) in worlds mode; hidden in shuffle (restart = new shuffle) | Accurate on hard |
-| Testing world switches | `GameRegistry.change_scenes: bool = true`; when false, `go_to_world()` only records the target in `last_world_request` (and still stores the requested level) | Shuffle switches worlds via `change_scene_to_file`, which would replace GUT's own scene in tests |
-| Opening a finished world in shuffle | If the world's shuffle level is past the range end (e.g. reopened after finishing it), `_ready` loads the range's last level and defers `GameRegistry.start_shuffle()` to move on | Never shows a level outside the difficulty; no scene change inside `_ready` |
-| Icons | Easy = small hill, Hard = tall snowy mountain, Shuffle = two crossing arrows; 128×128 placeholders | No text, matching the HUD |
+| Carousel input | Handles `InputEventMouseButton` / `InputEventMouseMotion` in `_gui_input` (touch arrives as mouse emulation, like the rest of the game). Cards and `Track` use `mouse_filter = IGNORE`, so a press anywhere on the strip (cards included) reaches the carousel; the carousel hit-tests a tap against each card's rect itself, as `DragPiece` does. Only the arrow buttons handle their own presses. Press + release within 12 px = tap on the card under the release point (none → nothing); otherwise a drag that moves the track live and on release snaps to `round(-drag / pitch)` cards away, clamped | One code path for touch and mouse; a swipe that starts on a card still swipes; same tap threshold as `DragPiece` |
+| Tapping cards | Every tap emits `card_pressed(id, was_centred)` and centres that card. The menu opens a world only when `was_centred`; the picker selects on any tap | A child who taps a peeking card sees it slide in first, then taps again to go — no surprise jumps; the picker stays one tap |
+| Highlight | `set_highlighted(id)` draws the card frame in the "current" colour (picker: page shown; star screen: none) | Replaces the tab highlight |
+| Card sizes | Export `card_size`, `pitch`, `side_scale` (0.75), `side_alpha` (0.6). Menu: 360×300 cards, pitch 420. Picker / star screen: 120×100 cards, pitch 132, side_scale 1.0, side_alpha 1.0 (several visible, still scrolls when worlds don't fit) | One component, two densities |
+| Future map | Card positions come only from `_card_position(index) -> Vector2` (a straight line now); cards are children of `Track`, which is what scrolls; `track_texture` export (unused now) can draw a strip behind them | Keeps the "painted path later" option cheap |
+| Fade owner | New autoload `Transition` (`scripts/autoloads/transition.gd`, a CanvasLayer at layer 100 with a full-rect `ColorRect` cover). `run(action: Callable)`: fade cover in (skipped if the screen is already fully covered), call action (skipped if its object was freed), fade out. `change_scene(path)`: `run()` around `scene_changer.call(path)`, waiting one frame before fading out. Calls made while a transition runs are queued and run in order | Global, survives scene changes; nothing in mechanics |
+| Launch | `Transition` starts fully covered and fades out on the frame after `_ready`, unless a `run()`/`change_scene()` has been queued by then. Boot's deferred `go_to_menu()` therefore lands while covered: no fade-in, the scene changes, then one fade out. Result: a single fade-in from the cover at launch, no double flash | Boot always changes scene right away |
+| Scene-change seam | `Transition.scene_changer: Callable`, default `get_tree().change_scene_to_file`. Tests swap in a stub that records the path | Lets `change_scene()` be tested without replacing GUT's scene |
+| Fade in tests | `Transition.enabled` (default true). Setting it false (a setter) immediately hides the cover, sets its `mouse_filter` to `IGNORE`, kills any running tween and clears the queue; while false, `run()` calls the action at once and `change_scene()` calls `scene_changer` at once. A GUT pre-run hook (`tests/pre_run_hook.gd`, set in `.gut_config.json` `pre_run_script`) turns it off for the whole suite; `test_transition.gd` turns it on per test and back off in `after_each` | The 362 existing tests assume synchronous loads and unblocked input; one switch keeps them unchanged |
+| Fade colour | `Color(0.12, 0.08, 0.05)` (very dark brown), export `cover_color` | Softer than pure black; matches the earthy palette |
+| Level change inside a world | `WorldBase` gets `_go_to_level(index)` = `Transition.run(_load_level.bind(index))`. `_resume(fade := true)` and `_choose_level(index, fade := true)` gain a `fade` flag choosing `_go_to_level` or `_load_level`. Callers: `_ready` → `_resume(false)` / `_choose_level(i, false)` (the scene fade already covers it); `_on_level_chosen` same world → `_resume()` / `_choose_level(i)` (fade); `_on_difficulty_chosen` → `_resume()` (fade); `_on_restart_requested` worlds mode → `_go_to_level(first)`; `_advance` next level → `_go_to_level`; `_advance_shuffle` same world → `_go_to_level`. Inside `_resume`, the "shuffle finished here" branch loads the range's last level with the same `fade` flag and still defers `GameRegistry.start_shuffle()` (which fades via `change_scene`, queued after any running fade) | No scene reload; `_load_count` still guards stale animations; every caller is explicit |
+| Scene changes | `GameRegistry.go_to_world()` and new `go_to_menu()` go through `Transition.change_scene()` when `change_scenes` is true; both record the target scene path in new `last_scene_request` (worlds also keep `last_world_request`) | Existing test seam extended, not replaced |
+| Play button | `GameRegistry.start_last_world()` (unchanged: the world resumes in the saved mode, shuffle included) | Already does "continue" |
+| Menu Shuffle button | `GameRegistry.start_shuffle()` | Same as the picker's continue when not shuffling; when already shuffling it moves on to a random world with levels left |
+| Menu world card | `GameRegistry.set_shuffle(false)` then `go_to_world(id)` (resume its saved level) | Same as picking a world elsewhere: leaves shuffle |
+| Menu start card | The carousel starts centred on `SaveManager.load_last_world()` (first world if none), without animating | The child sees where they were |
+| Home | `LevelHud.home_requested` → `WorldBase` calls `GameRegistry.go_to_menu()`. Mode, difficulty and progress are untouched | Play then continues exactly where they left off |
+| Star screen scaling | Restart, home, then a compact carousel of the other worlds (every world in shuffle) instead of one icon per world | A row of icons breaks past ~6 worlds |
+| Safe area | Menu content lives in a 1280×720 `PlayArea` control centred on screen (like the HUD badge's centre-relative offsets), with a 40 px inset; the 1800×1000 background fills the rest | Matches the worlds' "extra scenery on wide phones" approach |
+| No text | Menu has no labels; Play is a large green circle with a white triangle, Shuffle reuses `icon_shuffle.png` | DESIGN: no reading required |
 
 ---
 
@@ -57,124 +60,134 @@ Split every world's 20 levels into Easy (1–10) and Hard (11–20), chosen once
 
 | Layer | Files |
 |---|---|
-| `data/levels/` | **new** `difficulty.json`; **modified** `README.md` |
-| `scripts/systems/` | **modified** `level_loader.gd` (`get_difficulty_range`); **new** `shuffle_picker.gd` |
-| `scripts/autoloads/` | **modified** `save_manager.gd` (keys, migration, difficulty, play mode), `game_registry.gd` (difficulty/mode accessors, `get_level_range`, `start_shuffle`, `next_shuffle_world`) |
-| `scripts/worlds/` | **modified** `world_base.gd` (ranges, per-difficulty saves, shuffle flow, difficulty/shuffle signals) |
-| `scripts/ui/` | **modified** `level_hud.gd` (difficulty buttons, shuffle tab, range-limited grid, badge shuffle icon, restart label); `boot.gd` (migration) |
-| `scenes/ui/` | **modified** `level_hud.tscn` (ModeRow with Easy/Hard buttons, ShuffleIcon on the badge) |
-| `assets/sprites/ui/` | **new** `icon_shuffle.png`, `icon_easy.png`, `icon_hard.png`; **modified** `README.md` |
-| `tools/` | **new** `make_mode_icons.gd` |
-| `tests/` | **new** `test_shuffle_picker.gd`, `test_world_modes.gd`; **modified** `test_save_manager.gd`, `test_level_loader.gd`, `test_game_registry.gd`, `test_level_hud.gd`, `test_forest_bridge.gd`, `test_sky_balloons.gd`, `test_market.gd`, `test_picnic.gd` |
-| Docs | `DESIGN.md` (Progression System section) |
+| `scenes/ui/` | **new** `main_menu.tscn`, `world_carousel.tscn`; **modified** `level_hud.tscn` (TopRow: `WorldTabs` → `WorldCarousel` instance, `HomeButton`; `Complete/Choices`: `HomeButton`, `WorldCarousel` instance; level/close/easy/hard sizes) |
+| `scripts/ui/` | **new** `main_menu.gd` (`MainMenu`), `world_carousel.gd` (`WorldCarousel`); **modified** `level_hud.gd`, `boot.gd` |
+| `scripts/autoloads/` | **new** `transition.gd`; **modified** `game_registry.gd` (`MENU_SCENE`, `go_to_menu()`, `last_scene_request`, scene changes through `Transition`) |
+| `scripts/worlds/` | **modified** `world_base.gd` (`_go_to_level`, home) |
+| `project.godot` | **modified**: register `Transition` autoload |
+| `assets/sprites/ui/` | **new** `icon_home.png`, `icon_arrow.png`, `icon_play.png`, `card_frame.png`, `bg_menu.png`; **modified** `README.md` |
+| `tools/` | **new** `make_menu_placeholders.gd` |
+| `tests/` | **new** `test_world_carousel.gd`, `test_transition.gd`, `test_main_menu.gd`, `test_boot.gd`, `pre_run_hook.gd`; **modified** `test_level_hud.gd`, `test_game_registry.gd`, `test_world_modes.gd`; `.gut_config.json` |
+| Docs | `DESIGN.md` (Progression System: menu, carousel, home, fades), `CLAUDE.md` (Adding a New World: the card appears automatically), `assets/sprites/ui/README.md` |
 
-**New signals:** `LevelHud.difficulty_chosen(difficulty: String)`, `LevelHud.shuffle_requested`.
-**No new autoloads.**
+No mechanics, systems or level data change.
+
+**New signals:** `WorldCarousel.card_pressed(id: String, was_centred: bool)`, `WorldCarousel.centred_changed(id: String)`, `LevelHud.home_requested`, `Transition.finished`.
+**New autoload:** `Transition`.
 
 ---
 
 ## Implementation Steps
 
-1. **Data + loader** — `data/levels/difficulty.json`; `LevelLoader.get_difficulty_range(difficulty: String) -> Vector2i` (0-based first/last; unknown difficulty → whole of easy). `LevelLoader.DIFFICULTIES := ["easy", "hard"]`.
-2. **SaveManager** — `progress_key(world, difficulty, shuffle := false) -> String` (static); `save_difficulty/load_difficulty` (default `"easy"`, invalid → `"easy"`); `save_play_mode/load_play_mode` (default `"worlds"`); `migrate_progress(worlds: Array)`.
-3. **ShufflePicker** — `scripts/systems/shuffle_picker.gd`, `static func pick(next_levels: Dictionary, last_index: int, rng: RandomNumberGenerator) -> String` (next_levels: world id → 0-based next index; sorted keys before picking so a seed is deterministic).
-4. **GameRegistry** — `get_difficulty()`, `set_difficulty(d)`, `is_shuffle()`, `set_shuffle(on)`, `get_level_range(world_id = "") -> Vector2i` (current difficulty), `shuffle_next_index(world_id) -> int` (0-based, from the shuffle save), `next_shuffle_world() -> String` (via ShufflePicker with `_rng`), `start_shuffle()` (set mode, reset all shuffle saves for the difficulty if none left, go to `next_shuffle_world()`), `reset_shuffle()`. `go_to_world()` gains the `change_scenes` test seam (`last_world_request`).
-5. **WorldBase** —
-   - `_ready`: requested level, else resume index for the mode (`_resume_index()`), clamped to the range.
-   - `_advance`: worlds mode as today but against the range end and the per-difficulty key; reset sets the key to the range's first level. Shuffle mode: save `current + 2` to the shuffle key, then `next_shuffle_world()`: `""` → `world_complete` + star screen; this world → `_load_level(current + 1)`; another → `GameRegistry.go_to_world(id)`.
-   - `_on_level_chosen`: leaves shuffle; switches difficulty if the index is outside the range; saves to the per-difficulty key.
-   - `_on_restart_requested`: worlds mode → first level of the range; shuffle → `GameRegistry.start_shuffle()`.
-   - `_on_difficulty_chosen(d)`: save, then resume (see design table).
-   - `_on_shuffle_requested`: `GameRegistry.start_shuffle()`.
-6. **Icons** — `tools/make_mode_icons.gd` → `assets/sprites/ui/icon_shuffle.png`, `icon_easy.png`, `icon_hard.png`; import; README rows.
-7. **LevelHud** — scene: `Root/Picker/Panel/Margin/VBox/ModeRow` (HBox, centred) with `EasyButton`, `HardButton` (Buttons with icon, 110×80); `Root/LevelBadge/Row/ShuffleIcon` (TextureRect 48×48, hidden). Script: signals above; a Shuffle tab appended after the world tabs (`Tab_shuffle`, highlighted while shuffling) emitting `shuffle_requested` and closing; Easy/Hard highlight the current difficulty and emit `difficulty_chosen` and close; `_show_picker_world` lists only `GameRegistry.get_level_range()` levels, buttons named and labelled by real level number, `get_level_buttons()` unchanged; `show_level` toggles `ShuffleIcon`; `show_world_complete()` sets `OneLabel` to the range's first level number, hides it while shuffling, and in shuffle lists every world.
-8. **Boot** — `SaveManager.migrate_progress(GameRegistry.get_worlds() ids)` before `start_last_world`.
-9. **Tests** (see Test Plan) and update existing world tests to the new keys and the 10-level range.
-10. **Docs** — DESIGN.md Progression System; `data/levels/README.md` (difficulty.json); UI sprite README.
-11. **Verify** — full suite, gdlint, screenshots of the picker (easy, hard) and a shuffle badge, web export.
+1. **Placeholder art** — `tools/make_menu_placeholders.gd` draws into `assets/sprites/ui/`: `icon_home.png` (128², a little house), `icon_arrow.png` (128², right-pointing; left uses `flip_h`), `icon_play.png` (200², green circle, white triangle), `card_frame.png` (96², cream rounded rect with brown border, used as a 9-patch with 24 px margins), `bg_menu.png` (1800×1000, sky over a meadow). Run it, `--import`, add README rows.
+2. **Transition autoload** — `scripts/autoloads/transition.gd`: exports `half_duration` (0.15), `cover_color`; vars `enabled` (with the setter above), `scene_changer`. `run(action)`, `change_scene(path)`, `is_covering()` (cover fully opaque), `is_busy()` (a fade is running or the queue isn't empty), signal `finished` (after the fade back, once the queue is empty). Cover `mouse_filter = STOP` while visible, `IGNORE` otherwise. Queue for overlapping calls. Launch: starts covered; on the next frame fades out only if nothing was queued (see Launch). Register in `project.godot`.
+3. **Test hook** — `tests/pre_run_hook.gd` (extends `GutHookScript`, sets `Transition.enabled = false`); `.gut_config.json` `"pre_run_script": "res://tests/pre_run_hook.gd"`. Run the existing suite: still 362 passing.
+4. **GameRegistry** — `const MENU_SCENE := "res://scenes/ui/main_menu.tscn"`; `last_scene_request`; `go_to_menu()`; `go_to_world()` records the scene and uses `Transition.change_scene()`.
+5. **WorldCarousel** — `scenes/ui/world_carousel.tscn` (`WorldCarousel` Control, `clip_contents`; children `Track` (Control), `PrevButton`, `NextButton` (TextureButtons, `icon_arrow.png`, ≥100×100)). `scripts/ui/world_carousel.gd`: exports above; `set_items(items: Array[Dictionary])`, `scroll_to(id, animate := true)` (false = centre immediately, no tween), `next()`, `previous()`, `get_centred_id()`, `get_cards()`, `get_card(id)` (null if unknown), `set_highlighted(id)`, `_card_position(index)`. Each card is a `Panel` named `Card_<id>` with the `card_frame.png` stylebox and a centred `TextureRect` icon, all `mouse_filter = IGNORE`; taps and swipes are handled by the carousel's `_gui_input` with its own hit-testing (see Carousel input). Arrows hidden at the ends and when everything fits. Snap tween 0.2 s.
+6. **MainMenu** — `scenes/ui/main_menu.tscn`: `Background` (`bg_menu.png`, centred), `PlayArea` (1280×720 centred) with `Fox` (AnimatedSprite2D using `forest_bridge/character_idle.png`), `PlayButton` (TextureButton 200×200), `ShuffleButton` (140×140), `WorldCarousel` (menu density). `scripts/ui/main_menu.gd`: fills the carousel from `GameRegistry.get_worlds()`, centres on the last world, wires buttons as in the decision table; test accessors `get_carousel()`, `get_play_button()`, `get_shuffle_button()`.
+7. **Boot** — after migration, `GameRegistry.go_to_menu.call_deferred()` instead of `start_last_world`.
+8. **LevelHud** — picker: replace `_world_tabs` building with a compact carousel (`items` = worlds + `{id: "shuffle", icon: icon_shuffle}`); `centred`/pressed card → `_show_picker_world(id)` and `set_highlighted(id)`; opens centred on the current world or shuffle. `HomeButton` (100×100) in TopRow emits `home_requested` and closes. Raise level buttons to 150×100, close to 100×100, easy/hard to 120×100; check the panel still fits 720 px with the badge. Star screen: `HomeButton` next to restart; other worlds in a compact carousel; pressing a world card emits `level_chosen(id, -1)` as before. Keep `get_world_tabs()` / `get_shuffle_tab()` returning the carousel's world cards / shuffle card (docs updated); add `get_home_buttons()`, `get_choice_carousel()`.
+9. **WorldBase** — `_go_to_level(index)`; `fade` flags on `_resume` and `_choose_level`; wire every caller exactly as in the "Level change inside a world" row; connect `home_requested` → `GameRegistry.go_to_menu()`.
+10. **Tests** (see Test Plan).
+11. **Docs** — DESIGN.md Progression System; CLAUDE.md "Adding a New World" (register it and its card shows on the menu, picker and star screen); sprite README; refresh `docs/kids-math-game-context.md` locally (untracked).
+12. **Verify** — full suite, gdlint, headless boot; screenshots at 1280×720 and 1688×780 of the menu, the menu mid-swipe, the picker, and the star screen; play the web build on a phone (swipe feel, fade timing).
 
 ---
 
 ## Data Changes
 
-`data/levels/difficulty.json`:
+None. Worlds still come from `GameRegistry.WORLDS`; no level or save data changes.
+
+`.gut_config.json` gains:
 ```json
-{
-  "easy": { "first": 1, "last": 10 },
-  "hard": { "first": 11, "last": 20 }
-}
+"pre_run_script": "res://tests/pre_run_hook.gd"
 ```
-Save file (`user://save.cfg`): section `progress` keys `forest:easy`, `forest:hard`, `shuffle:forest:easy`, …; section `meta` adds `difficulty` and `play_mode`.
 
 ---
 
 ## Test Plan
 
-`tests/test_level_loader.gd` (added)
-- `test_level_loader_difficulty_range_easy_is_levels_1_to_10`
-- `test_level_loader_difficulty_range_hard_is_levels_11_to_20`
-- `test_level_loader_difficulty_range_unknown_falls_back_to_easy`
+`tests/test_world_carousel.gd`
+- `test_world_carousel_set_items_creates_a_card_per_item_in_order`
+- `test_world_carousel_starts_centred_on_first_item`
+- `test_world_carousel_scroll_to_centres_item_and_emits_centred_changed`
+- `test_world_carousel_scroll_to_unknown_id_does_nothing`
+- `test_world_carousel_scroll_to_without_animation_centres_immediately`
+- `test_world_carousel_get_card_unknown_id_returns_null`
+- `test_world_carousel_swipe_starting_on_a_card_moves_the_track`
+- `test_world_carousel_next_and_previous_move_one_card`
+- `test_world_carousel_next_at_last_card_stays_on_last`
+- `test_world_carousel_arrows_hidden_at_ends`
+- `test_world_carousel_arrows_hidden_when_all_cards_fit`
+- `test_world_carousel_swipe_past_half_pitch_centres_next_card`
+- `test_world_carousel_short_swipe_snaps_back_to_same_card`
+- `test_world_carousel_long_swipe_moves_several_cards_clamped_to_ends`
+- `test_world_carousel_tap_on_centred_card_emits_was_centred_true`
+- `test_world_carousel_tap_on_neighbour_emits_was_centred_false_and_centres_it`
+- `test_world_carousel_swipe_does_not_emit_card_pressed`
+- `test_world_carousel_card_position_spaces_cards_by_pitch`
+- `test_world_carousel_highlighted_card_uses_current_colour`
+- `test_world_carousel_cards_and_arrows_meet_minimum_tap_size`
+- `test_world_carousel_with_twelve_items_reaches_every_card`
 
-`tests/test_save_manager.gd` (added)
-- `test_save_manager_progress_key_formats_world_difficulty_and_shuffle`
-- `test_save_manager_difficulty_defaults_to_easy_and_roundtrips`
-- `test_save_manager_invalid_difficulty_loads_as_easy`
-- `test_save_manager_play_mode_defaults_to_worlds_and_roundtrips`
-- `test_save_manager_migrate_progress_low_level_moves_to_easy`
-- `test_save_manager_migrate_progress_high_level_moves_to_hard`
-- `test_save_manager_migrate_progress_leaves_new_keys_alone`
+`tests/test_transition.gd`
+- `test_transition_disabled_runs_action_immediately`
+- `test_transition_run_covers_screen_before_calling_action`
+- `test_transition_run_calls_action_once_then_uncovers_and_emits_finished`
+- `test_transition_blocks_input_only_while_covering`
+- `test_transition_overlapping_runs_call_actions_in_order`
+- `test_transition_skips_action_whose_object_was_freed`
+- `test_transition_full_fade_is_under_half_a_second`
+- `test_transition_disabling_hides_cover_and_lets_input_through`
+- `test_transition_change_scene_covers_then_calls_scene_changer_once`
+- `test_transition_change_scene_while_covered_does_not_fade_in_again`
+- `test_transition_is_busy_until_queue_is_empty`
 
-`tests/test_shuffle_picker.gd`
-- `test_shuffle_picker_returns_only_worlds_with_levels_left`
-- `test_shuffle_picker_returns_empty_when_all_done`
-- `test_shuffle_picker_eventually_picks_every_open_world`
-- `test_shuffle_picker_same_seed_same_pick`
+`tests/test_main_menu.gd`
+- `test_main_menu_has_a_card_per_registered_world`
+- `test_main_menu_carousel_starts_on_last_world_played`
+- `test_main_menu_carousel_starts_on_first_world_without_save`
+- `test_main_menu_play_opens_last_world`
+- `test_main_menu_play_keeps_shuffle_mode`
+- `test_main_menu_shuffle_button_starts_shuffle`
+- `test_main_menu_tapping_centred_card_opens_world_and_leaves_shuffle`
+- `test_main_menu_tapping_neighbour_card_only_centres_it`
+- `test_main_menu_buttons_meet_minimum_tap_size`
+
+`tests/test_boot.gd`
+- `test_boot_migrates_old_save_and_opens_main_menu`
 
 `tests/test_game_registry.gd` (added)
-- `test_game_registry_level_range_follows_difficulty`
-- `test_game_registry_next_shuffle_world_skips_finished_worlds`
-- `test_game_registry_next_shuffle_world_empty_when_all_finished`
-- `test_game_registry_set_shuffle_persists_mode`
-- `test_game_registry_go_to_world_without_scene_changes_records_request`
-- `test_game_registry_start_shuffle_resets_when_all_finished`
+- `test_game_registry_go_to_menu_without_scene_changes_records_request`
+- `test_game_registry_go_to_world_records_scene_path`
+- `test_game_registry_go_to_world_with_scene_changes_uses_transition` (stub `Transition.scene_changer`)
 
 `tests/test_level_hud.gd` (updated/added)
-- `test_level_hud_picker_lists_only_easy_levels` (10 buttons, "1".."10")
-- `test_level_hud_picker_on_hard_lists_levels_11_to_20`
-- `test_level_hud_difficulty_button_emits_difficulty_chosen_and_closes`
-- `test_level_hud_current_difficulty_button_is_highlighted`
-- `test_level_hud_shuffle_tab_emits_shuffle_requested_and_closes`
-- `test_level_hud_badge_shows_shuffle_icon_only_while_shuffling`
-- `test_level_hud_world_complete_restart_label_shows_first_level_of_difficulty`
-- `test_level_hud_world_complete_in_shuffle_hides_label_and_lists_every_world`
+- `test_level_hud_picker_has_a_card_per_world_plus_shuffle` (replaces `..._has_a_tab_per_world`)
+- `test_level_hud_other_world_card_lists_its_levels_and_emits_its_id` (replaces the tab version)
+- `test_level_hud_world_card_from_shuffle_page_shows_its_levels` (replaces the tab version)
+- `test_level_hud_picker_opens_centred_on_current_world`
+- `test_level_hud_picker_home_button_emits_home_requested_and_closes`
+- `test_level_hud_world_complete_home_button_emits_home_requested`
+- `test_level_hud_world_complete_offers_other_worlds` (updated: cards in the choice carousel)
+- `test_level_hud_world_complete_in_shuffle_hides_label_and_lists_every_world` (updated: cards)
+- `test_level_hud_buttons_meet_minimum_tap_size`
 
-`tests/test_world_modes.gd` (uses the forest world with tiny durations)
-- `test_world_modes_easy_starts_at_level_1_and_completes_after_level_10`
-- `test_world_modes_easy_restart_goes_to_level_1`
-- `test_world_modes_hard_starts_at_level_11`
-- `test_world_modes_hard_completes_after_level_20_and_restart_goes_to_11`
-- `test_world_modes_progress_is_saved_per_difficulty`
-- `test_world_modes_difficulty_chosen_resumes_at_that_difficultys_level`
-- `test_world_modes_picking_hard_level_on_easy_switches_difficulty`
-- `test_world_modes_shuffle_win_saves_shuffle_progress_not_normal_progress`
-- `test_world_modes_shuffle_win_with_only_this_world_left_loads_next_level_in_place`
-- `test_world_modes_shuffle_all_done_shows_star_screen`
-- `test_world_modes_shuffle_restart_starts_fresh_shuffle`
-- `test_world_modes_picking_a_level_leaves_shuffle`
-- `test_world_modes_shuffle_resumes_at_shuffle_level`
-- `test_world_modes_shuffle_win_with_other_worlds_left_requests_one_of_them`
-- `test_world_modes_shuffle_finished_world_on_open_moves_on`
-
-Existing world tests (`forest_bridge`, `sky_balloons`, `market`, `picnic`): switch save assertions to `progress_key(...)`, and "every level / world complete after all levels" tests to the 10-level easy range plus a hard-range run.
+`tests/test_world_modes.gd` (added)
+- `test_world_modes_home_requested_goes_to_menu_and_keeps_mode`
+- `test_world_modes_level_change_with_transition_loads_after_cover`
+- `test_world_modes_first_level_loads_without_transition`
 
 ---
 
 ## Definition of Done
-- [x] Easy plays levels 1–10, Hard 11–20, in every world; finishing the range shows the star screen and restart returns to its first level
-- [x] Difficulty is chosen in the picker, saved, and applies to every world; the child-facing badge never shows it
-- [x] Progress is kept separately per world, per difficulty, and for shuffle; an old save is migrated
-- [x] Shuffle picks only worlds with unplayed levels in the difficulty, plays each world's levels in order, and ends with the star screen; restart starts a fresh shuffle
-- [x] Picking a level leaves shuffle; the game reopens in the mode it was left in
-- [x] Every public method and signal is documented and tested; full suite passes; gdlint clean
-- [x] Picker screenshots (easy, hard) and a shuffle badge checked; web export builds
-- [x] Tests and docs in the same PR; not merged without the user's go-ahead
+- [ ] The game opens on the main menu (after a fade in), not inside a world
+- [ ] Play continues the last world in the saved mode (shuffle included); Shuffle starts or continues a shuffle; a centred world card opens that world at its saved level and leaves shuffle
+- [ ] The carousel swipes and snaps on a phone and with a mouse, arrows step one card, a peeking card slides in on the first tap; adding a world to `GameRegistry.WORLDS` adds its card on the menu, picker and star screen with no other code
+- [ ] The picker's world tabs and the star screen's world list are carousels; home in both returns to the menu without changing mode, difficulty or progress
+- [ ] Every level change, world switch and menu ↔ world change fades in about 0.3 s, and taps are ignored while covered; levels inside a world still don't reload the scene
+- [ ] Every button on the menu, picker and star screen is at least 100×100 px and inside the iPhone landscape safe area (screenshots at 1280×720 and 1688×780)
+- [ ] No text on the menu
+- [ ] Every public method and signal is documented and tested; full suite passes; gdlint clean; headless boot clean
+- [ ] Web build played on a phone: swipe, fade and home checked
+- [ ] Tests and docs in the same PR; issue #9 updated; not merged without the user's go-ahead

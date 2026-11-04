@@ -12,6 +12,7 @@ func after_each() -> void:
 	_clear_save()
 	GameRegistry.change_scenes = true
 	GameRegistry.last_world_request = ""
+	GameRegistry.last_scene_request = ""
 
 
 func _clear_save() -> void:
@@ -105,6 +106,27 @@ func test_game_registry_go_to_world_without_scene_changes_records_request() -> v
 	GameRegistry.go_to_world("sky", 4)
 	assert_eq(GameRegistry.last_world_request, "sky")
 	assert_eq(GameRegistry.take_requested_level("sky"), 4)
+
+
+func test_game_registry_go_to_menu_without_scene_changes_records_request() -> void:
+	GameRegistry.go_to_menu()
+	assert_eq(GameRegistry.last_scene_request, GameRegistry.MENU_SCENE)
+
+
+func test_game_registry_go_to_world_records_scene_path() -> void:
+	GameRegistry.go_to_world("sky")
+	assert_eq(GameRegistry.last_scene_request, GameRegistry.get_world("sky")["scene"])
+
+
+func test_game_registry_go_to_world_with_scene_changes_uses_transition() -> void:
+	var changer: Callable = Transition.scene_changer
+	var paths: Array = []
+	Transition.scene_changer = func(path: String) -> void: paths.append(path)
+	GameRegistry.change_scenes = true
+	GameRegistry.go_to_world("market")
+	GameRegistry.change_scenes = false
+	Transition.scene_changer = changer
+	assert_eq(paths, [GameRegistry.get_world("market")["scene"]])
 
 
 func test_game_registry_start_shuffle_goes_to_a_world_and_turns_shuffle_on() -> void:
