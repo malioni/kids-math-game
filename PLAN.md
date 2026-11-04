@@ -1,5 +1,11 @@
 # PLAN.md — Easy/Hard difficulty and Shuffle mode
 
+> **Status: shipped.** Merged as #25 (2026-10-30); no feature is in progress. The next `/plan` replaces this file.
+>
+> **Revisions after merge:**
+> - #26: the badge counts to the end of the difficulty (easy 1/10–10/10, hard 11/20–20/20) instead of always "/20", and in shuffle it shows the place in the whole run across every world (e.g. 7/40 with four worlds).
+> - #27: the Shuffle tab has a page of its own (continue / start, and start over, which clears shuffle's place in every world), and the picker opens on it while shuffling. `shuffle_requested` now carries `from_start: bool`.
+>
 > GitHub issue: not filed. Agreed with the user in conversation (2026-10-30).
 
 ## Feature
@@ -164,11 +170,11 @@ Existing world tests (`forest_bridge`, `sky_balloons`, `market`, `picnic`): swit
 ---
 
 ## Definition of Done
-- [ ] Easy plays levels 1–10, Hard 11–20, in every world; finishing the range shows the star screen and restart returns to its first level
-- [ ] Difficulty is chosen in the picker, saved, and applies to every world; the child-facing badge never shows it
-- [ ] Progress is kept separately per world, per difficulty, and for shuffle; an old save is migrated
-- [ ] Shuffle picks only worlds with unplayed levels in the difficulty, plays each world's levels in order, and ends with the star screen; restart starts a fresh shuffle
-- [ ] Picking a level leaves shuffle; the game reopens in the mode it was left in
-- [ ] Every public method and signal is documented and tested; full suite passes; gdlint clean
-- [ ] Picker screenshots (easy, hard) and a shuffle badge checked; web export builds
-- [ ] Tests and docs in the same PR; not merged without the user's go-ahead
+- [x] Easy plays levels 1–10, Hard 11–20, in every world; finishing the range shows the star screen and restart returns to its first level
+- [x] Difficulty is chosen in the picker, saved, and applies to every world; the child-facing badge never shows it
+- [x] Progress is kept separately per world, per difficulty, and for shuffle; an old save is migrated
+- [x] Shuffle picks only worlds with unplayed levels in the difficulty, plays each world's levels in order, and ends with the star screen; restart starts a fresh shuffle
+- [x] Picking a level leaves shuffle; the game reopens in the mode it was left in
+- [x] Every public method and signal is documented and tested; full suite passes; gdlint clean
+- [x] Picker screenshots (easy, hard) and a shuffle badge checked; web export builds
+- [x] Tests and docs in the same PR; not merged without the user's go-ahead
