@@ -1,7 +1,6 @@
 extends Node
 
-## Main scene. Moves an old save to per-difficulty progress, then opens the world the player was
-## last in.
+## Main scene. Moves an old save to per-difficulty progress, then opens the main menu.
 
 
 func _ready() -> void:
@@ -9,4 +8,4 @@ func _ready() -> void:
 		func(w: Dictionary) -> String: return w["id"]
 	)
 	SaveManager.migrate_progress(world_ids)
-	GameRegistry.start_last_world.call_deferred()
+	GameRegistry.go_to_menu.call_deferred()

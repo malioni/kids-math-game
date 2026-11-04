@@ -15,8 +15,11 @@ func before_each() -> void:
 
 func after_each() -> void:
 	_clear_save()
+	Transition.enabled = false
+	Transition.half_duration = 0.15
 	GameRegistry.change_scenes = true
 	GameRegistry.last_world_request = ""
+	GameRegistry.last_scene_request = ""
 
 
 func _clear_save() -> void:
@@ -277,3 +280,30 @@ func test_world_modes_shuffle_badge_counts_through_every_world() -> void:
 	assert_eq(_badge_text(world), "31/%d" % total)
 	await _win(world)
 	assert_eq(_badge_text(world), "32/%d" % total)
+
+
+func test_world_modes_home_requested_goes_to_menu_and_keeps_mode() -> void:
+	GameRegistry.set_difficulty("hard")
+	var world: Node2D = _make_world()
+	_hud(world).home_requested.emit()
+	assert_eq(GameRegistry.last_scene_request, GameRegistry.MENU_SCENE)
+	assert_eq(GameRegistry.get_difficulty(), "hard")
+	assert_false(GameRegistry.is_shuffle())
+
+
+func test_world_modes_level_change_with_transition_loads_after_cover() -> void:
+	var world: Node2D = _make_world()
+	Transition.half_duration = 0.05
+	Transition.enabled = true
+	_hud(world).level_chosen.emit("forest", 4)
+	assert_eq(world._current_index, 0, "the old level stays until the screen is covered")
+	await wait_for_signal(Transition.finished, 2.0)
+	assert_eq(world._current_index, 4)
+
+
+func test_world_modes_first_level_loads_without_transition() -> void:
+	SaveManager.set_progress(SaveManager.progress_key("forest", "easy"), 3)
+	Transition.enabled = true
+	var world: Node2D = _make_world()
+	assert_eq(world._current_index, 2)
+	assert_false(Transition.is_busy())

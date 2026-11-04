@@ -7,5 +7,6 @@
   "ignore_pause": false,
   "selected": "",
   "tests": [],
-  "hide_orphans": false
+  "hide_orphans": false,
+  "pre_run_script": "res://tests/pre_run_hook.gd"
 }
