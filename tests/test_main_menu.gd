@@ -66,7 +66,7 @@ func test_main_menu_carousel_starts_on_first_world_without_save() -> void:
 	assert_eq(menu.get_carousel().get_centred_id(), GameRegistry.get_worlds()[0]["id"])
 
 
-func test_main_menu_play_opens_last_world() -> void:
+func test_main_menu_play_without_swiping_opens_last_world() -> void:
 	SaveManager.save_last_world("picnic")
 	var menu: MainMenu = _make_menu()
 	menu.get_play_button().pressed.emit()
@@ -74,13 +74,35 @@ func test_main_menu_play_opens_last_world() -> void:
 	assert_false(GameRegistry.is_shuffle())
 
 
-func test_main_menu_play_keeps_shuffle_mode() -> void:
+func test_main_menu_play_opens_the_centred_world() -> void:
+	SaveManager.save_last_world("forest")
+	var menu: MainMenu = _make_menu()
+	menu.get_carousel().next()
+	menu.get_carousel().next()
+	menu.get_play_button().pressed.emit()
+	assert_eq(GameRegistry.last_world_request, "market")
+
+
+func test_main_menu_play_leaves_shuffle() -> void:
 	SaveManager.save_last_world("sky")
 	GameRegistry.set_shuffle(true)
 	var menu: MainMenu = _make_menu()
 	menu.get_play_button().pressed.emit()
 	assert_eq(GameRegistry.last_world_request, "sky")
-	assert_true(GameRegistry.is_shuffle())
+	assert_false(GameRegistry.is_shuffle())
+
+
+func test_main_menu_shuffle_button_continues_shuffle_place() -> void:
+	GameRegistry.set_shuffle(true)
+	for world in GameRegistry.get_worlds():
+		if world["id"] != "market":
+			var key: String = SaveManager.progress_key(world["id"], "easy", true)
+			SaveManager.set_progress(key, 12)
+	SaveManager.set_progress(SaveManager.progress_key("market", "easy", true), 5)
+	var menu: MainMenu = _make_menu()
+	menu.get_shuffle_button().pressed.emit()
+	assert_eq(GameRegistry.last_world_request, "market")
+	assert_eq(GameRegistry.shuffle_next_index("market"), 4)
 
 
 func test_main_menu_shuffle_button_starts_shuffle() -> void:
