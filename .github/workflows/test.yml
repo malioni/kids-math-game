@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  pull_request:
+  workflow_call:
+
+env:
+  GODOT_RELEASE: "4.6.2-stable"
+  GDTOOLKIT_VERSION: "4.5.0"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_RELEASE}"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_RELEASE}_linux.x86_64.zip"
+          unzip -q godot.zip
+          sudo install -m 0755 Godot_v${GODOT_RELEASE}_linux.x86_64 /usr/local/bin/godot
+
+      - name: Lint
+        run: |
+          pipx install "gdtoolkit==${GDTOOLKIT_VERSION}"
+          gdlint scripts/ scenes/
+
+      - name: Import assets
+        # May exit non-zero on the initial run even when the import succeeds, so the status is
+        # not checked.
+        run: godot --headless --import --path . || true
+
+      - name: Run tests
+        run: godot --headless --path . -s addons/gut/gut_cmdln.gd -gconfig=.gut_config.json
+
+      - name: Boot the game
+        run: godot --headless --path . --quit

@@ -15,11 +15,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GODOT_VERSION: "4.6"
-  GODOT_RELEASE: "4.6-stable"
+  GODOT_VERSION: "4.6.2"
+  GODOT_RELEASE: "4.6.2-stable"
 
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
