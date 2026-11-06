@@ -48,6 +48,14 @@ func _ready() -> void:
 	home = position
 
 
+# Motion is read here rather than in _unhandled_input, where the GUI would take it while the pointer
+# is over a button, and the piece would stop following until the pointer left.
+func _input(event: InputEvent) -> void:
+	if _dragging and event is InputEventMouseMotion:
+		global_position = _pointer_global(event) + _grab_offset
+		get_viewport().set_input_as_handled()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not interactive:
 		return
@@ -59,9 +67,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif not event.pressed and _pressing:
 			_end_press(pointer)
 			get_viewport().set_input_as_handled()
-	elif event is InputEventMouseMotion and _dragging:
-		global_position = _pointer_global(event) + _grab_offset
-		get_viewport().set_input_as_handled()
 
 
 ## Tweens the piece back to home.

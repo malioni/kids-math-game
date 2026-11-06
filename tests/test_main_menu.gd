@@ -24,7 +24,7 @@ func _make_menu() -> MainMenu:
 
 
 func _tap_card(menu: MainMenu, id: String) -> void:
-	await wait_frames(1)
+	await wait_process_frames(1)
 	var carousel: WorldCarousel = menu.get_carousel()
 	var card: Panel = carousel.get_card(id)
 	var at: Vector2 = card.get_parent().position + card.position + card.pivot_offset
@@ -125,7 +125,7 @@ func test_main_menu_tapping_neighbour_card_only_centres_it() -> void:
 
 func test_main_menu_buttons_meet_minimum_tap_size() -> void:
 	var menu: MainMenu = _make_menu()
-	await wait_frames(1)
+	await wait_process_frames(1)
 	_assert_tap_size(menu.get_play_button())
 	_assert_tap_size(menu.get_shuffle_button())
 	for card in menu.get_carousel().get_cards():

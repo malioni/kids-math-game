@@ -29,7 +29,7 @@ func _press(piece: DragPiece, at: Vector2, pressed: bool) -> void:
 func _move(piece: DragPiece, to: Vector2) -> void:
 	var event := InputEventMouseMotion.new()
 	event.position = to
-	piece._unhandled_input(event)
+	piece._input(event)
 
 
 func test_bag_drag_is_a_drag_piece() -> void:

@@ -99,9 +99,11 @@ func test_transition_full_fade_is_under_half_a_second() -> void:
 
 
 func test_transition_disabling_hides_cover_and_lets_input_through() -> void:
+	# Long enough that a slow frame can't finish the fade before fades are turned off.
+	Transition.half_duration = 5.0
 	var calls: Array = []
 	Transition.run(func() -> void: calls.append(1))
-	await wait_frames(2)
+	await wait_process_frames(2)
 	assert_true(_cover().visible)
 	Transition.enabled = false
 	assert_false(_cover().visible)
@@ -129,7 +131,7 @@ func test_transition_change_scene_while_covered_does_not_fade_in_again() -> void
 	while Transition.is_busy():
 		if phase[0] == "covered":
 			lowest[0] = minf(lowest[0], _cover().color.a)
-		await wait_frames(1)
+		await wait_process_frames(1)
 	assert_eq(phase[0], "changed")
 	assert_eq(lowest[0], 1.0, "the cover stays up between the two actions")
 

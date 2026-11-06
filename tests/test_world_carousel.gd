@@ -60,7 +60,7 @@ func _swipe(from: Vector2, by: float) -> void:
 func test_world_carousel_set_items_creates_a_card_per_item_in_order() -> void:
 	assert_eq(_ids(), ["a", "b", "c", "d"])
 	carousel.set_items(_items(["x", "y"]))
-	await wait_frames(1)
+	await wait_process_frames(1)
 	assert_eq(_ids(), ["x", "y"])
 
 

@@ -42,7 +42,7 @@ func _write_file(path: String, content: String) -> void:
 func test_load_level_valid_file_returns_dictionary() -> void:
 	var result := LevelLoader.load_level("world_fixture_world_01")
 	assert_eq(result.get("id"), "world_fixture_world_01")
-	assert_eq(result.get("target_count"), 1)
+	assert_eq(int(result.get("target_count")), 1)
 
 
 func test_load_level_missing_file_returns_empty_dict() -> void:

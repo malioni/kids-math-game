@@ -29,7 +29,7 @@ func _press(at: Vector2, pressed: bool) -> void:
 func _move(to: Vector2) -> void:
 	var event := InputEventMouseMotion.new()
 	event.position = to
-	_fruit._unhandled_input(event)
+	_fruit._input(event)
 
 
 func test_fruit_drag_configure_sets_item_and_icon() -> void:

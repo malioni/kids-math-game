@@ -39,17 +39,17 @@ func test_world_forest_all_ranges_have_min_le_max() -> void:
 
 
 func test_world_forest_level_01_bridge_length_below_5() -> void:
-	assert_lt(_levels[0]["bridge_length"]["max"], 5)
+	assert_lt(int(_levels[0]["bridge_length"]["max"]), 5)
 
 
 func test_world_forest_level_10_bridge_length_around_30() -> void:
-	assert_gte(_levels[9]["bridge_length"]["min"], 25)
-	assert_lte(_levels[9]["bridge_length"]["max"], 35)
+	assert_gte(int(_levels[9]["bridge_length"]["min"]), 25)
+	assert_lte(int(_levels[9]["bridge_length"]["max"]), 35)
 
 
 func test_world_forest_level_20_bridge_length_around_50() -> void:
-	assert_gte(_levels[19]["bridge_length"]["min"], 45)
-	assert_lte(_levels[19]["bridge_length"]["max"], 55)
+	assert_gte(int(_levels[19]["bridge_length"]["min"]), 45)
+	assert_lte(int(_levels[19]["bridge_length"]["max"]), 55)
 
 
 func test_world_forest_bridge_length_min_never_decreases_between_levels() -> void:
@@ -59,4 +59,4 @@ func test_world_forest_bridge_length_min_never_decreases_between_levels() -> voi
 
 func test_world_forest_max_solutions_is_at_least_1() -> void:
 	for level in _levels:
-		assert_gte(level["max_solutions"], 1)
+		assert_gte(int(level["max_solutions"]), 1)
