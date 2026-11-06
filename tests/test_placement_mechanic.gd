@@ -214,3 +214,39 @@ func test_placement_mechanic_bridge_end_position_moves_with_placed_planks() -> v
 	assert_eq(mechanic.to_local(mechanic.get_bridge_end_position()), Vector2(-300, 0))
 	_drop_on_gap(_plank(3))
 	assert_eq(mechanic.to_local(mechanic.get_bridge_end_position()), Vector2(-300 + 180, 0))
+
+
+func _push_pointer(at: Vector2, pressed: Variant = null) -> void:
+	var event: InputEvent
+	if pressed == null:
+		event = InputEventMouseMotion.new()
+	else:
+		event = InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = pressed
+	event.position = at
+	get_viewport().push_input(event, true)
+
+
+# Buttons take the pointer's motion events, so a drag has to read them before the GUI does.
+func test_placement_mechanic_plank_keeps_following_the_pointer_over_the_go_button() -> void:
+	var plank: PlankDrag = _plank(3)
+	var over_go: Vector2 = mechanic.get_node("GoButton").get_global_rect().get_center()
+	_push_pointer(plank.global_position, true)
+	assert_true(plank.is_dragging())
+	_push_pointer(over_go)
+	assert_almost_eq(plank.global_position, over_go, Vector2(1, 1))
+
+
+func test_placement_mechanic_dropping_a_plank_on_the_go_button_does_not_press_it() -> void:
+	watch_signals(mechanic)
+	var plank: PlankDrag = _plank(3)
+	var over_go: Vector2 = mechanic.get_node("GoButton").get_global_rect().get_center()
+	_push_pointer(plank.global_position, true)
+	_push_pointer(over_go)
+	_push_pointer(over_go, false)
+	await wait_physics_frames(2)
+	assert_false(plank.is_dragging())
+	assert_signal_not_emitted(mechanic, "correct")
+	assert_signal_not_emitted(mechanic, "incorrect")
+

@@ -19,7 +19,7 @@ A tablet game for children aged 4–7 where mathematical concepts are the physic
 - Short sessions: 5–10 minutes per sitting
 - Immediate visual and audio feedback for all interactions
 - No reading required — icons, animation, and sound carry all meaning
-- Difficulty adjusts silently — the child never sees an Easy/Hard label
+- The child never sees difficulty named — a grown-up picks Easy or Hard with icon buttons in the level picker
 
 ## Skill Areas
 
@@ -110,7 +110,6 @@ fox's amount is never shown — the child works out total ÷ plates.
 
 ## Progression System
 
-- Tracks per-skill mastery silently using success rate per mechanic type
 - No stars, scores, or difficulty labels visible to the child
 - Narrative completion is the only visible reward (creature reaches home)
 - **Main menu:** the game opens on a start screen with no text: a swipeable strip of world cards (one card centred, its neighbours smaller at the sides; swipe or use the arrows), a big Play button, a Shuffle button and the fox. The strip opens on the last world played. Play, or tapping the centred card, opens the centred world at its saved level (leaving shuffle); tapping a side card slides it to the centre first. Shuffle starts or continues a shuffle. Every registered world gets a card automatically, so the menu scales as worlds are added. A home button in the level picker and on the star screen returns to the menu
@@ -119,7 +118,7 @@ fox's amount is never shown — the child works out total ÷ plates.
 - **Difficulty:** every world's levels split into Easy (1–10) and Hard (11–20) (`data/levels/difficulty.json`). A grown-up picks it with two icon buttons in the picker (a hill and a mountain); it applies to every world, and progress is kept separately per difficulty. The child-facing badge never names it, but counts to the end of it: 4/10 on easy, 14/20 on hard
 - **Shuffle:** the picker's shuffle tab (where the picker opens while shuffling) has continue and start-over buttons. Shuffle plays a random world after every win, always that world's next unplayed level of the current difficulty. Shuffle keeps its own place in each world, and the badge shows the place in the whole shuffle (e.g. 7/40 with four worlds); when every world's levels are played the star screen shows and restart starts a fresh shuffle. Picking a level leaves shuffle
 - **Parent view:** Session summaries accessible via a separate parent-only screen (PIN-gated)
-- Adaptive branching: if a child struggles at N=4, the system repeats N=3 variants before retrying
+- **Possible later, after more playtesting:** track per-skill mastery silently and adapt difficulty, e.g. if a child struggles at N=4, repeat N=3 variants before retrying
 
 ## Art Direction
 

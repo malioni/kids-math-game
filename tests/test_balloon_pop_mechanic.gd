@@ -102,7 +102,7 @@ func test_balloon_pop_mechanic_reset_brings_back_all_balloons() -> void:
 	mechanic.pop(_balloon(4))
 	watch_signals(mechanic)
 	mechanic.reset()
-	await wait_frames(1)
+	await wait_process_frames(1)
 	assert_eq(mechanic.get_unpopped_balloons().size(), 4)
 	assert_eq(_values(), [2, 3, 4, 5])
 	assert_eq(mechanic.get_lift_total(), 14)

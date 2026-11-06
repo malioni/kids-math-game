@@ -74,17 +74,21 @@ func test_picnic_correct_advances_to_next_level() -> void:
 
 
 func test_picnic_correct_fox_celebrates() -> void:
+	# Long enough that a slow frame can't move on to the next level before the check below.
+	_world.celebrate_duration = 0.5
 	_solve()
 	await wait_for_signal(_mechanic.correct, 1.0)
 	assert_eq(_world.get_node("Character").animation, &"celebrate")
 
 
 func test_picnic_incorrect_fox_sad_and_retry_shown() -> void:
+	# Long enough that a slow frame can't reach the retry prompt before the checks below.
+	_world.sad_duration = 0.5
 	_mechanic.confirm()
 	await wait_for_signal(_mechanic.incorrect, 1.0)
 	assert_eq(_world.get_node("Character").animation, &"sad")
 	assert_false(_retry.visible)
-	await wait_seconds(_SETTLE)
+	await wait_seconds(0.5 + _SETTLE)
 	assert_true(_retry.visible)
 	assert_eq(_world._current_index, 0)
 

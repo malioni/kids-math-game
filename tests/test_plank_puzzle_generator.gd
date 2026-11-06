@@ -69,7 +69,9 @@ func test_generate_bridge_length_within_range_for_all_levels() -> void:
 	_for_every_puzzle(
 		func(level: Dictionary, puzzle: Dictionary) -> void:
 			var length: int = puzzle["bridge_length"]
-			assert_between(length, level["bridge_length"]["min"], level["bridge_length"]["max"])
+			assert_between(
+				length, int(level["bridge_length"]["min"]), int(level["bridge_length"]["max"])
+			)
 	)
 
 
@@ -77,7 +79,9 @@ func test_generate_plank_lengths_within_range_for_all_levels() -> void:
 	_for_every_puzzle(
 		func(level: Dictionary, puzzle: Dictionary) -> void:
 			for plank in puzzle["plank_lengths"]:
-				assert_between(plank, level["plank_length"]["min"], level["plank_length"]["max"])
+				assert_between(
+					plank, int(level["plank_length"]["min"]), int(level["plank_length"]["max"])
+				)
 	)
 
 

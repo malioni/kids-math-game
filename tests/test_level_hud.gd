@@ -33,7 +33,7 @@ func _picker_carousel() -> WorldCarousel:
 
 # Taps the card with the given id, as a finger would, once the HUD has laid out.
 func _tap_card(carousel: WorldCarousel, id: String) -> void:
-	await wait_frames(1)
+	await wait_process_frames(1)
 	var card: Panel = carousel.get_card(id)
 	var at: Vector2 = card.get_parent().position + card.position + card.pivot_offset
 	for pressed in [true, false]:
@@ -132,7 +132,7 @@ func test_level_hud_level_button_emits_level_chosen_and_closes() -> void:
 func test_level_hud_other_world_card_lists_its_levels_and_emits_its_id() -> void:
 	hud.open_picker()
 	await _tap_card(_picker_carousel(), "sky")
-	await wait_frames(1)
+	await wait_process_frames(1)
 	assert_eq(hud.get_level_buttons().size(), 10)
 	watch_signals(hud)
 	hud.get_level_buttons()[2].pressed.emit()
@@ -230,7 +230,7 @@ func test_level_hud_world_card_from_shuffle_page_shows_its_levels() -> void:
 	GameRegistry.set_shuffle(true)
 	hud.open_picker()
 	await _tap_card(_picker_carousel(), "sky")
-	await wait_frames(1)
+	await wait_process_frames(1)
 	assert_false(hud.is_shuffle_page_shown())
 	assert_eq(hud.get_level_buttons().size(), 10)
 
@@ -282,7 +282,7 @@ func test_level_hud_world_complete_home_button_emits_home_requested() -> void:
 
 func test_level_hud_buttons_meet_minimum_tap_size() -> void:
 	hud.open_picker()
-	await wait_frames(2)
+	await wait_process_frames(2)
 	for button in hud.get_level_buttons():
 		_assert_tap_size(button)
 	for button in hud.get_difficulty_buttons():
@@ -292,7 +292,7 @@ func test_level_hud_buttons_meet_minimum_tap_size() -> void:
 	_assert_tap_size(hud.get_home_buttons()[0])
 	_assert_tap_size(hud.get_node("Root/Picker/Panel/Margin/VBox/TopRow/CloseButton"))
 	hud.show_world_complete()
-	await wait_frames(2)
+	await wait_process_frames(2)
 	_assert_tap_size(hud.get_home_buttons()[1])
 	_assert_tap_size(hud.get_node("Root/Complete/Choices/RestartButton"))
 	for card in hud.get_choice_carousel().get_cards():

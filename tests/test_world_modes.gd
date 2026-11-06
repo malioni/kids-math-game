@@ -189,7 +189,7 @@ func test_world_modes_shuffle_restart_starts_fresh_shuffle() -> void:
 	_finish_shuffle(["forest", "sky", "market", "picnic"])
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
-	await wait_frames(2)
+	await wait_process_frames(2)
 	GameRegistry.last_world_request = ""
 	_hud(world).restart_requested.emit()
 	assert_ne(GameRegistry.last_world_request, "")
@@ -211,7 +211,7 @@ func test_world_modes_shuffle_finished_world_on_open_moves_on() -> void:
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
 	assert_eq(world._current_index, 9)
-	await wait_frames(2)
+	await wait_process_frames(2)
 	assert_ne(GameRegistry.last_world_request, "")
 	assert_ne(GameRegistry.last_world_request, "forest")
 

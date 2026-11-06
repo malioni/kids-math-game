@@ -28,7 +28,7 @@ func _press(at: Vector2, pressed: bool) -> void:
 func _move(to: Vector2) -> void:
 	var event := InputEventMouseMotion.new()
 	event.position = to
-	_plank._unhandled_input(event)
+	_plank._input(event)
 
 
 func _drag(from: Vector2, to: Vector2) -> void:
