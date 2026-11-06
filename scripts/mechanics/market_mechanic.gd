@@ -1,15 +1,13 @@
 class_name MarketMechanic
-extends Node2D
+extends Mechanic
 
 ## A market table. An order slip shows how many of each item the customer wants; each ordered item
 ## has a crate of equal-sized bags that never runs out. The player drags or taps bags onto the
 ## table (one row per item), taps a placed bag to take it off, and presses Go. The number of items
-## placed is never shown, so the player has to work out bags × bag size themselves.
+## placed is never shown, so the player has to work out bags × bag size themselves. Go emits correct
+## if every item's bags hold exactly the ordered quantity, or incorrect if any hold too few or too
+## many.
 
-## Emitted when confirm() is called and every item's placed bags hold exactly the ordered quantity.
-signal correct
-## Emitted when confirm() is called and any item's placed bags hold too few or too many.
-signal incorrect
 ## Emitted whenever the number of placed bags of an item changes, and for every item on reset.
 signal bags_changed(item: String, count: int)
 

@@ -33,7 +33,6 @@ const _TEXT := Color(0.3, 0.2, 0.12)
 
 var _world_id: String = ""
 var _level_index: int = 0
-var _level_count: int = 0
 var _picker_world_id: String = ""
 
 @onready var _badge: Button = $Root/LevelBadge
@@ -76,13 +75,12 @@ func _ready() -> void:
 	_complete.visible = false
 
 
-## Shows the given level (0-based) of the world's count levels on the badge and closes any open
-## overlay. The badge counts to the end of the difficulty (e.g. 4/10 on easy, 14/20 on hard), or in
-## shuffle mode shows the place in the whole shuffle (e.g. 7/40).
-func show_level(world_id: String, index: int, count: int) -> void:
+## Shows the given level (0-based) of the world on the badge and closes any open overlay. The badge
+## counts to the end of the difficulty (e.g. 4/10 on easy, 14/20 on hard), or in shuffle mode shows
+## the place in the whole shuffle (e.g. 7/40).
+func show_level(world_id: String, index: int) -> void:
 	_world_id = world_id
 	_level_index = index
-	_level_count = count
 	_update_badge_numbers()
 	_badge_icon.texture = _world_icon(world_id)
 	_shuffle_icon.visible = GameRegistry.is_shuffle()
@@ -184,11 +182,8 @@ func _show_picker_world(world_id: String) -> void:
 	_grid.visible = not on_shuffle
 	if on_shuffle:
 		return
-	var count: int = (
-		_level_count if world_id == _world_id else GameRegistry.get_level_count(world_id)
-	)
 	var level_range: Vector2i = GameRegistry.get_level_range()
-	for i in range(level_range.x, mini(level_range.y + 1, count)):
+	for i in range(level_range.x, level_range.y + 1):
 		var button := Button.new()
 		button.name = "Level_%d" % (i + 1)
 		button.text = str(i + 1)
@@ -275,6 +270,5 @@ func _update_badge_numbers() -> void:
 		_badge_level.text = str(position.x)
 		_badge_count.text = "/%d" % position.y
 		return
-	var last: int = mini(GameRegistry.get_level_range().y + 1, _level_count)
 	_badge_level.text = str(_level_index + 1)
-	_badge_count.text = "/%d" % last
+	_badge_count.text = "/%d" % (GameRegistry.get_level_range().y + 1)

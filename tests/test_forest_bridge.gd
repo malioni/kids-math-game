@@ -1,7 +1,6 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/worlds/forest_bridge/forest_bridge.tscn")
-const _SAVE_PATH := "user://save.cfg"
 const _SEED := 1234
 # AnimationPlayer speed-up so walk_across (2 s) and bridge_collapse (1 s) finish quickly.
 const _ANIM_SPEED := 20.0
@@ -16,7 +15,7 @@ var _retry: BaseButton
 
 
 func before_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	_world = _make_world()
 	add_child(_world)
 	_mechanic = _world.get_node("BridgeLayer/PlacementMechanic")
@@ -25,12 +24,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	_world.queue_free()
-	_clear_save()
-
-
-func _clear_save() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
+	SaveFixture.clear()
 
 
 func _make_world() -> Node2D:

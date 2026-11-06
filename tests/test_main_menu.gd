@@ -1,26 +1,20 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/ui/main_menu.tscn")
-const _SAVE_PATH := "user://save.cfg"
 
 
 func before_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	GameRegistry.change_scenes = false
 	GameRegistry.last_world_request = ""
 	GameRegistry.last_scene_request = ""
 
 
 func after_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	GameRegistry.change_scenes = true
 	GameRegistry.last_world_request = ""
 	GameRegistry.last_scene_request = ""
-
-
-func _clear_save() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
 
 
 func _make_menu() -> MainMenu:

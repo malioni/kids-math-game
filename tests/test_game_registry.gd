@@ -1,23 +1,16 @@
 extends GutTest
 
-const _SAVE_PATH := "user://save.cfg"
-
 
 func before_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	GameRegistry.change_scenes = false
 
 
 func after_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	GameRegistry.change_scenes = true
 	GameRegistry.last_world_request = ""
 	GameRegistry.last_scene_request = ""
-
-
-func _clear_save() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
 
 
 ## Marks shuffle as having played every level of the current difficulty in the given world.
@@ -51,17 +44,12 @@ func test_game_registry_unknown_world_is_empty() -> void:
 	assert_eq(GameRegistry.get_world("nowhere"), {})
 
 
-func test_game_registry_level_counts_match_level_data() -> void:
-	assert_eq(GameRegistry.get_level_count("forest"), 20)
-	assert_eq(GameRegistry.get_level_count("sky"), 20)
-
-
-func test_game_registry_market_level_count_is_20() -> void:
-	assert_eq(GameRegistry.get_level_count("market"), 20)
-
-
-func test_game_registry_picnic_level_count_is_20() -> void:
-	assert_eq(GameRegistry.get_level_count("picnic"), 20)
+func test_game_registry_every_world_has_levels_for_every_difficulty() -> void:
+	for world in GameRegistry.get_worlds():
+		var count: int = LevelLoader.get_levels_for_world(world["id"]).size()
+		for difficulty in LevelLoader.DIFFICULTIES:
+			var last: int = LevelLoader.get_difficulty_range(difficulty).y
+			assert_gt(count, last, "%s has levels up to %s's last" % [world["id"], difficulty])
 
 
 func test_game_registry_requested_level_is_taken_once() -> void:

@@ -3,28 +3,28 @@ extends GutTest
 ## Easy/hard difficulty and shuffle mode, played through the forest world.
 
 const SCENE := preload("res://scenes/worlds/forest_bridge/forest_bridge.tscn")
-const _SAVE_PATH := "user://save.cfg"
 const _SETTLE := 0.3
+
+var _scene_changes: Array[String] = []
+var _real_scene_changer: Callable
 
 
 func before_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	GameRegistry.change_scenes = false
 	GameRegistry.last_world_request = ""
+	_scene_changes = []
+	_real_scene_changer = Transition.scene_changer
 
 
 func after_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	Transition.enabled = false
 	Transition.half_duration = 0.15
+	Transition.scene_changer = _real_scene_changer
 	GameRegistry.change_scenes = true
 	GameRegistry.last_world_request = ""
 	GameRegistry.last_scene_request = ""
-
-
-func _clear_save() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
 
 
 func _make_world() -> Node2D:
@@ -307,3 +307,31 @@ func test_world_modes_first_level_loads_without_transition() -> void:
 	var world: Node2D = _make_world()
 	assert_eq(world._current_index, 2)
 	assert_false(Transition.is_busy())
+
+
+# The player taps while the fade from an earlier tap is still running, and the celebration's timer
+# runs out under it: _advance() must not undo what the player asked for.
+func test_choosing_a_level_as_a_win_finishes_keeps_the_chosen_level() -> void:
+	var world: Node2D = _make_world()
+	Transition.half_duration = 0.01
+	Transition.enabled = true
+	_hud(world).level_chosen.emit("forest", 5)
+	world._advance()
+	await wait_for_signal(Transition.finished, 2.0)
+	assert_eq(world._current_index, 5)
+	assert_eq(SaveManager.load_progress("forest:easy"), 6)
+
+
+func test_going_home_as_a_shuffle_win_finishes_stays_on_the_menu() -> void:
+	GameRegistry.set_shuffle(true)
+	SaveManager.set_progress("shuffle:forest:easy", 10)
+	var world: Node2D = _make_world()
+	GameRegistry.change_scenes = true
+	Transition.scene_changer = func(path: String) -> void: _scene_changes.append(path)
+	Transition.half_duration = 0.01
+	Transition.enabled = true
+	_hud(world).home_requested.emit()
+	world._advance()
+	await wait_for_signal(Transition.finished, 2.0)
+	assert_eq(_scene_changes, [GameRegistry.MENU_SCENE] as Array[String])
+	assert_eq(SaveManager.load_progress("shuffle:forest:easy"), 10, "the win wasn't counted")
