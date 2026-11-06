@@ -11,31 +11,21 @@ const _STEP_OFF_PX := 12.0
 
 var _walk_tween: Tween
 
-@onready var _mechanic: Node2D = $BridgeLayer/PlacementMechanic
-@onready var _character: AnimatedSprite2D = $Character
+@onready var _mechanic: PlacementMechanic = $BridgeLayer/PlacementMechanic
 @onready var _anim: AnimationPlayer = $AnimationPlayer
-@onready var _particles: GPUParticles2D = $CelebrationParticles
-@onready var _retry_prompt: BaseButton = $RetryPrompt/RetryIcon
-
-
-func _ready() -> void:
-	_mechanic.correct.connect(_on_correct)
-	_mechanic.incorrect.connect(_on_incorrect)
-	_retry_prompt.pressed.connect(_on_retry_pressed)
-	_retry_prompt.visible = false
-	super()
 
 
 func _world_id() -> String:
 	return "forest"
 
 
+func _get_mechanic() -> Mechanic:
+	return _mechanic
+
+
 func _setup_level(level: Dictionary) -> void:
-	_retry_prompt.visible = false
-	_restore_stage()
 	var puzzle: Dictionary = PlankPuzzleGenerator.generate(level, _rng)
 	_mechanic.setup(puzzle["bridge_length"], puzzle["plank_lengths"])
-	_mechanic.set_interactive(true)
 
 
 func _restore_stage() -> void:
@@ -43,35 +33,18 @@ func _restore_stage() -> void:
 		_walk_tween.kill()
 	_anim.play("RESET")
 	_anim.advance(0.0)
-	_character.play("idle")
+	super()
 
 
-func _on_correct() -> void:
-	var load_count: int = _load_count
-	_mechanic.set_interactive(false)
+func _play_win() -> void:
 	_anim.play("walk_across")
 	await _anim.animation_finished
-	if load_count != _load_count:
-		return
-	_character.play("celebrate")
-	_particles.restart()
-	await get_tree().create_timer(celebrate_duration).timeout
-	if load_count != _load_count:
-		return
-	_advance()
 
 
-func _on_incorrect() -> void:
-	var load_count: int = _load_count
-	_mechanic.set_interactive(false)
+func _play_lose() -> void:
 	await _walk_to_bridge_end()
-	if load_count != _load_count:
-		return
 	_anim.play("bridge_collapse")
 	await _anim.animation_finished
-	if load_count != _load_count:
-		return
-	_retry_prompt.visible = true
 
 
 func _walk_to_bridge_end() -> void:
@@ -83,10 +56,3 @@ func _walk_to_bridge_end() -> void:
 	_walk_tween = create_tween()
 	_walk_tween.tween_property(_character, "position:x", end_x, distance / walk_speed)
 	await _walk_tween.finished
-
-
-func _on_retry_pressed() -> void:
-	_retry_prompt.visible = false
-	_restore_stage()
-	_mechanic.reset()
-	_mechanic.set_interactive(true)

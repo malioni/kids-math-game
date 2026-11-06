@@ -9,7 +9,7 @@ func before_each() -> void:
 	SaveFixture.clear()
 	hud = SCENE.instantiate()
 	add_child(hud)
-	hud.show_level("forest", 4, 20)
+	hud.show_level("forest", 4)
 
 
 func after_each() -> void:
@@ -57,7 +57,7 @@ func test_level_hud_badge_on_easy_counts_to_10() -> void:
 
 func test_level_hud_badge_on_hard_shows_real_number_out_of_20() -> void:
 	GameRegistry.set_difficulty("hard")
-	hud.show_level("forest", 13, 20)
+	hud.show_level("forest", 13)
 	assert_eq(_badge_text(), "14/20")
 
 
@@ -65,7 +65,7 @@ func test_level_hud_badge_in_shuffle_shows_place_in_whole_shuffle() -> void:
 	GameRegistry.set_shuffle(true)
 	SaveManager.set_progress(SaveManager.progress_key("sky", "easy", true), 4)
 	SaveManager.set_progress(SaveManager.progress_key("market", "easy", true), 3)
-	hud.show_level("sky", 3, 20)
+	hud.show_level("sky", 3)
 	assert_eq(_badge_text(), "6/%d" % (10 * GameRegistry.get_worlds().size()))
 
 
@@ -108,7 +108,7 @@ func test_level_hud_picker_has_a_card_per_world_plus_shuffle() -> void:
 
 
 func test_level_hud_picker_opens_centred_on_current_world() -> void:
-	hud.show_level("market", 2, 20)
+	hud.show_level("market", 2)
 	hud.open_picker()
 	assert_eq(_picker_carousel().get_centred_id(), "market")
 	var style: StyleBoxTexture = hud.get_world_tabs()[2].get_theme_stylebox("panel")
@@ -161,7 +161,7 @@ func test_level_hud_world_complete_offers_other_worlds() -> void:
 
 func test_level_hud_show_level_closes_overlays() -> void:
 	hud.show_world_complete()
-	hud.show_level("forest", 0, 20)
+	hud.show_level("forest", 0)
 	assert_false(hud.is_world_complete_shown())
 	assert_eq(hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "1")
 
@@ -233,10 +233,10 @@ func test_level_hud_badge_shows_shuffle_icon_only_while_shuffling() -> void:
 	var icon: TextureRect = hud.get_node("Root/LevelBadge/ShuffleIcon")
 	assert_false(icon.visible)
 	GameRegistry.set_shuffle(true)
-	hud.show_level("sky", 2, 20)
+	hud.show_level("sky", 2)
 	assert_true(icon.visible)
 	GameRegistry.set_shuffle(false)
-	hud.show_level("sky", 2, 20)
+	hud.show_level("sky", 2)
 	assert_false(icon.visible)
 
 

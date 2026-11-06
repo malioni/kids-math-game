@@ -28,18 +28,11 @@ var _rig_tween: Tween
 
 @onready var _rig: Node2D = $Rig
 @onready var _mechanic: BalloonPopMechanic = $Rig/BalloonPopMechanic
-@onready var _character: AnimatedSprite2D = $Rig/Character
 @onready var _clouds: Node2D = $Clouds
-@onready var _particles: GPUParticles2D = $CelebrationParticles
-@onready var _retry_prompt: BaseButton = $RetryPrompt/RetryIcon
 
 
 func _ready() -> void:
 	_rig_home = _rig.position
-	_mechanic.correct.connect(_on_correct)
-	_mechanic.incorrect.connect(_on_incorrect)
-	_retry_prompt.pressed.connect(_on_retry_pressed)
-	_retry_prompt.visible = false
 	super()
 
 
@@ -75,12 +68,17 @@ func _world_id() -> String:
 	return "sky"
 
 
+func _get_mechanic() -> Mechanic:
+	return _mechanic
+
+
+func _get_character() -> AnimatedSprite2D:
+	return $Rig/Character
+
+
 func _setup_level(level: Dictionary) -> void:
-	_retry_prompt.visible = false
-	_restore_stage()
 	var puzzle: Dictionary = BalloonPuzzleGenerator.generate(level, _rng)
 	_mechanic.setup(puzzle["target"], puzzle["balloon_values"])
-	_mechanic.set_interactive(true)
 
 
 func _restore_stage() -> void:
@@ -88,40 +86,20 @@ func _restore_stage() -> void:
 		_rig_tween.kill()
 	_rig.position = _rig_home
 	_state = State.RISING
-	_character.play("idle")
+	super()
 
 
-func _on_correct() -> void:
-	var load_count: int = _load_count
+func _play_win() -> void:
 	_state = State.LEVEL
-	_mechanic.set_interactive(false)
-	_character.play("celebrate")
-	_particles.restart()
-	await get_tree().create_timer(celebrate_duration).timeout
-	if load_count != _load_count:
-		return
-	_advance()
 
 
-func _on_incorrect() -> void:
-	var load_count: int = _load_count
+func _play_lose() -> void:
 	_state = State.FALLING
-	_mechanic.set_interactive(false)
 	_character.play("fall")
 	_rig_tween = create_tween()
 	_rig_tween.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 	_rig_tween.tween_property(_rig, "position:y", _rig.position.y + fall_distance, fall_duration)
 	await _rig_tween.finished
-	if load_count != _load_count:
-		return
-	_retry_prompt.visible = true
-
-
-func _on_retry_pressed() -> void:
-	_retry_prompt.visible = false
-	_restore_stage()
-	_mechanic.reset()
-	_mechanic.set_interactive(true)
 
 
 # Clouds further back (smaller) move slower, for a little depth. They wrap top to bottom.
