@@ -1,10 +1,8 @@
-extends Node2D
+class_name PlacementMechanic
+extends Mechanic
 
-## Emitted when confirm() is called and the placed planks add up to target_length exactly.
-signal correct
-
-## Emitted when confirm() is called and the placed planks fall short of target_length.
-signal incorrect
+## A gap and a pile of numbered planks. The player lays planks end to end across the gap and presses
+## Go. Planks that add up to the target length exactly emit correct; falling short emits incorrect.
 
 ## Emitted on every placement, removal, or reset with the new placed total.
 signal total_changed(new_total: int)

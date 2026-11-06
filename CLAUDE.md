@@ -88,15 +88,15 @@ Test files extend `GutTest` and use GUT assertions (`assert_eq`, `assert_signal_
 
 ## Adding a New Mechanic
 1. Create scene in `scenes/mechanics/<name>.tscn`
-2. Create script in `scripts/mechanics/<name>.gd`
-3. Mechanic must emit at minimum: `correct`, `incorrect` signals
+2. Create script in `scripts/mechanics/<name>.gd` extending `Mechanic`
+3. Mechanic must emit `correct` and `incorrect`, and override `reset()` and `set_interactive()`
 4. Write tests in `tests/test_<name>.gd`
 5. Document all public methods with `##` doc comments
 
 ## Adding a New World
-1. Create `data/levels/<world_name>/` with JSON level files
+1. Create `data/levels/<world_name>/` with JSON level files, covering every difficulty in `data/levels/difficulty.json`
 2. Create `scenes/worlds/<world_name>/` with scene files
 3. Register the world in `scripts/autoloads/game_registry.gd` (id, scene, icon); its card then appears on the main menu, in the level picker and on the star screen with no other code
-4. Write the world script in `scripts/worlds/` extending `WorldBase` (level flow, save, HUD); override `_world_id()` and `_setup_level()`, call `_advance()` after the win animation
-5. Instance `scenes/ui/level_hud.tscn` as a `LevelHud` child of the world scene
+4. Write the world script in `scripts/worlds/` extending `WorldBase` (level flow, win and lose flow, retry, save, HUD); override `_world_id()`, `_get_mechanic()` and `_setup_level()`, and add the world's animations with `_play_win()`, `_play_lose()` and `_restore_stage()`
+5. Instance `scenes/ui/level_hud.tscn` as a `LevelHud` child of the world scene, and add the nodes `WorldBase` needs: `Character`, `CelebrationParticles` and `RetryPrompt/RetryIcon`
 6. Compose existing mechanics from `scenes/mechanics/` — never duplicate mechanic logic
