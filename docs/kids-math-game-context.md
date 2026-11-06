@@ -1,6 +1,6 @@
 # Kids Math Game: project context
 
-_Last updated 2026-11-03. Everything below is merged to `main` through PR #27: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), and the shuffle page in the picker (#27)._
+_Last updated 2026-11-05. Everything below is merged to `main` through PR #30: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), and menu Play opening the centred world (#30)._
 
 ## What it is
 
@@ -32,7 +32,7 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 - Two icon buttons, Easy (a hill) and Hard (a snowy mountain), set the difficulty for the whole game. This is the grown-up's control; the child never sees it named.
 - A Shuffle tab with its own page: continue (or start shuffling) and start over (clears shuffle's place in every world and begins again). The picker opens on this page while shuffling.
 - After the difficulty's last level, a star screen offers restart from the difficulty's first level (retry icon labelled 1 or 11) or another world's icon. In shuffle, the star screen shows once every world is done, and restart starts a fresh shuffle.
-- The game opens on the main menu (`scenes/ui/main_menu.tscn`, via `scenes/ui/boot.tscn`): Play (or tapping the centred card) opens the centred world, which starts as the last world played, and leaves shuffle; Shuffle starts or continues a shuffle; and a swipeable `WorldCarousel` (`scripts/ui/world_carousel.gd`) has a card per registered world. The picker's world row and the star screen's world list use the same carousel; both have a home button. Every level change and scene change fades through the `Transition` autoload (0.3 s); tests run with `Transition.enabled = false` via `tests/pre_run_hook.gd`. Merged in #29.
+- The game opens on the main menu (`scenes/ui/main_menu.tscn`, via `scenes/ui/boot.tscn`): Play (or tapping the centred card) opens the centred world, which starts as the last world played, and leaves shuffle; Shuffle starts or continues a shuffle; and a swipeable `WorldCarousel` (`scripts/ui/world_carousel.gd`) has a card per registered world. The picker's world row and the star screen's world list use the same carousel; both have a home button. Every level change and scene change fades through the `Transition` autoload (0.3 s); tests run with `Transition.enabled = false` via `tests/pre_run_hook.gd`. Merged in #29 and #30.
 
 ## Current state
 
@@ -40,7 +40,7 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 - Every puzzle is generated at load from per-level ranges, so replays differ. Progress is saved locally per world, per difficulty, and separately for shuffle.
 - All art is programmer-art placeholder (`assets/sprites/forest_bridge/`, `sky_balloons/`, `market/`, `picnic/`, `ui/`, see the READMEs there), at final filenames and sizes so real art can drop in. Several placeholders are drawn by headless tools in `tools/` (`make_market_placeholders.gd`, `make_picnic_placeholders.gd`, `make_mode_icons.gd`, `make_fox_sad_placeholder.gd`). The author said the placeholders are fine for now.
 - Every push to `main` builds the Web preset in CI and publishes it to GitHub Pages at https://malioni.github.io/kids-math-game/ (`.github/workflows/deploy-web.yml`); the runs for #25–#27 all succeeded.
-- 362 GUT tests passing (2026-11-03); headless boot clean. `gdlint` isn't installed on the Mac right now (`pip install gdtoolkit`).
+- 416 GUT tests passing (2026-11-05); headless boot clean. `gdlint` isn't installed on the Mac right now (`pip install gdtoolkit`).
 - Not yet done: audio (issue #8, `assets/audio/` is empty), final art (issue #7), adaptive difficulty (`scripts/autoloads/progression.gd` is an empty stub), the PIN-gated parent view, native Android/iOS exports (only a Web preset exists), and playtesting with the target age.
 
 ## Tech stack and tools
@@ -93,7 +93,7 @@ Strict layers (from `CLAUDE.md`): `scenes/` are presentation only; `scripts/mech
 | `scripts/systems/level_loader.gd` | Autoload. `get_levels_for_world("forest")` reads `data/levels/world_forest/levels.json` and then each level file. `get_difficulty_range(difficulty) -> Vector2i` (0-based, from `difficulty.json`; unknown → easy). `DIFFICULTIES = ["easy", "hard"]`. |
 | `scripts/systems/shuffle_picker.gd` | `ShufflePicker.pick(next_levels, last_index, rng) -> String`: a uniformly random world that still has levels left, or `""`. Keys are sorted first, so a seed is deterministic. |
 | `scripts/systems/subset_sums.gd` | `SubsetSums.analyze(values, target) -> {count, min_size, max_size}` over distinct multisets. Used by the plank and balloon generators. |
-| `scripts/ui/boot.gd` + `scenes/ui/boot.tscn` | Main scene: migrates old saves, then opens the last world played. |
+| `scripts/ui/boot.gd` + `scenes/ui/boot.tscn` | Main scene: migrates old saves, then opens the main menu. |
 | `tools/export_web.sh`, `tools/serve_web.sh` | Web export and serving (see above). `export_presets.cfg` is committed (single-threaded "Web" preset, no secrets) so CI can see it. `build/` is git-ignored. |
 | `.github/workflows/deploy-web.yml` | On push to `main` (or manually): installs Godot 4.6 and its export templates, imports assets, exports "Web" to `build/web`, and deploys it with GitHub Pages. |
 
@@ -199,7 +199,7 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 ## Workflow
 
 - One feature per branch, squash-merged to `main` through PRs. Because of the squash, `git branch -d` refuses merged branches; check the PR is merged and nothing is unpushed, then use `-D`. Commits are authored as `malioni <47998755+malioni@users.noreply.github.com>`.
-- `.claude/commands/` holds the project's agent workflow: `/plan` (writes `PLAN.md`), `/plan-review`, `/implement`, `/write-tests`, `/review`, `/write-docs`, `/ship` (all of them in sequence). `PLAN.md` at the repo root holds the current feature's plan, with a revision note at the top whenever implementation departed from it. It currently holds the shipped difficulty/shuffle plan (#25), marked as shipped; the next `/plan` replaces it.
+- `.claude/commands/` holds the project's agent workflow: `/plan` (writes `PLAN.md`), `/plan-review`, `/implement`, `/write-tests`, `/review`, `/write-docs`, `/ship` (all of them in sequence). `PLAN.md` at the repo root holds the current feature's plan, with a revision note at the top whenever implementation departed from it. It currently holds the main menu plan (#29); the next `/plan` replaces it.
 - Godot also runs in the Cowork Linux VM (download the `linux.arm64` 4.6 build from GitHub releases into `$HOME`, rsync the repo to a scratch copy, `--import`, then run GUT / `xvfb-run` screenshots there). Run Godot on the scratch copy, not the mounted folder, since deletes are blocked in the mount.
 - Before committing: run GUT, `gdlint scripts/ scenes/`, and a headless boot. For visual changes, render screenshots: `xvfb-run` + `--rendering-driver opengl3`, and `--resolution 1688x780` for an iPhone shape.
 
@@ -222,7 +222,7 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 ## Open ideas and next steps
 
 - Playtest every world with the target age and tune the level JSON in `data/levels/world_*/`.
-- Audio (#8), main menu and transitions (#9), final art (#7).
+- Audio (#8), final art (#7).
 - Adaptive difficulty through `Progression` (e.g. repeat easier variants after a failure). DESIGN.md says difficulty should adjust silently; today Easy/Hard is a manual grown-up choice, so either build the adaptive part or update the design.
 - Parent view (PIN-gated session summaries).
 - Skill areas with no world yet: counting, comparison, patterns and spatial reasoning (mechanics `CountingMechanic`, `SortingMechanic`, `MatchingMechanic`, `BalanceMechanic` in DESIGN.md are unbuilt). Planned worlds: Garden (addition and grouping), Kitchen (addition and subtraction).
