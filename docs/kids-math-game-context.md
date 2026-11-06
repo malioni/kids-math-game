@@ -1,6 +1,6 @@
 # Kids Math Game: project context
 
-_Last updated 2026-11-05. Everything below is merged to `main` through PR #30: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), and menu Play opening the centred world (#30)._
+_Last updated 2026-11-05. Everything below describes `main` through PR #36: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), menu Play opening the centred world (#30), checks before every deploy (#33), the win and lose flow moving into `WorldBase` (#34), the save kept in memory (#35), and small fixes (#36)._
 
 ## What it is
 
@@ -39,13 +39,13 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 - Four worlds, 20 levels each, split Easy (1–10) / Hard (11–20) by `data/levels/difficulty.json`.
 - Every puzzle is generated at load from per-level ranges, so replays differ. Progress is saved locally per world, per difficulty, and separately for shuffle.
 - All art is programmer-art placeholder (`assets/sprites/forest_bridge/`, `sky_balloons/`, `market/`, `picnic/`, `ui/`, see the READMEs there), at final filenames and sizes so real art can drop in. Several placeholders are drawn by headless tools in `tools/` (`make_market_placeholders.gd`, `make_picnic_placeholders.gd`, `make_mode_icons.gd`, `make_fox_sad_placeholder.gd`). The author said the placeholders are fine for now.
-- Every push to `main` builds the Web preset in CI and publishes it to GitHub Pages at https://malioni.github.io/kids-math-game/ (`.github/workflows/deploy-web.yml`); the runs for #25–#27 all succeeded.
-- 416 GUT tests passing (2026-11-05); headless boot clean. `gdlint` isn't installed on the Mac right now (`pip install gdtoolkit`).
-- Not yet done: audio (issue #8, `assets/audio/` is empty), final art (issue #7), adaptive difficulty (`scripts/autoloads/progression.gd` is an empty stub), the PIN-gated parent view, native Android/iOS exports (only a Web preset exists), and playtesting with the target age.
+- Every pull request runs lint, tests and a headless boot (`.github/workflows/test.yml`). Every push to `main` runs the same checks, then builds the Web preset and publishes it to GitHub Pages at https://malioni.github.io/kids-math-game/ (`.github/workflows/deploy-web.yml`).
+- 418 GUT tests passing (2026-11-05); headless boot and lint clean. `gdlint` isn't installed on the Mac right now (`pip install gdtoolkit`); CI runs it.
+- Not yet done: audio (issue #8, `assets/audio/` is empty), final art (issue #7), adaptive difficulty, the PIN-gated parent view, native Android/iOS exports (only a Web preset exists), and playtesting with the target age.
 
 ## Tech stack and tools
 
-- Godot **4.6** (Mobile renderer; web builds use Compatibility), GDScript, GUT **9.6.0** for tests, gdtoolkit for lint/format.
+- Godot **4.6.2** (Mobile renderer; web builds use Compatibility), GDScript, GUT **9.6.0** for tests, gdtoolkit for lint/format.
 - Mac Godot binary: `/Applications/Godot-2.app/Contents/MacOS/Godot`.
 - Viewport 1280×720 landscape; stretch mode `canvas_items`, aspect `expand`.
 
@@ -62,18 +62,19 @@ tools/serve_web.sh --tunnel    # prints an https://*.trycloudflare.com address; 
 
 ## Architecture
 
-Strict layers (from `CLAUDE.md`): `scenes/` are presentation only; `scripts/mechanics/` hold mechanic behaviour with no world-specific code; `scripts/systems/` and `scripts/autoloads/` hold core systems; `scripts/worlds/` hold world flow (all extend `WorldBase`); `data/levels/` holds all level content as JSON. Mechanics talk to worlds only through signals and public methods. Every mechanic emits `correct` / `incorrect` and has a `tests/test_<name>.gd` file. Conventions: snake_case, type hints everywhere, `##` doc comments on public methods, signals at the top of the file, `_private` names.
+Strict layers (from `CLAUDE.md`): `scenes/` are presentation only; `scripts/mechanics/` hold mechanic behaviour with no world-specific code; `scripts/systems/` and `scripts/autoloads/` hold core systems; `scripts/worlds/` hold world flow (all extend `WorldBase`); `data/levels/` holds all level content as JSON. Mechanics talk to worlds only through signals and public methods. Every mechanic extends `Mechanic`, emits `correct` / `incorrect` and has a `tests/test_<name>.gd` file. Conventions: snake_case, type hints everywhere, `##` doc comments on public methods, signals at the top of the file, `_private` names.
 
 ### Key files
 
 | File | Role |
 |---|---|
-| `scripts/worlds/world_base.gd` | `WorldBase` (extends Node2D): flow shared by every world. Owns the RNG (`puzzle_seed`, 0 = random) and `celebrate_duration`, loads levels, resumes from `GameRegistry.take_requested_level()` or the save for the current difficulty and mode (clamped to the difficulty's range), saves the last world, drives the `LevelHud`, and `_advance()`: in worlds mode the next level, or at the range's end reset to its first level + `world_complete` + star screen; in shuffle, save the shuffle place, then load the next level in place, switch to another world, or show the star screen when every world is done. Handles `level_chosen`, `restart_requested`, `difficulty_chosen`, `shuffle_requested`. `_load_count` is bumped per load; animations check it after each `await` so picking a level mid-animation doesn't double-advance. Subclasses override `_world_id()` and `_setup_level(level)`. |
+| `scripts/worlds/world_base.gd` | `WorldBase` (extends Node2D): flow shared by every world. Owns the RNG (`puzzle_seed`, 0 = random) and `celebrate_duration`, loads levels, resumes from `GameRegistry.take_requested_level()` or the save for the current difficulty and mode, saves the last world, drives the `LevelHud`, and runs the win, lose and retry flow. `_advance()`: in worlds mode the next level, or at the range's end reset to its first level + `world_complete` + star screen; in shuffle, save the shuffle place, then load the next level in place, switch to another world, or show the star screen when every world is done. It does nothing while a fade is running, because that means the player has already picked a level or gone home. `_load_count` is bumped per load, and the flows check it after each `await`. Subclasses override `_world_id()`, `_get_mechanic()` and `_setup_level(level)`, and optionally `_play_win()`, `_play_lose()`, `_restore_stage()` (call `super()`) and `_get_character()`. |
+| `scripts/mechanics/mechanic.gd` | `Mechanic` (extends Node2D): base class of every mechanic. Signals `correct`, `incorrect`; `reset()` and `set_interactive(enabled)` to override. |
 | `scripts/mechanics/drag_piece.gd` | `DragPiece`: base class for draggable pieces. `bounce_back()`, `move_to(pos)`, `cancel_drag()`, `is_dragging()`; signals `dropped(release_position)`, `tapped` (press and release within 12 px). `PlankDrag`, `BagDrag` and `FruitDrag` extend it. |
 | `scripts/mechanics/plank_puzzle_generator.gd` | `PlankPuzzleGenerator` (static). `generate(params, rng) -> {bridge_length, plank_lengths}`, `count_solutions(lengths, target)`. Pure logic, seedable. |
 | `scripts/mechanics/placement_mechanic.gd` + `.tscn` | The bridge puzzle. `setup(target_length, plank_lengths)`, `reset()` (same puzzle), `confirm()`, `set_interactive(bool)`, `get_target_length()`, `get_placed_total()`, `get_remaining_length()`, `get_planks()`, `get_placed_planks()`, `get_bridge_end_position()`. Signals: `correct`, `incorrect`, `total_changed(new_total)`. Exported layout tunables: `bridge_width` (600), `drop_margin`, `pile_left`, `pile_right`, `pile_row_y` (3 rows), `pile_spacing`, `go_texture`. |
 | `scripts/mechanics/plank_drag.gd` + `.tscn` | A numbered plank (`DragPiece`). `configure(length, unit_px)`; vars `length`, `is_placed`, `home`, `interactive`. 64 px tall, with an 8×6 px touch margin. |
-| `scripts/worlds/forest_bridge.gd` + `scenes/worlds/forest_bridge/` | Generates a plank puzzle per level load and runs animations (`walk_across`, `bridge_collapse`, `RESET`), particles and retry. Exports `walk_speed` (500 px/s). Has a `Camera2D` centred at (640, 360). |
+| `scripts/worlds/forest_bridge.gd` + `scenes/worlds/forest_bridge/` | Generates a plank puzzle per level load and adds its animations (`walk_across`, `bridge_collapse`, `RESET`). Exports `walk_speed` (500 px/s). Has a `Camera2D` centred at (640, 360). |
 | `scripts/mechanics/balloon_puzzle_generator.gd` | `BalloonPuzzleGenerator` (static). `generate(params, rng) -> {target, balloon_values}`, `count_solutions(values, extra)`. |
 | `scripts/mechanics/balloon_pop_mechanic.gd` + `.tscn` | `BalloonPopMechanic`. `setup(target, values)`, `reset()`, `pop(balloon)`, `set_interactive()`, `get_target()`, `get_lift_total()`, `get_balance()` (lift − weight), `get_balloons()`, `get_unpopped_balloons()`, `radius_for(value)`. Signals `correct` (lift = weight), `incorrect` (lift < weight), `total_changed`. Evaluates after every pop; no Go button. Up to 4 per row, 2 rows (8 balloons max). Local origin = basket rim. |
 | `scripts/mechanics/balloon.gd` + `.tscn` | `Balloon`: `configure(value, radius, color, string_end)`, `pop()`, `contains_global_point()`; signal `tapped` (on press). Texture is white and tinted per balloon. |
@@ -86,26 +87,25 @@ Strict layers (from `CLAUDE.md`): `scenes/` are presentation only; `scripts/mech
 | `scripts/mechanics/sharing_mechanic.gd` + `.tscn` | `SharingMechanic`. `setup(plates, orders)`, `reset()`, `confirm()` (deals to the friends, `deal_step` s per step), `set_interactive()`, `is_dealing()`, `get_orders()`, `get_plate_count()`, `get_placed_count(item)`, `get_placed_pieces(item)`, `get_ready_piece(item)`, `get_basket_count(item)`, `get_dealt_count(guest, item)`, `get_guest(guest)`. Signals `correct`, `incorrect`. Exports textures, `guest_frames`, `guest_tints` and layout. |
 | `scripts/mechanics/fruit_drag.gd` + `.tscn` | `FruitDrag` (`DragPiece`): `configure(item_id, icon)`, `get_width()`. |
 | `scripts/worlds/picnic.gd` + `scenes/worlds/picnic/` | Picnic flow: everyone cheers, or the fox's sad loop and retry. Exports `sad_duration`. |
-| `scripts/ui/level_hud.gd` + `scenes/ui/level_hud.tscn` | `LevelHud` (CanvasLayer 5). `show_level(world_id, index, count)`, `open_picker()`, `close_picker()`, `is_picker_open()`, `show_world_complete()`, `is_world_complete_shown()`, plus test accessors (`get_difficulty_buttons()`, `get_level_buttons()`, `get_world_tabs()`, `get_shuffle_tab()`, `is_shuffle_page_shown()`, `get_shuffle_buttons()`). Signals `level_chosen(world_id, index)` (index −1 = resume that world), `restart_requested`, `difficulty_chosen(difficulty)`, `shuffle_requested(from_start)`. Badge anchored to the play area's top-left so it stays inside the iPhone safe area. |
-| `scripts/autoloads/game_registry.gd` | `WORLDS` list (id, scene, icon): forest, sky, market, picnic. `get_worlds()`, `get_world(id)`, `get_level_count(id)`, `go_to_world(id, level_index = -1)`, `request_level()` / `take_requested_level()`, `start_last_world()`. Difficulty and mode read through to `SaveManager`: `get_difficulty()` / `set_difficulty()`, `is_shuffle()` / `set_shuffle()`, `get_level_range()` (0-based `Vector2i`). Shuffle: `shuffle_next_index(id)`, `shuffle_position()` (place in the whole run, for the badge), `next_shuffle_world()`, `reset_shuffle()`, `start_shuffle()`. Test seam: `change_scenes = false` makes `go_to_world()` only record `last_world_request`. |
-| `scripts/autoloads/save_manager.gd` | `ConfigFile` at `user://save.cfg`. Progress keys come from `progress_key(world, difficulty, shuffle)`: `"forest:easy"`, `"shuffle:forest:hard"`, … (1-indexed levels). `save_progress` (only raises) / `set_progress` (exact) / `load_progress` / `reset_progress`, `save_last_world` / `load_last_world`, `save_difficulty` / `load_difficulty` (default `easy`), `save_play_mode` / `load_play_mode` (`worlds` / `shuffle`), `migrate_progress(worlds)` (old per-world keys → per-difficulty), and a session count. |
-| `scripts/autoloads/progression.gd` | Empty stub, meant for per-skill mastery and adaptive difficulty. |
+| `scripts/ui/level_hud.gd` + `scenes/ui/level_hud.tscn` | `LevelHud` (CanvasLayer 5). `show_level(world_id, index)`, `open_picker()`, `close_picker()`, `is_picker_open()`, `show_world_complete()`, `is_world_complete_shown()`, plus test accessors (`get_difficulty_buttons()`, `get_level_buttons()`, `get_world_tabs()`, `get_shuffle_tab()`, `is_shuffle_page_shown()`, `get_shuffle_buttons()`). Signals `level_chosen(world_id, index)` (index −1 = resume that world), `restart_requested`, `difficulty_chosen(difficulty)`, `shuffle_requested(from_start)`. Badge anchored to the play area's top-left so it stays inside the iPhone safe area. |
+| `scripts/autoloads/game_registry.gd` | `WORLDS` list (id, scene, icon): forest, sky, market, picnic. `get_worlds()`, `get_world(id)`, `go_to_world(id, level_index = -1)`, `go_to_menu()`, `request_level()` / `take_requested_level()`. Every world needs levels for all of every difficulty's range; a test enforces it. Difficulty and mode read through to `SaveManager`: `get_difficulty()` / `set_difficulty()`, `is_shuffle()` / `set_shuffle()`, `get_level_range()` (0-based `Vector2i`). Shuffle: `shuffle_next_index(id)`, `shuffle_position()` (place in the whole run, for the badge), `next_shuffle_world()`, `reset_shuffle()`, `start_shuffle()`. Test seam: `change_scenes = false` makes `go_to_world()` only record `last_world_request`. |
+| `scripts/autoloads/save_manager.gd` | `ConfigFile` at `save_path` (`user://save.cfg`), read once by `reload()` and kept in memory; every change is written straight away. Progress keys come from `progress_key(world, difficulty, shuffle)`: `"forest:easy"`, `"shuffle:forest:hard"`, … (1-indexed levels). `save_progress` (only raises) / `set_progress` (exact) / `load_progress` / `reset_progress`, `save_last_world` / `load_last_world`, `save_difficulty` / `load_difficulty` (default `easy`), `save_play_mode` / `load_play_mode` (`worlds` / `shuffle`), `migrate_progress(worlds)` (old per-world keys → per-difficulty). |
 | `scripts/systems/level_loader.gd` | Autoload. `get_levels_for_world("forest")` reads `data/levels/world_forest/levels.json` and then each level file. `get_difficulty_range(difficulty) -> Vector2i` (0-based, from `difficulty.json`; unknown → easy). `DIFFICULTIES = ["easy", "hard"]`. |
 | `scripts/systems/shuffle_picker.gd` | `ShufflePicker.pick(next_levels, last_index, rng) -> String`: a uniformly random world that still has levels left, or `""`. Keys are sorted first, so a seed is deterministic. |
 | `scripts/systems/subset_sums.gd` | `SubsetSums.analyze(values, target) -> {count, min_size, max_size}` over distinct multisets. Used by the plank and balloon generators. |
 | `scripts/ui/boot.gd` + `scenes/ui/boot.tscn` | Main scene: migrates old saves, then opens the main menu. |
 | `tools/export_web.sh`, `tools/serve_web.sh` | Web export and serving (see above). `export_presets.cfg` is committed (single-threaded "Web" preset, no secrets) so CI can see it. `build/` is git-ignored. |
-| `.github/workflows/deploy-web.yml` | On push to `main` (or manually): installs Godot 4.6 and its export templates, imports assets, exports "Web" to `build/web`, and deploys it with GitHub Pages. |
+| `.github/workflows/test.yml` | On pull requests, and called by the deploy: installs Godot 4.6.2, runs `gdlint`, GUT and a headless boot. |
+| `.github/workflows/deploy-web.yml` | On push to `main` (or manually): runs `test.yml`, installs Godot 4.6.2 and its export templates, imports assets, exports "Web" to `build/web`, and deploys it with GitHub Pages. |
 
 ## Puzzle generation
 
 The level JSON holds ranges, not puzzles; every schema is documented in `data/levels/README.md`.
 
 ```json
-{ "id": "world_forest_10", "world": "forest", "mechanic": "placement",
+{ "id": "world_forest_10", "world": "forest",
   "bridge_length": { "min": 27, "max": 33 }, "plank_length": { "min": 4, "max": 14 },
-  "plank_count": 8, "max_solutions": 2,
-  "narrative_key": "forest_bridge_10", "skill_tags": ["addition", "number-composition"] }
+  "plank_count": 8, "max_solutions": 2 }
 ```
 
 Generator rules (it retries up to 500 attempts, then falls back to a puzzle with no decoys, which is always solvable):
@@ -135,9 +135,9 @@ Generator rules (it retries up to 500 attempts, then falls back to a puzzle with
 ### Sky Balloons generation
 
 ```json
-{ "id": "world_sky_10", "world": "sky", "mechanic": "balloon_pop",
+{ "id": "world_sky_10", "world": "sky",
   "balloon_count": 6, "balloon_value": { "min": 3, "max": 9 }, "pop_count": { "min": 2, "max": 3 },
-  "total_max": 36, "max_solutions": 2, "narrative_key": "sky_balloons_10", "skill_tags": ["subtraction", "number-composition"] }
+  "total_max": 36, "max_solutions": 2 }
 ```
 
 Draw `balloon_count` values; reject if the total exceeds `total_max`; the first *p* (∈ `pop_count`) are the intended pops, extra = their sum, target = total − extra. Reject unless the distinct pop sets summing to extra number ≤ `max_solutions` and every such set pops at least `pop_count.min` balloons (so a level meant to need two pops can't be solved with one). 500 attempts, then a fallback. Prototyped at 300 puzzles per level: no fallbacks, worst case 107 attempts.
@@ -160,11 +160,10 @@ Untested with the target age; the upper levels (subtracting 15–50 from 50–76
 ### Market generation
 
 ```json
-{ "id": "world_market_06", "world": "market", "mechanic": "market",
+{ "id": "world_market_06", "world": "market",
   "items": [
     { "item": "tomato", "bag_size": { "min": 2, "max": 4 }, "bag_count": { "min": 2, "max": 3 } },
-    { "item": "potato", "bag_size": { "min": 5, "max": 7 }, "bag_count": { "min": 2, "max": 3 } } ],
-  "narrative_key": "market_06", "skill_tags": ["multiplication", "equal-groups"] }
+    { "item": "potato", "bag_size": { "min": 5, "max": 7 }, "bag_count": { "min": 2, "max": 3 } } ] }
 ```
 
 Per item, pick a bag size and a bag count from their ranges; the order is size × count. No rejection step: the crates never run out, so every order is solvable and has one answer. Levels 1–5 order tomatoes; 6–10 add potatoes; 11–20 add carrots. Bag counts start low (2–3) each time a new item joins and rise to 8–10 at level 20, so the biggest order is 10 × 10.
@@ -172,10 +171,9 @@ Per item, pick a bag size and a bag count from their ranges; the order is size �
 ### Picnic generation
 
 ```json
-{ "id": "world_picnic_01", "world": "picnic", "mechanic": "sharing",
+{ "id": "world_picnic_01", "world": "picnic",
   "plates": { "min": 2, "max": 2 },
-  "items": [ { "item": "strawberry", "share": { "min": 2, "max": 3 } } ],
-  "narrative_key": "picnic_01", "skill_tags": ["division", "fair-sharing"] }
+  "items": [ { "item": "strawberry", "share": { "min": 2, "max": 3 } } ] }
 ```
 
 Pick the number of plates (the fox's included), then a share per fruit; each basket holds plates × share. Levels 1–5 share strawberries; 6–10 add apples; 11–20 add bananas. Plates and shares start low each time a fruit joins and rise to 5 plates of 7–10 each at level 20, so the biggest basket is 50.
@@ -183,7 +181,7 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 ## Difficulty and shuffle
 
 - `data/levels/difficulty.json`: `{"easy": {"first": 1, "last": 10}, "hard": {"first": 11, "last": 20}}`, read by `LevelLoader.get_difficulty_range()` as a 0-based `Vector2i`.
-- Save file sections: `progress` holds `<world>:<difficulty>` and `shuffle:<world>:<difficulty>` (1-indexed); `meta` holds `difficulty`, `play_mode`, the last world and the session count. Boot migrates an old `<world>` value N to `easy = N` if N ≤ 10, else `easy = 1, hard = N`.
+- Save file sections: `progress` holds `<world>:<difficulty>` and `shuffle:<world>:<difficulty>` (1-indexed); `meta` holds `difficulty`, `play_mode` and the last world. Boot migrates an old `<world>` value N to `easy = N` if N ≤ 10, else `easy = 1, hard = N`.
 - Shuffle after every win: save this world's shuffle place, then `ShufflePicker` picks a random world that still has levels left in the difficulty. The same world loads its next level in place (no scene reload); another world is opened at its shuffle place; none left → star screen. Opening a world whose shuffle place is past the range loads the range's last level and defers `start_shuffle()`, so a scene change never happens inside `_ready`.
 - Changing difficulty resumes immediately: in worlds mode at that difficulty's saved level, in shuffle at the shuffle place (or the next pick if this world is done).
 
@@ -212,18 +210,19 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 - `set_process_input()` on a parent doesn't reach child pieces; use the mechanic's `set_interactive()`.
 - Compute piece and bridge positions from the placed total, not from node positions, because pieces may still be mid-tween.
 - `bridge_collapse` animates only `Character:position:y`, so the fall happens wherever the walk tween left the fox. Play `RESET` (then `advance(0)`) before each level load and each retry.
-- A world that awaits an animation must re-check `_load_count` after each `await`; the player can pick another level mid-animation. Kill running tweens in `_restore_stage()`.
+- `WorldBase` re-checks `_load_count` after `_play_win()` and `_play_lose()`, because the player can pick another level mid-animation. Kill running tweens in `_restore_stage()`, so those hooks stop rather than carry on.
 - gdlint rejects enum names starting with `_` (`enum-name`).
 - `Array.shuffle()` uses the global RNG; the generators have their own seeded shuffle, so puzzles are reproducible from a seed.
 - `change_scene_to_file` in a test replaces GUT's own scene; set `GameRegistry.change_scenes = false` in tests that make a world switch (shuffle does this).
-- Tests touching difficulty, mode or progress must delete `user://save.cfg` first; `GameRegistry` reads through to the save rather than caching.
+- Tests touching difficulty, mode or progress must call `SaveFixture.clear()` first. The suite uses `user://test_save.cfg`, set in `tests/pre_run_hook.gd`, so it leaves the real save alone.
+- In tests, don't rely on a very short duration outlasting a frame. A slow machine can finish a 0.01 s celebration before the next check, so set a longer duration when checking the state during it.
 - Each fox frame must stay inside its own 64 px cell with an empty column at each edge, or texture filtering bleeds a neighbour's pixels in (the stray tail tip fixed in #24).
 
 ## Open ideas and next steps
 
 - Playtest every world with the target age and tune the level JSON in `data/levels/world_*/`.
 - Audio (#8), final art (#7).
-- Adaptive difficulty through `Progression` (e.g. repeat easier variants after a failure). DESIGN.md says difficulty should adjust silently; today Easy/Hard is a manual grown-up choice, so either build the adaptive part or update the design.
+- Adaptive difficulty (e.g. repeat easier variants after a failure), after more playtesting. Today Easy/Hard is a manual grown-up choice, and DESIGN.md says so. `skill_tags` and `narrative_key` were removed from the level JSON in #35 because nothing read them; they're in git history if this or a story needs them.
 - Parent view (PIN-gated session summaries).
 - Skill areas with no world yet: counting, comparison, patterns and spatial reasoning (mechanics `CountingMechanic`, `SortingMechanic`, `MatchingMechanic`, `BalanceMechanic` in DESIGN.md are unbuilt). Planned worlds: Garden (addition and grouping), Kitchen (addition and subtraction).
 - Native Android/iOS builds.
