@@ -19,7 +19,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameRegistry="*res://scripts/autoloads/game_registry.gd"
-Progression="*res://scripts/autoloads/progression.gd"
 SaveManager="*res://scripts/autoloads/save_manager.gd"
 LevelLoader="*res://scripts/systems/level_loader.gd"
 Transition="*res://scripts/autoloads/transition.gd"

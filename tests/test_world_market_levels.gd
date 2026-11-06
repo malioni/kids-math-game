@@ -1,6 +1,6 @@
 extends GutTest
 
-const REQUIRED_FIELDS := ["id", "world", "mechanic", "items", "narrative_key", "skill_tags"]
+const REQUIRED_FIELDS := ["id", "world", "items"]
 const BAG_SIZES := {
 	"tomato": Vector2i(2, 4),
 	"potato": Vector2i(5, 7),
@@ -34,9 +34,8 @@ func test_world_market_all_levels_have_required_fields() -> void:
 			assert_true(level.has(field), "%s missing %s" % [level.get("id", "?"), field])
 
 
-func test_world_market_all_levels_use_market_mechanic() -> void:
+func test_world_market_all_levels_belong_to_market() -> void:
 	for level in _levels:
-		assert_eq(level["mechanic"], "market")
 		assert_eq(level["world"], "market")
 
 

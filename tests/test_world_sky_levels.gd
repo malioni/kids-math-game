@@ -3,14 +3,11 @@ extends GutTest
 const REQUIRED_FIELDS := [
 	"id",
 	"world",
-	"mechanic",
 	"balloon_count",
 	"balloon_value",
 	"pop_count",
 	"total_max",
 	"max_solutions",
-	"narrative_key",
-	"skill_tags",
 ]
 
 var _levels: Array[Dictionary]
@@ -32,9 +29,8 @@ func test_world_sky_all_levels_have_required_fields() -> void:
 			assert_true(level.has(field), "%s missing %s" % [level.get("id", "?"), field])
 
 
-func test_world_sky_all_levels_use_balloon_pop_mechanic() -> void:
+func test_world_sky_all_levels_belong_to_sky() -> void:
 	for level in _levels:
-		assert_eq(level["mechanic"], "balloon_pop")
 		assert_eq(level["world"], "sky")
 
 

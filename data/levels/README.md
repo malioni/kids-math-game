@@ -31,26 +31,20 @@ Placement levels don't store a fixed puzzle. They store ranges, and
 {
   "id": "world_forest_01",
   "world": "forest",
-  "mechanic": "placement",
   "bridge_length": { "min": 2, "max": 4 },
   "plank_length": { "min": 1, "max": 3 },
   "plank_count": 3,
-  "max_solutions": 2,
-  "narrative_key": "forest_bridge_intro",
-  "skill_tags": ["addition", "number-composition"]
+  "max_solutions": 2
 }
 
 | Field | Type | Description |
 |---|---|---|
 | `id` | String | Unique identifier; matches filename without `.json` |
 | `world` | String | World slug (e.g. `"forest"`) |
-| `mechanic` | String | Mechanic type (e.g. `"placement"`) |
 | `bridge_length.min/max` | int | Inclusive range for the generated bridge length |
 | `plank_length.min/max` | int | Inclusive range for every plank, solution and decoys alike |
 | `plank_count` | int | Total planks in the pile (solution + decoys) |
 | `max_solutions` | int | Most distinct plank combinations allowed to fill the bridge; at least 1 is guaranteed |
-| `narrative_key` | String | Key for narrative/localisation lookup |
-| `skill_tags` | Array[String] | Skill areas exercised; used by Progression |
 
 ## Balloon-pop level schema (world_sky)
 
@@ -62,14 +56,11 @@ total − weight.
 {
   "id": "world_sky_10",
   "world": "sky",
-  "mechanic": "balloon_pop",
   "balloon_count": 6,
   "balloon_value": { "min": 3, "max": 9 },
   "pop_count": { "min": 2, "max": 3 },
   "total_max": 36,
-  "max_solutions": 2,
-  "narrative_key": "sky_balloons_10",
-  "skill_tags": ["subtraction", "number-composition"]
+  "max_solutions": 2
 }
 
 | Field | Type | Description |
@@ -89,14 +80,11 @@ child drags that many bags onto the table; the placed total is never shown.
 {
   "id": "world_market_11",
   "world": "market",
-  "mechanic": "market",
   "items": [
     { "item": "tomato", "bag_size": { "min": 2, "max": 4 },  "bag_count": { "min": 2, "max": 3 } },
     { "item": "potato", "bag_size": { "min": 5, "max": 7 },  "bag_count": { "min": 2, "max": 3 } },
     { "item": "carrot", "bag_size": { "min": 8, "max": 10 }, "bag_count": { "min": 2, "max": 3 } }
-  ],
-  "narrative_key": "market_11",
-  "skill_tags": ["multiplication", "equal-groups"]
+  ]
 }
 
 | Field | Type | Description |
@@ -116,15 +104,12 @@ same to everyone else; the fox's amount is never shown.
 {
   "id": "world_picnic_11",
   "world": "picnic",
-  "mechanic": "sharing",
   "plates": { "min": 2, "max": 2 },
   "items": [
     { "item": "strawberry", "share": { "min": 2, "max": 3 } },
     { "item": "apple", "share": { "min": 2, "max": 3 } },
     { "item": "banana", "share": { "min": 2, "max": 3 } }
-  ],
-  "narrative_key": "picnic_11",
-  "skill_tags": ["division", "fair-sharing"]
+  ]
 }
 
 | Field | Type | Description |

@@ -1,13 +1,12 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/ui/level_hud.tscn")
-const _SAVE_PATH := "user://save.cfg"
 
 var hud: LevelHud
 
 
 func before_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	hud = SCENE.instantiate()
 	add_child(hud)
 	hud.show_level("forest", 4)
@@ -15,12 +14,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	hud.queue_free()
-	_clear_save()
-
-
-func _clear_save() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
+	SaveFixture.clear()
 
 
 func _level_texts() -> Array:

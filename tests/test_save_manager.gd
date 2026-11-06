@@ -1,16 +1,12 @@
 extends GutTest
 
-const _SAVE_PATH := "user://save.cfg"
-
 
 func before_each() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
+	SaveFixture.clear()
 
 
 func after_each() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
+	SaveFixture.clear()
 
 
 func test_load_progress_returns_1_when_no_save_file() -> void:
@@ -42,18 +38,48 @@ func test_save_progress_does_not_overwrite_with_lower_value() -> void:
 func test_load_progress_returns_default_on_corrupt_file() -> void:
 	var cfg := ConfigFile.new()
 	cfg.set_value("progress", "forest", "not_an_int")
-	cfg.save(_SAVE_PATH)
+	cfg.save(SaveManager.save_path)
+	SaveManager.reload()
 	assert_eq(SaveManager.load_progress("forest"), 1)
 
 
-func test_get_session_count_returns_0_when_no_save_file() -> void:
-	assert_eq(SaveManager.get_session_count(), 0)
+func test_save_progress_replaces_a_corrupt_value() -> void:
+	var cfg := ConfigFile.new()
+	cfg.set_value("progress", "forest", "not_an_int")
+	cfg.save(SaveManager.save_path)
+	SaveManager.reload()
+	SaveManager.save_progress("forest", 3)
+	assert_eq(SaveManager.load_progress("forest"), 3)
 
 
-func test_increment_and_get_session_count() -> void:
-	SaveManager.increment_session_count()
-	SaveManager.increment_session_count()
-	assert_eq(SaveManager.get_session_count(), 2)
+func test_every_kind_of_save_is_still_there_after_a_restart() -> void:
+	SaveManager.save_progress("forest:easy", 3)
+	SaveManager.save_last_world("sky")
+	SaveManager.save_difficulty("hard")
+	SaveManager.save_play_mode("shuffle")
+	SaveManager.reload()
+	assert_eq(SaveManager.load_progress("forest:easy"), 3)
+	assert_eq(SaveManager.load_last_world(), "sky")
+	assert_eq(SaveManager.load_difficulty(), "hard")
+	assert_eq(SaveManager.load_play_mode(), "shuffle")
+
+
+func test_set_and_reset_progress_are_still_there_after_a_restart() -> void:
+	SaveManager.set_progress("forest:easy", 5)
+	SaveManager.set_progress("sky:easy", 5)
+	SaveManager.reset_progress("sky:easy")
+	SaveManager.reload()
+	assert_eq(SaveManager.load_progress("forest:easy"), 5)
+	assert_eq(SaveManager.load_progress("sky:easy"), 1)
+
+
+func test_reload_of_an_unreadable_file_starts_empty() -> void:
+	SaveManager.save_progress("forest", 3)
+	var file := FileAccess.open(SaveManager.save_path, FileAccess.WRITE)
+	file.store_string("this is not [a config file")
+	file.close()
+	SaveManager.reload()
+	assert_eq(SaveManager.load_progress("forest"), 1)
 
 
 func test_save_progress_preserves_other_worlds() -> void:
@@ -123,8 +149,10 @@ func test_save_manager_migrate_progress_low_level_moves_to_easy() -> void:
 	assert_eq(SaveManager.load_progress("forest:easy"), 7)
 	assert_eq(SaveManager.load_progress("forest:hard"), 1)
 	var cfg := ConfigFile.new()
-	cfg.load(_SAVE_PATH)
+	cfg.load(SaveManager.save_path)
 	assert_false(cfg.has_section_key("progress", "forest"))
+	SaveManager.reload()
+	assert_eq(SaveManager.load_progress("forest:easy"), 7, "the move was written to the file")
 
 
 func test_save_manager_migrate_progress_high_level_moves_to_hard() -> void:

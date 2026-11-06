@@ -20,23 +20,15 @@ func test_world_forest_all_levels_have_required_fields() -> void:
 	var required: Array[String] = [
 		"id",
 		"world",
-		"mechanic",
 		"bridge_length",
 		"plank_length",
 		"plank_count",
 		"max_solutions",
-		"narrative_key",
-		"skill_tags",
 	]
 	for level in _levels:
 		for field in required:
 			var msg := "Missing field '%s' in level '%s'" % [field, level.get("id", "?")]
 			assert_true(level.has(field), msg)
-
-
-func test_world_forest_all_levels_use_placement_mechanic() -> void:
-	for level in _levels:
-		assert_eq(level.get("mechanic"), "placement")
 
 
 func test_world_forest_all_ranges_have_min_le_max() -> void:
@@ -58,12 +50,6 @@ func test_world_forest_level_10_bridge_length_around_30() -> void:
 func test_world_forest_level_20_bridge_length_around_50() -> void:
 	assert_gte(_levels[19]["bridge_length"]["min"], 45)
 	assert_lte(_levels[19]["bridge_length"]["max"], 55)
-
-
-func test_world_forest_only_last_level_uses_final_narrative_key() -> void:
-	for i in _levels.size():
-		var is_final: bool = _levels[i]["narrative_key"] == "forest_bridge_final"
-		assert_eq(is_final, i == _levels.size() - 1, "level %d" % (i + 1))
 
 
 func test_world_forest_bridge_length_min_never_decreases_between_levels() -> void:
