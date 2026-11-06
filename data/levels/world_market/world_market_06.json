@@ -1,11 +1,8 @@
 {
   "id": "world_market_06",
   "world": "market",
-  "mechanic": "market",
   "items": [
     { "item": "tomato", "bag_size": { "min": 2, "max": 4 }, "bag_count": { "min": 2, "max": 3 } },
     { "item": "potato", "bag_size": { "min": 5, "max": 7 }, "bag_count": { "min": 2, "max": 3 } }
-  ],
-  "narrative_key": "market_06",
-  "skill_tags": ["multiplication", "equal-groups"]
+  ]
 }

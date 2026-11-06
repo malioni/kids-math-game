@@ -17,18 +17,12 @@ func before_each() -> void:
 	_write_file(FIXTURE_LEVEL_A, JSON.stringify({
 		"id": "world_fixture_world_01",
 		"world": "fixture_world",
-		"mechanic": "placement",
-		"target_count": 1,
-		"narrative_key": "test_key_a",
-		"skill_tags": ["counting"]
+		"target_count": 1
 	}))
 	_write_file(FIXTURE_LEVEL_B, JSON.stringify({
 		"id": "world_fixture_world_02",
 		"world": "fixture_world",
-		"mechanic": "placement",
-		"target_count": 2,
-		"narrative_key": "test_key_b",
-		"skill_tags": ["counting"]
+		"target_count": 2
 	}))
 
 

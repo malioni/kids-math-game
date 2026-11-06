@@ -1,7 +1,7 @@
 extends GutTest
 
 const REQUIRED_FIELDS := [
-	"id", "world", "mechanic", "plates", "items", "narrative_key", "skill_tags"
+	"id", "world", "plates", "items"
 ]
 
 var _levels: Array[Dictionary]
@@ -31,9 +31,8 @@ func test_world_picnic_all_levels_have_required_fields() -> void:
 			assert_true(level.has(field), "%s missing %s" % [level.get("id", "?"), field])
 
 
-func test_world_picnic_all_levels_use_sharing_mechanic() -> void:
+func test_world_picnic_all_levels_belong_to_picnic() -> void:
 	for level in _levels:
-		assert_eq(level["mechanic"], "sharing")
 		assert_eq(level["world"], "picnic")
 
 
