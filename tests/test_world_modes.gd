@@ -12,10 +12,10 @@ var _real_scene_changer: Callable
 
 func before_each() -> void:
 	_clear_save()
-	_scene_changes = []
-	_real_scene_changer = Transition.scene_changer
 	GameRegistry.change_scenes = false
 	GameRegistry.last_world_request = ""
+	_scene_changes = []
+	_real_scene_changer = Transition.scene_changer
 
 
 func after_each() -> void:
