@@ -1,17 +1,13 @@
 class_name SharingMechanic
-extends Node2D
+extends Mechanic
 
 ## A picnic. Each fruit has a basket showing only how many it holds; friends sit at plates along
 ## the top. The player drags or taps fruit from the baskets onto the fox's plate (one row per
 ## fruit), taps a placed fruit to put it back, and presses Go. The basket then deals the fox's
 ## amount to every friend in turn. Too much and the last friends come up short; too little and
 ## fruit is left in the basket. How much the fox took is never shown, so the player has to work
-## out total ÷ plates themselves.
-
-## Emitted after the deal when every plate got the same of every fruit and the baskets are empty.
-signal correct
-## Emitted after the deal when any friend came up short or any basket has fruit left.
-signal incorrect
+## out total ÷ plates themselves. After the deal, correct is emitted if every plate got the same of
+## every fruit and the baskets are empty, or incorrect otherwise.
 
 ## Scene instantiated for each piece of fruit.
 const FRUIT_SCENE := preload("res://scenes/mechanics/fruit_drag.tscn")

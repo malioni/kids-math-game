@@ -12,7 +12,8 @@ const MENU_SCENE := "res://scenes/ui/main_menu.tscn"
 
 ## Every world in play order. "id" matches the world's level folder (data/levels/world_<id>/)
 ## and its save key; "icon" is shown on the world's card in the menu, the level picker and the
-## world-complete screen, and on the level badge.
+## world-complete screen, and on the level badge. Every world needs levels for all of every
+## difficulty's range in data/levels/difficulty.json.
 const WORLDS: Array[Dictionary] = [
 	{
 		"id": "forest",
@@ -46,7 +47,6 @@ var last_world_request: String = ""
 var last_scene_request: String = ""
 
 var _requested_levels := {}
-var _level_counts := {}
 var _rng := RandomNumberGenerator.new()
 
 
@@ -70,13 +70,6 @@ func get_world(world_id: String) -> Dictionary:
 		if world["id"] == world_id:
 			return world
 	return {}
-
-
-## Returns how many levels the given world has (0 for an unknown world).
-func get_level_count(world_id: String) -> int:
-	if not _level_counts.has(world_id):
-		_level_counts[world_id] = LevelLoader.get_levels_for_world(world_id).size()
-	return _level_counts[world_id]
 
 
 ## Fades to the given world's scene. A level_index of 0 or more starts that level (0-based); -1
@@ -154,13 +147,11 @@ func shuffle_next_index(world_id: String) -> int:
 ## levels at the current difficulty (y), e.g. (1, 40) at the start of a shuffle with four worlds.
 func shuffle_position() -> Vector2i:
 	var level_range: Vector2i = get_level_range()
+	var size: int = level_range.y - level_range.x + 1
+	var total: int = size * WORLDS.size()
 	var played: int = 0
-	var total: int = 0
 	for world in WORLDS:
-		var last: int = mini(level_range.y, get_level_count(world["id"]) - 1)
-		var size: int = maxi(last - level_range.x + 1, 0)
-		total += size
-		played += clampi(shuffle_next_index(world["id"]) - level_range.x, 0, size)
+		played += mini(shuffle_next_index(world["id"]) - level_range.x, size)
 	return Vector2i(mini(played + 1, total), total)
 
 

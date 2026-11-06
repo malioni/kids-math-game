@@ -1,5 +1,5 @@
 class_name BalloonPopMechanic
-extends Node2D
+extends Mechanic
 
 ## A bunch of numbered balloons lifting a weight. The lift total (sum of unpopped balloons) and
 ## the weight (target) are both shown. Popping a balloon lowers the lift: landing exactly on the
@@ -9,10 +9,6 @@ extends Node2D
 ## Local origin is where the ropes meet the load (e.g. a basket's rim). Balloon strings meet at
 ## knot_position, where the lift total is shown.
 
-## Emitted when popping a balloon makes the lift equal the weight.
-signal correct
-## Emitted when popping a balloon makes the lift less than the weight.
-signal incorrect
 ## Emitted on every pop and on reset, with the new lift total.
 signal total_changed(new_total: int)
 
