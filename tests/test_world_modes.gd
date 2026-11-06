@@ -3,28 +3,22 @@ extends GutTest
 ## Easy/hard difficulty and shuffle mode, played through the forest world.
 
 const SCENE := preload("res://scenes/worlds/forest_bridge/forest_bridge.tscn")
-const _SAVE_PATH := "user://save.cfg"
 const _SETTLE := 0.3
 
 
 func before_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	GameRegistry.change_scenes = false
 	GameRegistry.last_world_request = ""
 
 
 func after_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	Transition.enabled = false
 	Transition.half_duration = 0.15
 	GameRegistry.change_scenes = true
 	GameRegistry.last_world_request = ""
 	GameRegistry.last_scene_request = ""
-
-
-func _clear_save() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
 
 
 func _make_world() -> Node2D:

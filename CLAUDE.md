@@ -43,7 +43,7 @@ data/levels/          — Level definitions as JSON/Resource files only
 - Mechanics communicate via signals only — no direct scene-to-scene references
 - No mechanic knows about a specific world
 - No world reimplements a mechanic — it composes from the mechanic library
-- `scripts/autoloads/` manages global state (progression, session, registry)
+- `scripts/autoloads/` manages global state (save, registry, transitions)
 
 ## Project Structure
 
@@ -54,7 +54,7 @@ scenes/
   ui/            — HUD, menus, transitions
 scripts/
   mechanics/     — Mechanic GDScript logic
-  systems/       — Core systems (progression, audio, save)
+  systems/       — Core systems (level loading, shuffle)
   autoloads/     — Global singletons
   worlds/        — World flow scripts (all extend WorldBase)
   ui/            — HUD and boot scripts

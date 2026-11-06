@@ -110,14 +110,6 @@ func take_requested_level(world_id: String) -> int:
 	return index
 
 
-## Opens the world played last, or the first world if none is saved.
-func start_last_world() -> void:
-	var world_id: String = SaveManager.load_last_world()
-	if get_world(world_id).is_empty():
-		world_id = WORLDS[0]["id"]
-	go_to_world(world_id)
-
-
 ## Returns the game-wide difficulty, "easy" or "hard".
 func get_difficulty() -> String:
 	return SaveManager.load_difficulty()

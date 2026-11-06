@@ -1,7 +1,6 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/worlds/sky_balloons/sky_balloons.tscn")
-const _SAVE_PATH := "user://save.cfg"
 const _SEED := 1234
 const _SETTLE := 0.3
 
@@ -12,7 +11,7 @@ var _hud: LevelHud
 
 
 func before_each() -> void:
-	_clear_save()
+	SaveFixture.clear()
 	_world = _make_world()
 	add_child(_world)
 	_mechanic = _world.get_node("Rig/BalloonPopMechanic")
@@ -22,12 +21,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	_world.queue_free()
-	_clear_save()
-
-
-func _clear_save() -> void:
-	if FileAccess.file_exists(_SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(_SAVE_PATH))
+	SaveFixture.clear()
 
 
 func _make_world() -> Node2D:
