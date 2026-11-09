@@ -118,8 +118,8 @@ A headless tool, run like the other `tools/make_*` scripts, that synthesises eve
   the forest river and the sky wind, a soft murmur for the market, simple chirps for the picnic, and a calm
   slow tone for the menu.
 
-The same tool draws the four toggle icons (music on/off, effects on/off) in the style of
-`make_mode_icons.gd`, into `assets/sprites/ui/`.
+The four toggle icons (music on/off, effects on/off) are added to `tools/make_mode_icons.gd`, which
+already draws the picker's other mode icons and has the drawing helpers, into `assets/sprites/ui/`.
 
 ## Error handling
 
