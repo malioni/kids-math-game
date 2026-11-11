@@ -167,3 +167,29 @@ func test_save_manager_migrate_progress_leaves_new_keys_alone() -> void:
 	SaveManager.set_progress("forest", 9)
 	SaveManager.migrate_progress(["forest"])
 	assert_eq(SaveManager.load_progress("forest:easy"), 4)
+
+
+func test_save_manager_sound_settings_default_to_on() -> void:
+	assert_true(SaveManager.load_music_enabled())
+	assert_true(SaveManager.load_effects_enabled())
+
+
+func test_save_manager_sound_settings_survive_a_restart() -> void:
+	SaveManager.save_music_enabled(false)
+	SaveManager.save_effects_enabled(false)
+	SaveManager.reload()
+	assert_false(SaveManager.load_music_enabled())
+	assert_false(SaveManager.load_effects_enabled())
+
+
+func test_save_manager_sound_settings_are_separate() -> void:
+	SaveManager.save_music_enabled(false)
+	assert_true(SaveManager.load_effects_enabled())
+
+
+func test_save_manager_invalid_sound_setting_loads_as_on() -> void:
+	var cfg := ConfigFile.new()
+	cfg.set_value("meta", "music_enabled", "no")
+	cfg.save(SaveManager.save_path)
+	SaveManager.reload()
+	assert_true(SaveManager.load_music_enabled())

@@ -5,6 +5,7 @@ extends Control
 ## The carousel opens on the last world played. Play, or tapping the centred card, opens the centred
 ## world at its saved level and leaves shuffle; tapping a card beside it only slides it to the
 ## centre. Shuffle starts or continues a shuffle. No text anywhere.
+## Its background loop and button taps play through AudioManager.
 
 @onready var _carousel: WorldCarousel = $PlayArea/WorldCarousel
 @onready var _play_button: TextureButton = $PlayArea/PlayButton
@@ -21,6 +22,12 @@ func _ready() -> void:
 	_play_button.pressed.connect(_open_centred_world)
 	_shuffle_button.pressed.connect(GameRegistry.start_shuffle)
 	$PlayArea/Fox.play("idle")
+	AudioManager.play_music(AudioManager.MENU_MUSIC)
+	_play_button.pressed.connect(_play_tap)
+	_shuffle_button.pressed.connect(_play_tap)
+	_carousel.card_pressed.connect(_play_tap.unbind(2))
+	for arrow in _carousel.get_arrow_buttons():
+		arrow.pressed.connect(_play_tap)
 
 
 ## Returns the world carousel.
@@ -46,3 +53,7 @@ func _on_card_pressed(_world_id: String, was_centred: bool) -> void:
 func _open_centred_world() -> void:
 	GameRegistry.set_shuffle(false)
 	GameRegistry.go_to_world(_carousel.get_centred_id())
+
+
+func _play_tap() -> void:
+	AudioManager.play_sfx("tap")

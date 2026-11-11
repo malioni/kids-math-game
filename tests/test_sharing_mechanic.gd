@@ -328,3 +328,40 @@ func test_sharing_mechanic_go_button_confirms() -> void:
 	_mechanic.get_node("GoButton").pressed.emit()
 	await wait_seconds(SETTLE)
 	assert_signal_emitted(_mechanic, "correct")
+
+
+func _six_strawberries_for_two() -> void:
+	var orders: Array[Dictionary] = [{"item": "strawberry", "total": 6}]
+	_mechanic.setup(2, orders)
+
+
+func test_sharing_mechanic_placing_and_taking_back_fruit_emit_piece_signals() -> void:
+	_six_strawberries_for_two()
+	watch_signals(_mechanic)
+	_mechanic.get_ready_piece("strawberry").dropped.emit(ON_PLATE)
+	_mechanic.get_ready_piece("strawberry").tapped.emit()
+	assert_signal_emit_count(_mechanic, "piece_placed", 2)
+	_mechanic.get_placed_pieces("strawberry")[0].tapped.emit()
+	assert_signal_emit_count(_mechanic, "piece_removed", 1)
+
+
+# Review focus: a rejected move makes no sound.
+func test_sharing_mechanic_rejected_moves_emit_no_piece_signals() -> void:
+	_six_strawberries_for_two()
+	for i in 6:
+		_mechanic.get_ready_piece("strawberry").tapped.emit()
+	watch_signals(_mechanic)
+	_mechanic.get_ready_piece("strawberry").tapped.emit()
+	_mechanic.get_ready_piece("strawberry").dropped.emit(ON_PLATE + Vector2(0, -600))
+	assert_signal_not_emitted(_mechanic, "piece_placed")
+	assert_signal_not_emitted(_mechanic, "piece_removed")
+
+
+func test_sharing_mechanic_setup_and_reset_emit_no_piece_signals() -> void:
+	_six_strawberries_for_two()
+	_mechanic.get_ready_piece("strawberry").tapped.emit()
+	watch_signals(_mechanic)
+	_mechanic.reset()
+	_six_strawberries_for_two()
+	assert_signal_not_emitted(_mechanic, "piece_placed")
+	assert_signal_not_emitted(_mechanic, "piece_removed")

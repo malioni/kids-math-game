@@ -60,7 +60,7 @@ scripts/
   ui/            — HUD and boot scripts
 assets/
   sprites/
-  audio/
+  audio/         — Sounds, played by name through AudioManager (see README there)
   fonts/
 data/
   levels/        — Level definitions (JSON or Godot .tres resources)
@@ -100,3 +100,4 @@ Test files extend `GutTest` and use GUT assertions (`assert_eq`, `assert_signal_
 4. Write the world script in `scripts/worlds/` extending `WorldBase` (level flow, win and lose flow, retry, save, HUD); override `_world_id()`, `_get_mechanic()` and `_setup_level()`, and add the world's animations with `_play_win()`, `_play_lose()` and `_restore_stage()`
 5. Instance `scenes/ui/level_hud.tscn` as a `LevelHud` child of the world scene, and add the nodes `WorldBase` needs: `Character`, `CelebrationParticles` and `RetryPrompt/RetryIcon`
 6. Compose existing mechanics from `scenes/mechanics/` — never duplicate mechanic logic
+7. Add `assets/audio/<world_name>/ambience.wav`, `place.wav` and `remove.wav` (placeholders: add the world to `PLACE_HZ` and an ambience in `tools/make_audio_placeholders.gd`); a test fails without them

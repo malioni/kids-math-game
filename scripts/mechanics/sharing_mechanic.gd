@@ -332,6 +332,7 @@ func _place(piece: FruitDrag) -> bool:
 	piece.reparent(_placed_fruit)
 	_relayout_row(row)
 	_spawn_ready_piece(row)
+	piece_placed.emit()
 	return true
 
 
@@ -342,6 +343,7 @@ func _remove(piece: FruitDrag) -> void:
 	piece.move_to(_basket_position(row))
 	get_tree().create_timer(DragPiece.MOVE_DURATION).timeout.connect(piece.queue_free)
 	_relayout_row(row)
+	piece_removed.emit()
 
 
 func _relayout_row(row: int) -> void:

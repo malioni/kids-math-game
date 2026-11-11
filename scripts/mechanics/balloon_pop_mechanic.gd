@@ -84,6 +84,7 @@ func pop(balloon: Balloon) -> void:
 		return
 	balloon.pop()
 	_update_lift()
+	piece_removed.emit()
 	var lift: int = get_lift_total()
 	if lift == _target:
 		correct.emit()

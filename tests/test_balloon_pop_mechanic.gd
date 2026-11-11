@@ -125,3 +125,26 @@ func test_balloon_pop_mechanic_8_balloons_fit_on_screen() -> void:
 	mechanic.setup(30, values)
 	for balloon: Balloon in mechanic.get_balloons():
 		assert_lt(absf(balloon.position.x) + balloon.radius, 600.0)
+
+
+func test_balloon_pop_mechanic_pop_emits_piece_removed_once() -> void:
+	watch_signals(mechanic)
+	var balloon: Balloon = _balloon(3)
+	mechanic.pop(balloon)
+	mechanic.pop(balloon)
+	assert_signal_emit_count(mechanic, "piece_removed", 1)
+	assert_signal_not_emitted(mechanic, "piece_placed")
+
+
+func test_balloon_pop_mechanic_pop_while_not_interactive_emits_nothing() -> void:
+	mechanic.set_interactive(false)
+	watch_signals(mechanic)
+	mechanic.pop(_balloon(3))
+	assert_signal_not_emitted(mechanic, "piece_removed")
+
+
+func test_balloon_pop_mechanic_reset_emits_no_piece_signals() -> void:
+	mechanic.pop(_balloon(3))
+	watch_signals(mechanic)
+	mechanic.reset()
+	assert_signal_not_emitted(mechanic, "piece_removed")

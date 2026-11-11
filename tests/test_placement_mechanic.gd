@@ -250,3 +250,33 @@ func test_placement_mechanic_dropping_a_plank_on_the_go_button_does_not_press_it
 	assert_signal_not_emitted(mechanic, "correct")
 	assert_signal_not_emitted(mechanic, "incorrect")
 
+
+
+func test_placement_mechanic_placing_and_taking_back_a_plank_emit_piece_signals() -> void:
+	watch_signals(mechanic)
+	var plank: PlankDrag = _plank(3)
+	_drop_on_gap(plank)
+	assert_signal_emit_count(mechanic, "piece_placed", 1)
+	assert_signal_not_emitted(mechanic, "piece_removed")
+	plank.tapped.emit()
+	assert_signal_emit_count(mechanic, "piece_removed", 1)
+
+
+# Review focus: a rejected move makes no sound.
+func test_placement_mechanic_rejected_moves_emit_no_piece_signals() -> void:
+	_drop_on_gap(_plank(3))
+	watch_signals(mechanic)
+	_drop_on_gap(_plank(9))
+	_plank(4).dropped.emit(mechanic.to_global(Vector2(0, 400)))
+	_plank(6).tapped.emit()
+	assert_signal_not_emitted(mechanic, "piece_placed")
+	assert_signal_not_emitted(mechanic, "piece_removed")
+
+
+func test_placement_mechanic_setup_and_reset_emit_no_piece_signals() -> void:
+	_drop_on_gap(_plank(3))
+	watch_signals(mechanic)
+	mechanic.reset()
+	mechanic.setup(TARGET, LENGTHS)
+	assert_signal_not_emitted(mechanic, "piece_placed")
+	assert_signal_not_emitted(mechanic, "piece_removed")

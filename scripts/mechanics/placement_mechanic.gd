@@ -133,6 +133,7 @@ func _on_plank_dropped(release_position: Vector2, plank: PlankDrag) -> void:
 	plank.reparent(_placed_planks)
 	_relayout_placed()
 	total_changed.emit(get_placed_total())
+	piece_placed.emit()
 
 
 func _on_plank_tapped(plank: PlankDrag) -> void:
@@ -143,6 +144,7 @@ func _on_plank_tapped(plank: PlankDrag) -> void:
 	plank.move_to(plank.home)
 	_relayout_placed()
 	total_changed.emit(get_placed_total())
+	piece_removed.emit()
 
 
 func _relayout_placed() -> void:

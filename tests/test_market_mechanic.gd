@@ -267,3 +267,35 @@ func test_market_mechanic_has_no_running_total_label() -> void:
 	_place("tomato", 5)
 	await wait_seconds(SETTLE)
 	assert_false(_label_texts(_mechanic).has("15"), "placed total 15 must not be shown")
+
+
+func test_market_mechanic_placing_and_taking_back_a_bag_emit_piece_signals() -> void:
+	_one_tomato_order()
+	watch_signals(_mechanic)
+	_mechanic.get_ready_bag("tomato").dropped.emit(_mechanic.global_position)
+	_mechanic.get_ready_bag("tomato").tapped.emit()
+	assert_signal_emit_count(_mechanic, "piece_placed", 2)
+	_mechanic.get_placed_bags("tomato")[0].tapped.emit()
+	assert_signal_emit_count(_mechanic, "piece_removed", 1)
+
+
+# Review focus: a rejected move makes no sound.
+func test_market_mechanic_rejected_moves_emit_no_piece_signals() -> void:
+	_one_tomato_order()
+	for i in _mechanic.max_bags_per_row:
+		_mechanic.get_ready_bag("tomato").tapped.emit()
+	watch_signals(_mechanic)
+	_mechanic.get_ready_bag("tomato").tapped.emit()
+	_mechanic.get_ready_bag("tomato").dropped.emit(_mechanic.to_global(Vector2(0, 600)))
+	assert_signal_not_emitted(_mechanic, "piece_placed")
+	assert_signal_not_emitted(_mechanic, "piece_removed")
+
+
+func test_market_mechanic_setup_and_reset_emit_no_piece_signals() -> void:
+	_one_tomato_order()
+	_mechanic.get_ready_bag("tomato").tapped.emit()
+	watch_signals(_mechanic)
+	_mechanic.reset()
+	_one_tomato_order()
+	assert_signal_not_emitted(_mechanic, "piece_placed")
+	assert_signal_not_emitted(_mechanic, "piece_removed")
