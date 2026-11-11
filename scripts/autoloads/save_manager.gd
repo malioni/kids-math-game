@@ -8,6 +8,8 @@ const _SECTION_META := "meta"
 const _KEY_LAST_WORLD := "last_world"
 const _KEY_DIFFICULTY := "difficulty"
 const _KEY_PLAY_MODE := "play_mode"
+const _KEY_MUSIC := "music_enabled"
+const _KEY_EFFECTS := "effects_enabled"
 const _DIFFICULTIES: Array[String] = ["easy", "hard"]
 const _PLAY_MODES: Array[String] = ["worlds", "shuffle"]
 
@@ -96,6 +98,26 @@ func load_play_mode() -> String:
 	return value if value is String and value in _PLAY_MODES else "worlds"
 
 
+## Saves whether background sound is on.
+func save_music_enabled(enabled: bool) -> void:
+	_write(_SECTION_META, _KEY_MUSIC, enabled)
+
+
+## Returns whether background sound is on: true unless it was saved off.
+func load_music_enabled() -> bool:
+	return _load_flag(_KEY_MUSIC)
+
+
+## Saves whether sound effects are on.
+func save_effects_enabled(enabled: bool) -> void:
+	_write(_SECTION_META, _KEY_EFFECTS, enabled)
+
+
+## Returns whether sound effects are on: true unless they were saved off.
+func load_effects_enabled() -> bool:
+	return _load_flag(_KEY_EFFECTS)
+
+
 ## Moves progress saved before difficulties existed (one level per world) to the per-difficulty
 ## keys: a level within the easy range becomes easy progress; a higher one becomes hard progress,
 ## with easy back at 1. Worlds that already have per-difficulty progress are left alone.
@@ -123,3 +145,8 @@ func migrate_progress(worlds: Array) -> void:
 func _write(section: String, key: String, value: Variant) -> void:
 	_cfg.set_value(section, key, value)
 	_cfg.save(save_path)
+
+
+func _load_flag(key: String) -> bool:
+	var value: Variant = _cfg.get_value(_SECTION_META, key, true)
+	return value if value is bool else true
