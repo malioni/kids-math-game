@@ -101,14 +101,17 @@ func test_audio_manager_quick_music_switches_end_on_the_last_loop() -> void:
 	await wait_seconds(0.8)
 	assert_eq(AudioManager.current_music(), AudioManager.MENU_MUSIC)
 	var menu_stream: AudioStream = AudioManager._stream(AudioManager.MENU_MUSIC)
+	var menu_players: int = 0
 	for player: AudioStreamPlayer in AudioManager._music_players:
 		if player.stream == menu_stream and player.playing:
+			menu_players += 1
 			assert_almost_eq(player.volume_db, AudioManager._MUSIC_DB, 0.5)
 		else:
 			assert_true(
 				not player.playing or player.volume_db <= AudioManager._SILENT_DB + 0.5,
 				"the other loop is silent"
 			)
+	assert_eq(menu_players, 1, "exactly one player plays the menu loop")
 
 
 func test_audio_manager_music_toggle_mutes_its_bus_and_is_saved() -> void:

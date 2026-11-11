@@ -76,3 +76,10 @@ func test_world_audio_star_screen_plays_complete() -> void:
 	watch_signals(AudioManager)
 	world._advance()
 	assert_has(_sfx_played(), "complete")
+
+
+func test_world_audio_retry_icon_plays_tap() -> void:
+	var world: WorldBase = _make_world(FOREST)
+	watch_signals(AudioManager)
+	world.get_node("RetryPrompt/RetryIcon").pressed.emit()
+	assert_has(_sfx_played(), "tap")

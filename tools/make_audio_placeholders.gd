@@ -223,7 +223,7 @@ func _pad() -> PackedFloat32Array:
 		var t: float = float(i) / RATE
 		var wobble: float = 0.8 + 0.2 * sin(TAU * t * 0.25)
 		samples[i] = (
-			(sin(TAU * 130.81 * t) + 0.7 * sin(TAU * 196.0 * t) + 0.5 * sin(TAU * 261.63 * t))
+			(sin(TAU * 130.75 * t) + 0.7 * sin(TAU * 196.0 * t) + 0.5 * sin(TAU * 261.63 * t))
 			* wobble
 		)
 	return _normalize(samples, 0.3)

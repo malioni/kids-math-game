@@ -344,3 +344,12 @@ func test_level_hud_sound_buttons_meet_minimum_tap_size() -> void:
 	for button in hud.get_sound_buttons():
 		assert_gte(button.size.y, 100.0)
 		assert_gte(button.size.x, 100.0)
+
+
+func test_level_hud_carousel_arrows_play_tap() -> void:
+	hud.show_world_complete()
+	for carousel in [_picker_carousel(), hud.get_choice_carousel()]:
+		for arrow in ["PrevButton", "NextButton"]:
+			watch_signals(AudioManager)
+			carousel.get_node(arrow).pressed.emit()
+			assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])

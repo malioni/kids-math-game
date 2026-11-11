@@ -26,6 +26,8 @@ func _ready() -> void:
 	_play_button.pressed.connect(_play_tap)
 	_shuffle_button.pressed.connect(_play_tap)
 	_carousel.card_pressed.connect(_play_tap.unbind(2))
+	for arrow in _carousel.get_arrow_buttons():
+		arrow.pressed.connect(_play_tap)
 
 
 ## Returns the world carousel.

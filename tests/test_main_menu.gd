@@ -153,3 +153,12 @@ func test_main_menu_card_tap_plays_tap() -> void:
 	watch_signals(AudioManager)
 	menu.get_carousel().card_pressed.emit("sky", false)
 	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
+
+
+func test_main_menu_carousel_arrows_play_tap() -> void:
+	var menu: MainMenu = _make_menu()
+	watch_signals(AudioManager)
+	menu.get_carousel().get_node("PrevButton").pressed.emit()
+	menu.get_carousel().get_node("NextButton").pressed.emit()
+	assert_signal_emit_count(AudioManager, "sfx_played", 2)
+	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])

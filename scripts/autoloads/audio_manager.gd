@@ -49,6 +49,16 @@ func _ready() -> void:
 	apply_saved_settings()
 
 
+func _exit_tree() -> void:
+	# A loop still playing at exit keeps its stream alive and shows up as a leaked resource. The
+	# audio thread lets go of a stopped sound a moment later, so wait for it.
+	for player in _effect_players + _music_players:
+		player.stop()
+		player.stream = null
+	_streams.clear()
+	OS.delay_msec(150)
+
+
 ## Plays a sound effect by name. Players are taken in turn, so quick sounds overlap rather than cut
 ## each other off. An unknown name stays silent.
 func play_sfx(sound: String) -> void:

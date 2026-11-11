@@ -52,6 +52,7 @@ func _ready() -> void:
 	_get_mechanic().piece_placed.connect(_play_world_sound.bind("place"))
 	_get_mechanic().piece_removed.connect(_play_world_sound.bind("remove"))
 	_retry_prompt.pressed.connect(_on_retry_pressed)
+	_retry_prompt.pressed.connect(_play_tap)
 	_retry_prompt.visible = false
 	_hud.level_chosen.connect(_on_level_chosen)
 	_hud.restart_requested.connect(_on_restart_requested)
@@ -184,6 +185,10 @@ func _show_world_complete() -> void:
 	world_complete.emit()
 	_hud.show_world_complete()
 	AudioManager.play_sfx("complete")
+
+
+func _play_tap() -> void:
+	AudioManager.play_sfx("tap")
 
 
 func _play_world_sound(sound: String) -> void:

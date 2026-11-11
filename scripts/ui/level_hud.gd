@@ -95,6 +95,9 @@ func _ready() -> void:
 		button.pressed.connect(_play_tap)
 	_world_carousel.card_pressed.connect(_play_tap.unbind(2))
 	_choice_carousel.card_pressed.connect(_play_tap.unbind(2))
+	for carousel in [_world_carousel, _choice_carousel]:
+		for arrow in carousel.get_arrow_buttons():
+			arrow.pressed.connect(_play_tap)
 	var items: Array[Dictionary] = _world_items()
 	items.append({"id": _SHUFFLE_PAGE, "icon": _SHUFFLE_ICON})
 	_world_carousel.set_items(items)

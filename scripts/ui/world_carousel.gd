@@ -115,6 +115,11 @@ func get_cards() -> Array[Panel]:
 	return _cards
 
 
+## Returns the previous and next arrow buttons, so a screen can react to their taps.
+func get_arrow_buttons() -> Array[TextureButton]:
+	return [_prev_button, _next_button]
+
+
 ## Returns the card for the given id, or null if there is none.
 func get_card(id: String) -> Panel:
 	var index: int = _index_of(id)
