@@ -22,6 +22,7 @@ GameRegistry="*res://scripts/autoloads/game_registry.gd"
 SaveManager="*res://scripts/autoloads/save_manager.gd"
 LevelLoader="*res://scripts/systems/level_loader.gd"
 Transition="*res://scripts/autoloads/transition.gd"
+AudioManager="*res://scripts/autoloads/audio_manager.gd"
 
 [display]
 
