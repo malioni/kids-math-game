@@ -8,6 +8,11 @@ extends Node2D
 signal correct
 ## Emitted when the player's answer is wrong.
 signal incorrect
+## Emitted when the player puts a piece in place. Never on setup() or reset().
+signal piece_placed
+## Emitted when the player takes a placed piece back out, or pops a balloon. Never on setup() or
+## reset().
+signal piece_removed
 
 
 ## Puts the current puzzle back to its start. Subclasses must override.

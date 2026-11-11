@@ -181,6 +181,7 @@ func _place(bag: BagDrag) -> bool:
 	_relayout_row(row)
 	_spawn_ready_bag(row)
 	bags_changed.emit(bag.item, get_placed_count(bag.item))
+	piece_placed.emit()
 	return true
 
 
@@ -192,6 +193,7 @@ func _remove(bag: BagDrag) -> void:
 	get_tree().create_timer(DragPiece.MOVE_DURATION).timeout.connect(bag.queue_free)
 	_relayout_row(row)
 	bags_changed.emit(bag.item, get_placed_count(bag.item))
+	piece_removed.emit()
 
 
 func _relayout_row(row: int) -> void:
