@@ -14,6 +14,8 @@ func before_each() -> void:
 
 func after_each() -> void:
 	hud.queue_free()
+	AudioManager.set_music_enabled(true)
+	AudioManager.set_effects_enabled(true)
 	SaveFixture.clear()
 
 
@@ -291,3 +293,54 @@ func test_level_hud_buttons_meet_minimum_tap_size() -> void:
 	_assert_tap_size(hud.get_node("Root/Complete/Choices/RestartButton"))
 	for card in hud.get_choice_carousel().get_cards():
 		_assert_tap_size(card)
+
+
+func test_level_hud_badge_tap_plays_tap() -> void:
+	watch_signals(AudioManager)
+	hud.get_node("Root/LevelBadge").pressed.emit()
+	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
+
+
+func test_level_hud_level_button_plays_tap() -> void:
+	hud.open_picker()
+	watch_signals(AudioManager)
+	hud.get_level_buttons()[0].pressed.emit()
+	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
+
+
+func test_level_hud_music_button_toggles_and_shows_it() -> void:
+	hud.open_picker()
+	var music: Button = hud.get_sound_buttons()[0]
+	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_on.png")
+	music.pressed.emit()
+	assert_false(AudioManager.is_music_enabled())
+	assert_true(AudioManager.is_effects_enabled())
+	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_off.png")
+	assert_true(hud.is_picker_open(), "a sound toggle keeps the picker open")
+	music.pressed.emit()
+	assert_true(AudioManager.is_music_enabled())
+
+
+func test_level_hud_effects_button_toggles_and_shows_it() -> void:
+	hud.open_picker()
+	var effects: Button = hud.get_sound_buttons()[1]
+	effects.pressed.emit()
+	assert_false(AudioManager.is_effects_enabled())
+	assert_true(AudioManager.is_music_enabled())
+	assert_eq(effects.icon.resource_path, "res://assets/sprites/ui/icon_effects_off.png")
+
+
+func test_level_hud_sound_buttons_show_saved_settings_when_opened() -> void:
+	AudioManager.set_music_enabled(false)
+	hud.open_picker()
+	assert_eq(
+		hud.get_sound_buttons()[0].icon.resource_path, "res://assets/sprites/ui/icon_music_off.png"
+	)
+
+
+func test_level_hud_sound_buttons_meet_minimum_tap_size() -> void:
+	hud.open_picker()
+	await wait_process_frames(1)
+	for button in hud.get_sound_buttons():
+		assert_gte(button.size.y, 100.0)
+		assert_gte(button.size.x, 100.0)

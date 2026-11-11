@@ -131,3 +131,25 @@ func test_main_menu_buttons_meet_minimum_tap_size() -> void:
 	for card in menu.get_carousel().get_cards():
 		_assert_tap_size(card)
 	_assert_tap_size(menu.get_carousel().get_node("NextButton"))
+
+
+func test_main_menu_plays_the_menu_loop() -> void:
+	AudioManager.play_music("forest/ambience")
+	_make_menu()
+	assert_eq(AudioManager.current_music(), AudioManager.MENU_MUSIC)
+
+
+func test_main_menu_buttons_play_tap() -> void:
+	var menu: MainMenu = _make_menu()
+	watch_signals(AudioManager)
+	menu.get_shuffle_button().pressed.emit()
+	menu.get_play_button().pressed.emit()
+	assert_signal_emit_count(AudioManager, "sfx_played", 2)
+	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
+
+
+func test_main_menu_card_tap_plays_tap() -> void:
+	var menu: MainMenu = _make_menu()
+	watch_signals(AudioManager)
+	menu.get_carousel().card_pressed.emit("sky", false)
+	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])

@@ -6,9 +6,11 @@ extends CanvasLayer
 ## The badge in the top-left shows the world and the current level number (with a shuffle icon in
 ## shuffle mode); tapping it opens a picker with a strip of world cards plus a shuffle card
 ## (continue the shuffle, or start it over), a button per level of the current difficulty,
-## Easy/Hard buttons and a home button. After the last level, show_world_complete() offers a
-## restart, home, and a strip of the other worlds' cards. The HUD only emits signals; the world
-## decides what loading a level means.
+## Easy/Hard buttons and a home button.
+## The picker also has background sound and effects toggles, which talk to AudioManager directly
+## since they don't affect the world; every tap in the HUD plays AudioManager's tap sound.
+## After the last level, show_world_complete() offers a restart, home, and a strip of the other
+## worlds' cards. The HUD only emits signals; the world decides what loading a level means.
 
 ## Emitted when the player picks a level. index is 0-based, or -1 to resume a world from its save.
 signal level_chosen(world_id: String, index: int)
@@ -25,6 +27,10 @@ signal home_requested
 # The picker page id of the shuffle card.
 const _SHUFFLE_PAGE := "shuffle"
 const _SHUFFLE_ICON := preload("res://assets/sprites/ui/icon_shuffle.png")
+const _MUSIC_ON := preload("res://assets/sprites/ui/icon_music_on.png")
+const _MUSIC_OFF := preload("res://assets/sprites/ui/icon_music_off.png")
+const _EFFECTS_ON := preload("res://assets/sprites/ui/icon_effects_on.png")
+const _EFFECTS_OFF := preload("res://assets/sprites/ui/icon_effects_off.png")
 
 const _CREAM := Color(1.0, 0.96, 0.86)
 const _CURRENT := Color(1.0, 0.72, 0.3)
@@ -49,6 +55,8 @@ var _picker_world_id: String = ""
 @onready var _shuffle_icon: TextureRect = $Root/LevelBadge/ShuffleIcon
 @onready var _easy_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/EasyButton
 @onready var _hard_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/HardButton
+@onready var _music_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/MusicButton
+@onready var _effects_button: Button = $Root/Picker/Panel/Margin/VBox/ModeRow/EffectsButton
 @onready var _restart_label: Label = $Root/Complete/Choices/RestartButton/OneLabel
 @onready var _shuffle_page: Control = $Root/Picker/Panel/Margin/VBox/ShufflePage
 @onready var _shuffle_continue: BaseButton = _shuffle_page.get_node("ContinueButton")
@@ -68,6 +76,25 @@ func _ready() -> void:
 	_complete_home.pressed.connect(_on_home_pressed)
 	_world_carousel.card_pressed.connect(_on_picker_card_pressed)
 	_choice_carousel.card_pressed.connect(_on_choice_card_pressed)
+	_music_button.pressed.connect(_on_music_pressed)
+	_effects_button.pressed.connect(_on_effects_pressed)
+	var buttons: Array[BaseButton] = [
+		_badge,
+		$Root/Picker/Panel/Margin/VBox/TopRow/CloseButton,
+		$Root/Complete/Choices/RestartButton,
+		_easy_button,
+		_hard_button,
+		_music_button,
+		_effects_button,
+		_shuffle_continue,
+		_shuffle_restart,
+		_picker_home,
+		_complete_home,
+	]
+	for button in buttons:
+		button.pressed.connect(_play_tap)
+	_world_carousel.card_pressed.connect(_play_tap.unbind(2))
+	_choice_carousel.card_pressed.connect(_play_tap.unbind(2))
 	var items: Array[Dictionary] = _world_items()
 	items.append({"id": _SHUFFLE_PAGE, "icon": _SHUFFLE_ICON})
 	_world_carousel.set_items(items)
@@ -95,6 +122,7 @@ func open_picker() -> void:
 	var difficulty: String = GameRegistry.get_difficulty()
 	_style_button(_easy_button, _CURRENT if difficulty == "easy" else _CREAM, 4)
 	_style_button(_hard_button, _CURRENT if difficulty == "hard" else _CREAM, 4)
+	_update_sound_buttons()
 	_picker.visible = true
 
 
@@ -169,6 +197,11 @@ func get_shuffle_buttons() -> Array[BaseButton]:
 	return [_shuffle_continue, _shuffle_restart]
 
 
+## Returns the sound toggles in the picker: background sound, then effects.
+func get_sound_buttons() -> Array[Button]:
+	return [_music_button, _effects_button]
+
+
 func _show_picker_world(world_id: String) -> void:
 	_picker_world_id = world_id
 	_world_carousel.scroll_to(world_id, false)
@@ -192,6 +225,7 @@ func _show_picker_world(world_id: String) -> void:
 		var current: bool = world_id == _world_id and i == _level_index
 		_style_button(button, _CURRENT if current else _CREAM, 4 if current else 2)
 		button.pressed.connect(_on_level_pressed.bind(i))
+		button.pressed.connect(_play_tap)
 		_grid.add_child(button)
 
 
@@ -203,6 +237,29 @@ func _on_level_pressed(index: int) -> void:
 func _on_difficulty_pressed(difficulty: String) -> void:
 	_picker.visible = false
 	difficulty_chosen.emit(difficulty)
+
+
+func _on_music_pressed() -> void:
+	AudioManager.set_music_enabled(not AudioManager.is_music_enabled())
+	_update_sound_buttons()
+
+
+func _on_effects_pressed() -> void:
+	AudioManager.set_effects_enabled(not AudioManager.is_effects_enabled())
+	_update_sound_buttons()
+
+
+func _update_sound_buttons() -> void:
+	var music_on: bool = AudioManager.is_music_enabled()
+	var effects_on: bool = AudioManager.is_effects_enabled()
+	_music_button.icon = _MUSIC_ON if music_on else _MUSIC_OFF
+	_effects_button.icon = _EFFECTS_ON if effects_on else _EFFECTS_OFF
+	_style_button(_music_button, _CURRENT if music_on else _CREAM, 4)
+	_style_button(_effects_button, _CURRENT if effects_on else _CREAM, 4)
+
+
+func _play_tap() -> void:
+	AudioManager.play_sfx("tap")
 
 
 func _on_shuffle_pressed(from_start: bool) -> void:

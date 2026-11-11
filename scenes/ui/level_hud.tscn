@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.png" id="8_go"]
 [ext_resource type="PackedScene" path="res://scenes/ui/world_carousel.tscn" id="9_carousel"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_home.png" id="10_home"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_music_on.png" id="30_music_on"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_effects_on.png" id="31_effects_on"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
 bg_color = Color(1, 0.96, 0.86, 0.95)
@@ -262,6 +264,20 @@ expand_icon = true
 custom_minimum_size = Vector2(120, 100)
 layout_mode = 2
 icon = ExtResource("7_hard")
+icon_alignment = 1
+expand_icon = true
+
+[node name="MusicButton" type="Button" parent="Root/Picker/Panel/Margin/VBox/ModeRow"]
+custom_minimum_size = Vector2(120, 100)
+layout_mode = 2
+icon = ExtResource("30_music_on")
+icon_alignment = 1
+expand_icon = true
+
+[node name="EffectsButton" type="Button" parent="Root/Picker/Panel/Margin/VBox/ModeRow"]
+custom_minimum_size = Vector2(120, 100)
+layout_mode = 2
+icon = ExtResource("31_effects_on")
 icon_alignment = 1
 expand_icon = true
 
