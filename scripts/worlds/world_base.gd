@@ -12,6 +12,9 @@ extends Node2D
 ## Level changes inside the world fade through Transition (the first level is covered by the
 ## scene's own fade instead). Home in the HUD goes back to the main menu.
 ##
+## Sounds play through AudioManager: the world's ambience on load, its place and remove sounds
+## when the mechanic reports a piece, win and lose on an answer, and complete with the star screen.
+##
 ## A world extends this and overrides _world_id(), _get_mechanic() and _setup_level(), then adds its
 ## own animations with _play_win(), _play_lose() and _restore_stage(). Its scene needs a Character
 ## (or an override of _get_character()), CelebrationParticles, RetryPrompt/RetryIcon and a LevelHud.
@@ -46,6 +49,8 @@ func _ready() -> void:
 		_rng.seed = puzzle_seed
 	_get_mechanic().correct.connect(_on_correct)
 	_get_mechanic().incorrect.connect(_on_incorrect)
+	_get_mechanic().piece_placed.connect(_play_world_sound.bind("place"))
+	_get_mechanic().piece_removed.connect(_play_world_sound.bind("remove"))
 	_retry_prompt.pressed.connect(_on_retry_pressed)
 	_retry_prompt.visible = false
 	_hud.level_chosen.connect(_on_level_chosen)
@@ -54,6 +59,7 @@ func _ready() -> void:
 	_hud.shuffle_requested.connect(_on_shuffle_requested)
 	_hud.home_requested.connect(GameRegistry.go_to_menu)
 	SaveManager.save_last_world(_world_id())
+	AudioManager.play_music("%s/ambience" % _world_id())
 	var start_index: int = GameRegistry.take_requested_level(_world_id())
 	if start_index >= 0:
 		_choose_level(start_index, false)
@@ -115,6 +121,7 @@ func _load_level(index: int) -> void:
 
 func _on_correct() -> void:
 	var load_count: int = _load_count
+	AudioManager.play_sfx("win")
 	_get_mechanic().set_interactive(false)
 	await _play_win()
 	if load_count != _load_count:
@@ -129,6 +136,7 @@ func _on_correct() -> void:
 
 func _on_incorrect() -> void:
 	var load_count: int = _load_count
+	AudioManager.play_sfx("lose")
 	_get_mechanic().set_interactive(false)
 	await _play_lose()
 	if load_count != _load_count:
@@ -155,8 +163,7 @@ func _advance() -> void:
 	var level_range: Vector2i = GameRegistry.get_level_range()
 	if _current_index >= level_range.y:
 		SaveManager.set_progress(_progress_key(), level_range.x + 1)
-		world_complete.emit()
-		_hud.show_world_complete()
+		_show_world_complete()
 	else:
 		SaveManager.save_progress(_progress_key(), _current_index + 2)
 		_go_to_level(_current_index + 1)
@@ -166,12 +173,21 @@ func _advance_shuffle() -> void:
 	SaveManager.set_progress(_progress_key(), _current_index + 2)
 	var next_world: String = GameRegistry.next_shuffle_world()
 	if next_world == "":
-		world_complete.emit()
-		_hud.show_world_complete()
+		_show_world_complete()
 	elif next_world == _world_id():
 		_go_to_level(_current_index + 1)
 	else:
 		GameRegistry.go_to_world(next_world)
+
+
+func _show_world_complete() -> void:
+	world_complete.emit()
+	_hud.show_world_complete()
+	AudioManager.play_sfx("complete")
+
+
+func _play_world_sound(sound: String) -> void:
+	AudioManager.play_sfx("%s/%s" % [_world_id(), sound])
 
 
 # Loads where the current mode and difficulty left off, fading unless fade is false. A world whose
