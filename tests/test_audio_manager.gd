@@ -61,6 +61,20 @@ func test_audio_manager_many_quick_effects_all_play() -> void:
 	assert_signal_emit_count(AudioManager, "sfx_played", 10)
 
 
+# Review focus: quick effects use different players, so none cuts off another.
+func test_audio_manager_quick_effects_use_different_players() -> void:
+	for player: AudioStreamPlayer in AudioManager._effect_players:
+		player.stop()
+	var count := 4
+	for i in count:
+		AudioManager.play_sfx("tap")
+	var playing := 0
+	for player: AudioStreamPlayer in AudioManager._effect_players:
+		if player.playing:
+			playing += 1
+	assert_eq(playing, count, "each quick effect has its own player")
+
+
 func test_audio_manager_same_music_does_not_restart() -> void:
 	AudioManager.play_music("forest/ambience")
 	watch_signals(AudioManager)
