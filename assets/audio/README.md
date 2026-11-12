@@ -12,7 +12,7 @@ name: `"win"` is `win.wav`, `"forest/place"` is `forest/place.wav`.
 | `tap` | A button or card is tapped in the menu, level picker or star screen |
 | `<world>/place` | A piece goes in: a plank, bag or fruit |
 | `<world>/remove` | A piece comes back out, or a balloon pops |
-| `<world>/ambience` | Loops quietly while in that world |
+| `<world>/ambience` | Loops quietly while in that world; the market's is a quick, bouncy 16 s tune |
 | `menu/ambience` | Loops quietly on the main menu: a 16 s music-box tune |
 | `market/splat` | The thrown tomato hits the table, after `lose` |
 
