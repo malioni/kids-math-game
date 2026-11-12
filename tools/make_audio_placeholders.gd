@@ -1,9 +1,9 @@
 extends SceneTree
 
 ## Generates the placeholder sounds into assets/audio/: shared feedback sounds, each world's place,
-## remove and background loop, and the menu's loop. Every sound is built in code, so nothing is
-## downloaded or licensed; real sounds can replace them later under the same names. Run from the
-## project root:
+## remove and background loop, the market's splat, and the menu's tune. Every sound is built in
+## code, so nothing is downloaded or licensed; real sounds can replace them later under the same
+## names. Run from the project root:
 ##   Godot --path . --headless -s tools/make_audio_placeholders.gd
 ## then `Godot --path . --headless --import` to create the .import files.
 
@@ -15,6 +15,24 @@ const LOOP_SECONDS := 8.0
 const BLEND_SECONDS := 1.0
 ## Pitch, in Hz, of each world's place sound; remove is higher and lighter.
 const PLACE_HZ := {"forest": 180.0, "sky": 520.0, "market": 140.0, "picnic": 330.0}
+## Length of the menu's tune, in seconds: 8 bars of 4 beats.
+const MENU_SECONDS := 16.0
+const MENU_BEAT := 0.5
+## The menu tune, one bar per row: a low note held for the bar, then one melody note per beat, as
+## MIDI note numbers (0 is a rest).
+const MENU_BARS := [
+	[48, [72, 76, 79, 76]],
+	[53, [77, 76, 74, 0]],
+	[55, [74, 77, 79, 77]],
+	[48, [76, 74, 72, 0]],
+	[45, [69, 72, 76, 72]],
+	[53, [74, 72, 69, 0]],
+	[55, [71, 74, 77, 74]],
+	[48, [72, 0, 0, 0]],
+]
+## Vowel formant pairs, in Hz, that the market's voices move between: a, e, i, o, u.
+const VOWELS := [[730.0, 1090.0], [530.0, 1840.0], [270.0, 2290.0], [570.0, 840.0], [300.0, 870.0]]
+const VOICES := 6
 
 var _rng := RandomNumberGenerator.new()
 
@@ -23,18 +41,19 @@ func _init() -> void:
 	_rng.seed = 8
 	_save("win", _notes([523.25, 659.25, 783.99], 0.11, 0.45))
 	_save("complete", _notes([523.25, 659.25, 783.99, 1046.5, 1318.5], 0.13, 0.7))
-	_save("lose", _thud(150.0, 85.0, 0.35, 0.7))
+	_save("lose", _notes([392.0, 349.23, 311.13], 0.2, 0.6))
 	_save("tap", _blip(1100.0, 0.06, 0.35))
 	for world: String in PLACE_HZ:
 		var hz: float = PLACE_HZ[world]
 		_save(world + "/place", _thud(hz, hz * 0.7, 0.14, 0.75))
 		_save(world + "/remove", _blip(hz * 2.5, 0.08, 0.4))
 	_save("sky/remove", _pop())
+	_save("market/splat", _splat())
 	_save("forest/ambience", _seamless(_water()))
 	_save("sky/ambience", _seamless(_wind()))
-	_save("market/ambience", _seamless(_murmur()))
+	_save("market/ambience", _seamless(_chatter()))
 	_save("picnic/ambience", _seamless(_birds()))
-	_save("menu/ambience", _seamless(_pad()))
+	_save("menu/ambience", _fold(_music_box(), MENU_SECONDS))
 	quit()
 
 
@@ -168,24 +187,87 @@ func _wind() -> PackedFloat32Array:
 	return _normalize(samples, 0.5)
 
 
-# Band-limited noise in short random bursts, like far-off voices: a market.
-func _murmur() -> PackedFloat32Array:
+# Several voices talking at once, with now and then a coin clink: a busy market.
+func _chatter() -> PackedFloat32Array:
 	var samples := _loop_buffer()
+	for v in VOICES:
+		_add_voice(samples, _rng.randf_range(0.35, 1.0))
 	var low: float = 0.0
-	var lower: float = 0.0
-	var level: float = 0.0
-	var target: float = 0.0
-	var next_change: int = 0
 	for i in samples.size():
-		if i >= next_change:
-			target = _rng.randf_range(0.2, 1.0)
-			next_change = i + int(_rng.randf_range(0.15, 0.4) * RATE)
-		level += 0.002 * (target - level)
-		var noise: float = _rng.randf_range(-1.0, 1.0)
-		low += 0.15 * (noise - low)
-		lower += 0.02 * (noise - lower)
-		samples[i] = (low - lower) * level
+		low += 0.35 * (samples[i] - low)
+		samples[i] = low
+	var start: float = _rng.randf_range(0.5, 1.5)
+	while start < LOOP_SECONDS + BLEND_SECONDS - 0.5:
+		for coin in _rng.randi_range(1, 2):
+			var hz: float = _rng.randf_range(2400.0, 3200.0)
+			_add_note(samples, hz, start + coin * 0.09, 0.25, 0.04)
+		start += _rng.randf_range(1.5, 3.5)
 	return _normalize(samples, 0.4)
+
+
+# One voice: a buzzy tone shaped by two vowel resonances, in syllables grouped into phrases.
+func _add_voice(samples: PackedFloat32Array, gain: float) -> void:
+	var pitch: float = _rng.randf_range(110.0, 230.0)
+	var phase: float = 0.0
+	var formants: Array = [0.0, 0.0]
+	var target: Array = VOWELS[0]
+	var state: Array = [[0.0, 0.0], [0.0, 0.0]]
+	var syllable_left: int = 0
+	var syllable_length: int = 1
+	var syllables_left: int = 0
+	var glide: float = 1.0
+	var i: int = int(_rng.randf_range(0.0, 1.0) * RATE)
+	while i < samples.size():
+		if syllable_left <= 0:
+			if syllables_left <= 0:
+				i += int(_rng.randf_range(0.3, 1.2) * RATE)
+				syllables_left = _rng.randi_range(3, 7)
+				continue
+			syllables_left -= 1
+			syllable_length = int(_rng.randf_range(0.12, 0.24) * RATE)
+			syllable_left = syllable_length
+			target = VOWELS[_rng.randi_range(0, VOWELS.size() - 1)]
+			glide = _rng.randf_range(0.9, 1.12)
+		var k: float = 1.0 - float(syllable_left) / syllable_length
+		syllable_left -= 1
+		phase = fmod(phase + pitch * lerpf(1.0, glide, k) / RATE, 1.0)
+		var source: float = 2.0 * phase - 1.0
+		var out: float = 0.0
+		for f in 2:
+			formants[f] += 0.004 * (target[f] - formants[f])
+			out += _resonate(source, formants[f], state[f])
+		samples[i] += out * sin(PI * k) * gain
+		i += 1
+
+
+# A two-pole band-pass at hz, keeping its last two outputs in state: one vowel resonance.
+func _resonate(x: float, hz: float, state: Array) -> float:
+	var r: float = exp(-PI * 120.0 / RATE)
+	var y: float = (1.0 - r) * x + 2.0 * r * cos(TAU * hz / RATE) * state[0] - r * r * state[1]
+	state[1] = state[0]
+	state[0] = y
+	return y
+
+
+# A wet thump with a hiss that dulls quickly, then a few droplets: a tomato splatting.
+func _splat() -> PackedFloat32Array:
+	var samples := _empty(0.45)
+	var phase: float = 0.0
+	var low: float = 0.0
+	for i in int(0.2 * RATE):
+		var t: float = float(i) / RATE
+		phase += TAU * lerpf(220.0, 60.0, t / 0.2) / RATE
+		low += lerpf(0.6, 0.05, t / 0.2) * (_rng.randf_range(-1.0, 1.0) - low)
+		samples[i] = (0.6 * sin(phase) + 0.9 * low) * exp(-t / 0.05) * minf(t / 0.002, 1.0)
+	for drop in 4:
+		var start: int = int(_rng.randf_range(0.08, 0.35) * RATE)
+		var hz: float = _rng.randf_range(900.0, 1600.0)
+		for i in int(0.03 * RATE):
+			if start + i >= samples.size():
+				break
+			var t: float = float(i) / RATE
+			samples[start + i] += sin(TAU * hz * (1.0 + t * 8.0) * t) * exp(-t / 0.008) * 0.15
+	return _normalize(samples, 0.85)
 
 
 # A soft breeze with short rising chirps at random times: birds at a picnic.
@@ -216,14 +298,29 @@ func _add_chirp(samples: PackedFloat32Array, start: float) -> void:
 		samples[first + i] += sin(phase) * sin(PI * k) * 0.25
 
 
-# Three quiet tones with a slow wobble: a calm menu loop.
-func _pad() -> PackedFloat32Array:
-	var samples := _loop_buffer()
-	for i in samples.size():
-		var t: float = float(i) / RATE
-		var wobble: float = 0.8 + 0.2 * sin(TAU * t * 0.25)
-		samples[i] = (
-			(sin(TAU * 130.75 * t) + 0.7 * sin(TAU * 196.0 * t) + 0.5 * sin(TAU * 261.63 * t))
-			* wobble
-		)
-	return _normalize(samples, 0.3)
+# A slow, cheerful tune with a soft low note per bar: a music box for the menu. Generated past
+# MENU_SECONDS so the last notes ring out; _fold wraps that ring onto the start.
+func _music_box() -> PackedFloat32Array:
+	var samples := _empty(MENU_SECONDS + 2.0)
+	for bar in MENU_BARS.size():
+		var start: float = bar * MENU_BEAT * 4.0
+		_add_note(samples, _midi_hz(MENU_BARS[bar][0]), start, 2.0, 0.18)
+		for beat in 4:
+			var note: int = MENU_BARS[bar][1][beat]
+			if note != 0:
+				_add_note(samples, _midi_hz(note), start + beat * MENU_BEAT, 1.2, 0.3)
+	return _normalize(samples, 0.35)
+
+
+func _midi_hz(note: int) -> float:
+	return 440.0 * pow(2.0, (note - 69) / 12.0)
+
+
+# Cuts samples to seconds and adds what rang past the end onto the start, so the loop repeats as if
+# it had always been playing.
+func _fold(raw: PackedFloat32Array, seconds: float) -> PackedFloat32Array:
+	var length: int = int(seconds * RATE)
+	var samples: PackedFloat32Array = raw.slice(0, length)
+	for i in raw.size() - length:
+		samples[i] += raw[length + i]
+	return samples

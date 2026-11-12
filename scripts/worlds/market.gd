@@ -52,5 +52,6 @@ func _play_lose() -> void:
 	await _throw_tween.finished
 	_flying_tomato.visible = false
 	_splat.visible = true
+	AudioManager.play_sfx("market/splat")
 	_character.play("idle")
 	await get_tree().create_timer(splat_duration).timeout
