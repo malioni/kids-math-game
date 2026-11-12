@@ -251,7 +251,6 @@ vertical_alignment = 1
 [node name="ModeRow" type="HBoxContainer" parent="Root/Picker/Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 16
-alignment = 1
 
 [node name="EasyButton" type="Button" parent="Root/Picker/Panel/Margin/VBox/ModeRow"]
 custom_minimum_size = Vector2(120, 100)
@@ -266,6 +265,10 @@ layout_mode = 2
 icon = ExtResource("7_hard")
 icon_alignment = 1
 expand_icon = true
+
+[node name="Spacer" type="Control" parent="Root/Picker/Panel/Margin/VBox/ModeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="MusicButton" type="Button" parent="Root/Picker/Panel/Margin/VBox/ModeRow"]
 custom_minimum_size = Vector2(120, 100)

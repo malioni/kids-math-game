@@ -88,6 +88,22 @@ func test_market_incorrect_shows_retry_after_throw() -> void:
 	assert_eq(_world._current_index, 0)
 
 
+func test_market_incorrect_chimes_then_splats_when_tomato_lands() -> void:
+	watch_signals(AudioManager)
+	_mechanic.confirm()
+	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["lose"])
+	assert_false(_sfx_played().has("market/splat"), "no splat before the tomato lands")
+	await wait_seconds(_THROW_SETTLE)
+	assert_has(_sfx_played(), "market/splat")
+
+
+func _sfx_played() -> Array:
+	var sounds: Array = []
+	for i in get_signal_emit_count(AudioManager, "sfx_played"):
+		sounds.append(get_signal_parameters(AudioManager, "sfx_played", i)[0])
+	return sounds
+
+
 func test_market_retry_keeps_same_orders_and_clears_table() -> void:
 	var orders: Array[Dictionary] = _mechanic.get_orders().duplicate(true)
 	_place(_mechanic, "tomato", 1)

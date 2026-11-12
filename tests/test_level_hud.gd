@@ -346,6 +346,18 @@ func test_level_hud_sound_buttons_meet_minimum_tap_size() -> void:
 		assert_gte(button.size.x, 100.0)
 
 
+func test_level_hud_sound_buttons_sit_apart_from_difficulty() -> void:
+	hud.open_picker()
+	await wait_process_frames(1)
+	var easy: Button = hud.get_node("Root/Picker/Panel/Margin/VBox/ModeRow/EasyButton")
+	var hard: Button = hud.get_node("Root/Picker/Panel/Margin/VBox/ModeRow/HardButton")
+	var row: Control = easy.get_parent()
+	var sounds: Array[Button] = hud.get_sound_buttons()
+	assert_almost_eq(easy.position.x, 0.0, 1.0, "difficulty in the left corner")
+	assert_almost_eq(sounds[1].get_rect().end.x, row.size.x, 1.0, "sound in the right corner")
+	assert_gt(sounds[0].position.x - hard.get_rect().end.x, 200.0, "a clear gap between them")
+
+
 func test_level_hud_carousel_arrows_play_tap() -> void:
 	hud.show_world_complete()
 	for carousel in [_picker_carousel(), hud.get_choice_carousel()]:
