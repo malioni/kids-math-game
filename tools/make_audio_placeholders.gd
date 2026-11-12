@@ -38,26 +38,29 @@ var _rng := RandomNumberGenerator.new()
 
 
 func _init() -> void:
-	_rng.seed = 8
-	_save("win", _notes([523.25, 659.25, 783.99], 0.11, 0.45))
-	_save("complete", _notes([523.25, 659.25, 783.99, 1046.5, 1318.5], 0.13, 0.7))
-	_save("lose", _notes([392.0, 349.23, 311.13], 0.2, 0.6))
-	_save("tap", _blip(1100.0, 0.06, 0.35))
+	_save("win", _notes.bind([523.25, 659.25, 783.99], 0.11, 0.45))
+	_save("complete", _notes.bind([523.25, 659.25, 783.99, 1046.5, 1318.5], 0.13, 0.7))
+	_save("lose", _notes.bind([392.0, 349.23, 311.13], 0.2, 0.6))
+	_save("tap", _blip.bind(1100.0, 0.06, 0.35))
 	for world: String in PLACE_HZ:
 		var hz: float = PLACE_HZ[world]
-		_save(world + "/place", _thud(hz, hz * 0.7, 0.14, 0.75))
-		_save(world + "/remove", _blip(hz * 2.5, 0.08, 0.4))
-	_save("sky/remove", _pop())
-	_save("market/splat", _splat())
-	_save("forest/ambience", _seamless(_water()))
-	_save("sky/ambience", _seamless(_wind()))
-	_save("market/ambience", _seamless(_chatter()))
-	_save("picnic/ambience", _seamless(_birds()))
-	_save("menu/ambience", _fold(_music_box(), MENU_SECONDS))
+		_save(world + "/place", _thud.bind(hz, hz * 0.7, 0.14, 0.75))
+		_save(world + "/remove", _blip.bind(hz * 2.5, 0.08, 0.4))
+	_save("sky/remove", _pop)
+	_save("market/splat", _splat)
+	_save("forest/ambience", func() -> PackedFloat32Array: return _seamless(_water()))
+	_save("sky/ambience", func() -> PackedFloat32Array: return _seamless(_wind()))
+	_save("market/ambience", func() -> PackedFloat32Array: return _seamless(_chatter()))
+	_save("picnic/ambience", func() -> PackedFloat32Array: return _seamless(_birds()))
+	_save("menu/ambience", func() -> PackedFloat32Array: return _fold(_music_box(), MENU_SECONDS))
 	quit()
 
 
-func _save(sound: String, samples: PackedFloat32Array) -> void:
+# Makes a sound with make and saves it. Each sound seeds the random numbers from its own name, so
+# changing one sound leaves the others byte-for-byte the same.
+func _save(sound: String, make: Callable) -> void:
+	_rng.seed = hash(sound)
+	var samples: PackedFloat32Array = make.call()
 	var data := PackedByteArray()
 	data.resize(samples.size() * 2)
 	for i in samples.size():
@@ -161,19 +164,44 @@ func _normalize(samples: PackedFloat32Array, peak: float) -> PackedFloat32Array:
 	return samples
 
 
-# Low-passed noise that rises and falls a little: a river.
+# A steady, bright rush of water with lots of small gurgles: a river.
 func _water() -> PackedFloat32Array:
 	var samples := _loop_buffer()
-	var low: float = 0.0
-	var bubbles: float = 0.0
+	var bright: float = 0.0
+	var dull: float = 0.0
+	var level: float = 0.8
+	var target: float = 0.8
+	var next_change: int = 0
 	for i in samples.size():
-		var t: float = float(i) / RATE
+		if i >= next_change:
+			target = _rng.randf_range(0.6, 1.0)
+			next_change = i + int(_rng.randf_range(0.03, 0.08) * RATE)
+		level += 0.01 * (target - level)
 		var noise: float = _rng.randf_range(-1.0, 1.0)
-		low += 0.05 * (noise - low)
-		bubbles += 0.3 * (noise - bubbles)
-		var swell: float = 0.75 + 0.25 * sin(TAU * t * 0.3)
-		samples[i] = (low * 3.0 + bubbles * 0.25) * swell
-	return _normalize(samples, 0.5)
+		bright += 0.4 * (noise - bright)
+		dull += 0.08 * (noise - dull)
+		samples[i] = (bright - dull) * level * 0.5
+	var start: float = 0.0
+	while start < LOOP_SECONDS + BLEND_SECONDS - 0.1:
+		_add_gurgle(samples, start)
+		start += _rng.randf_range(0.02, 0.08)
+	return _normalize(samples, 0.45)
+
+
+# A short tone sliding up: one bubble in running water.
+func _add_gurgle(samples: PackedFloat32Array, start: float) -> void:
+	var first: int = int(start * RATE)
+	var length: int = int(_rng.randf_range(0.02, 0.05) * RATE)
+	var from_hz: float = _rng.randf_range(300.0, 900.0)
+	var rise: float = _rng.randf_range(1.6, 2.2)
+	var gain: float = _rng.randf_range(0.1, 0.35)
+	var phase: float = 0.0
+	for i in length:
+		if first + i >= samples.size():
+			return
+		var k: float = float(i) / length
+		phase += TAU * lerpf(from_hz, from_hz * rise, k) / RATE
+		samples[first + i] += sin(phase) * pow(sin(PI * k), 2.0) * gain
 
 
 # Heavily low-passed noise with slow swells: wind.
@@ -191,11 +219,7 @@ func _wind() -> PackedFloat32Array:
 func _chatter() -> PackedFloat32Array:
 	var samples := _loop_buffer()
 	for v in VOICES:
-		_add_voice(samples, _rng.randf_range(0.35, 1.0))
-	var low: float = 0.0
-	for i in samples.size():
-		low += 0.35 * (samples[i] - low)
-		samples[i] = low
+		_add_voice(samples, _rng.randf_range(0.3, 1.0))
 	var start: float = _rng.randf_range(0.5, 1.5)
 	while start < LOOP_SECONDS + BLEND_SECONDS - 0.5:
 		for coin in _rng.randi_range(1, 2):
@@ -205,13 +229,16 @@ func _chatter() -> PackedFloat32Array:
 	return _normalize(samples, 0.4)
 
 
-# One voice: a buzzy tone shaped by two vowel resonances, in syllables grouped into phrases.
+# One voice: a buzzy tone shaped by two vowel resonances and a bright third one, in quick syllables
+# that start with a short consonant hiss, grouped into phrases.
 func _add_voice(samples: PackedFloat32Array, gain: float) -> void:
-	var pitch: float = _rng.randf_range(110.0, 230.0)
+	var pitch: float = _rng.randf_range(150.0, 300.0)
 	var phase: float = 0.0
-	var formants: Array = [0.0, 0.0]
+	var formants: Array = [0.0, 0.0, _rng.randf_range(2500.0, 2900.0)]
 	var target: Array = VOWELS[0]
-	var state: Array = [[0.0, 0.0], [0.0, 0.0]]
+	var state: Array = [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]
+	var hiss_low: float = 0.0
+	var hiss_length: int = 0
 	var syllable_left: int = 0
 	var syllable_length: int = 1
 	var syllables_left: int = 0
@@ -220,30 +247,41 @@ func _add_voice(samples: PackedFloat32Array, gain: float) -> void:
 	while i < samples.size():
 		if syllable_left <= 0:
 			if syllables_left <= 0:
-				i += int(_rng.randf_range(0.3, 1.2) * RATE)
-				syllables_left = _rng.randi_range(3, 7)
+				i += int(_rng.randf_range(0.2, 0.8) * RATE)
+				syllables_left = _rng.randi_range(3, 9)
 				continue
 			syllables_left -= 1
-			syllable_length = int(_rng.randf_range(0.12, 0.24) * RATE)
+			syllable_length = int(_rng.randf_range(0.08, 0.16) * RATE)
 			syllable_left = syllable_length
 			target = VOWELS[_rng.randi_range(0, VOWELS.size() - 1)]
-			glide = _rng.randf_range(0.9, 1.12)
+			glide = _rng.randf_range(0.85, 1.2)
+			hiss_length = int(0.03 * RATE) if _rng.randf() < 0.7 else 0
 		var k: float = 1.0 - float(syllable_left) / syllable_length
+		var into: int = syllable_length - syllable_left
 		syllable_left -= 1
 		phase = fmod(phase + pitch * lerpf(1.0, glide, k) / RATE, 1.0)
 		var source: float = 2.0 * phase - 1.0
 		var out: float = 0.0
 		for f in 2:
 			formants[f] += 0.004 * (target[f] - formants[f])
-			out += _resonate(source, formants[f], state[f])
+		for f in 3:
+			out += _resonate(source, formants[f], state[f]) * (0.5 if f == 2 else 1.0)
+		var noise: float = _rng.randf_range(-1.0, 1.0)
+		hiss_low += 0.3 * (noise - hiss_low)
+		if into < hiss_length:
+			out += (noise - hiss_low) * 0.3 * (1.0 - float(into) / hiss_length)
 		samples[i] += out * sin(PI * k) * gain
 		i += 1
 
 
-# A two-pole band-pass at hz, keeping its last two outputs in state: one vowel resonance.
+# A two-pole band-pass at hz, keeping its last two outputs in state: one vowel resonance. Its input
+# is scaled so high resonances ring as loudly as low ones, keeping the voices bright.
 func _resonate(x: float, hz: float, state: Array) -> float:
-	var r: float = exp(-PI * 120.0 / RATE)
-	var y: float = (1.0 - r) * x + 2.0 * r * cos(TAU * hz / RATE) * state[0] - r * r * state[1]
+	var r: float = exp(-PI * (60.0 + 0.08 * hz) / RATE)
+	var angle: float = TAU * maxf(hz, 50.0) / RATE
+	var y: float = (
+		(1.0 - r) * 2.0 * sin(angle) * x + 2.0 * r * cos(angle) * state[0] - r * r * state[1]
+	)
 	state[1] = state[0]
 	state[0] = y
 	return y
