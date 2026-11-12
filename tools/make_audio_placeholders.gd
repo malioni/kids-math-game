@@ -15,11 +15,9 @@ const LOOP_SECONDS := 8.0
 const BLEND_SECONDS := 1.0
 ## Pitch, in Hz, of each world's place sound; remove is higher and lighter.
 const PLACE_HZ := {"forest": 180.0, "sky": 520.0, "market": 140.0, "picnic": 330.0}
-## Length of the menu's tune, in seconds: 8 bars of 4 beats.
-const MENU_SECONDS := 16.0
-const MENU_BEAT := 0.5
-## The menu tune, one bar per row: a low note held for the bar, then one melody note per beat, as
-## MIDI note numbers (0 is a rest).
+## The tunes, one bar per row: a low note, then the melody, one note per beat, as MIDI note numbers
+## (0 is a rest). _tune says how often the low note sounds.
+## The menu: slow and calm, a music box.
 const MENU_BARS := [
 	[48, [72, 76, 79, 76]],
 	[53, [77, 76, 74, 0]],
@@ -30,9 +28,17 @@ const MENU_BARS := [
 	[55, [71, 74, 77, 74]],
 	[48, [72, 0, 0, 0]],
 ]
-## Vowel formant pairs, in Hz, that the market's voices move between: a, e, i, o, u.
-const VOWELS := [[730.0, 1090.0], [530.0, 1840.0], [270.0, 2290.0], [570.0, 840.0], [300.0, 870.0]]
-const VOICES := 6
+## The market: quick and bouncy, with short plucked notes.
+const MARKET_BARS := [
+	[43, [67, 0, 71, 74, 79, 0, 74, 71]],
+	[48, [72, 0, 76, 79, 76, 0, 72, 0]],
+	[50, [74, 0, 78, 81, 78, 0, 74, 72]],
+	[43, [71, 74, 71, 67, 0, 0, 67, 69]],
+	[43, [71, 0, 71, 74, 72, 0, 71, 69]],
+	[48, [67, 0, 72, 76, 74, 72, 71, 0]],
+	[50, [69, 71, 72, 74, 76, 74, 72, 69]],
+	[43, [67, 0, 0, 74, 67, 0, 0, 0]],
+]
 
 var _rng := RandomNumberGenerator.new()
 
@@ -50,9 +56,9 @@ func _init() -> void:
 	_save("market/splat", _splat)
 	_save("forest/ambience", func() -> PackedFloat32Array: return _seamless(_water()))
 	_save("sky/ambience", func() -> PackedFloat32Array: return _seamless(_wind()))
-	_save("market/ambience", func() -> PackedFloat32Array: return _seamless(_chatter()))
+	_save("market/ambience", _tune.bind(MARKET_BARS, 0.25, 0.35, 4))
 	_save("picnic/ambience", func() -> PackedFloat32Array: return _seamless(_birds()))
-	_save("menu/ambience", func() -> PackedFloat32Array: return _fold(_music_box(), MENU_SECONDS))
+	_save("menu/ambience", _tune.bind(MENU_BARS, 0.5, 1.2, 4))
 	quit()
 
 
@@ -215,78 +221,6 @@ func _wind() -> PackedFloat32Array:
 	return _normalize(samples, 0.5)
 
 
-# Several voices talking at once, with now and then a coin clink: a busy market.
-func _chatter() -> PackedFloat32Array:
-	var samples := _loop_buffer()
-	for v in VOICES:
-		_add_voice(samples, _rng.randf_range(0.3, 1.0))
-	var start: float = _rng.randf_range(0.5, 1.5)
-	while start < LOOP_SECONDS + BLEND_SECONDS - 0.5:
-		for coin in _rng.randi_range(1, 2):
-			var hz: float = _rng.randf_range(2400.0, 3200.0)
-			_add_note(samples, hz, start + coin * 0.09, 0.25, 0.04)
-		start += _rng.randf_range(1.5, 3.5)
-	return _normalize(samples, 0.4)
-
-
-# One voice: a buzzy tone shaped by two vowel resonances and a bright third one, in quick syllables
-# that start with a short consonant hiss, grouped into phrases.
-func _add_voice(samples: PackedFloat32Array, gain: float) -> void:
-	var pitch: float = _rng.randf_range(150.0, 300.0)
-	var phase: float = 0.0
-	var formants: Array = [0.0, 0.0, _rng.randf_range(2500.0, 2900.0)]
-	var target: Array = VOWELS[0]
-	var state: Array = [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]
-	var hiss_low: float = 0.0
-	var hiss_length: int = 0
-	var syllable_left: int = 0
-	var syllable_length: int = 1
-	var syllables_left: int = 0
-	var glide: float = 1.0
-	var i: int = int(_rng.randf_range(0.0, 1.0) * RATE)
-	while i < samples.size():
-		if syllable_left <= 0:
-			if syllables_left <= 0:
-				i += int(_rng.randf_range(0.2, 0.8) * RATE)
-				syllables_left = _rng.randi_range(3, 9)
-				continue
-			syllables_left -= 1
-			syllable_length = int(_rng.randf_range(0.08, 0.16) * RATE)
-			syllable_left = syllable_length
-			target = VOWELS[_rng.randi_range(0, VOWELS.size() - 1)]
-			glide = _rng.randf_range(0.85, 1.2)
-			hiss_length = int(0.03 * RATE) if _rng.randf() < 0.7 else 0
-		var k: float = 1.0 - float(syllable_left) / syllable_length
-		var into: int = syllable_length - syllable_left
-		syllable_left -= 1
-		phase = fmod(phase + pitch * lerpf(1.0, glide, k) / RATE, 1.0)
-		var source: float = 2.0 * phase - 1.0
-		var out: float = 0.0
-		for f in 2:
-			formants[f] += 0.004 * (target[f] - formants[f])
-		for f in 3:
-			out += _resonate(source, formants[f], state[f]) * (0.5 if f == 2 else 1.0)
-		var noise: float = _rng.randf_range(-1.0, 1.0)
-		hiss_low += 0.3 * (noise - hiss_low)
-		if into < hiss_length:
-			out += (noise - hiss_low) * 0.3 * (1.0 - float(into) / hiss_length)
-		samples[i] += out * sin(PI * k) * gain
-		i += 1
-
-
-# A two-pole band-pass at hz, keeping its last two outputs in state: one vowel resonance. Its input
-# is scaled so high resonances ring as loudly as low ones, keeping the voices bright.
-func _resonate(x: float, hz: float, state: Array) -> float:
-	var r: float = exp(-PI * (60.0 + 0.08 * hz) / RATE)
-	var angle: float = TAU * maxf(hz, 50.0) / RATE
-	var y: float = (
-		(1.0 - r) * 2.0 * sin(angle) * x + 2.0 * r * cos(angle) * state[0] - r * r * state[1]
-	)
-	state[1] = state[0]
-	state[0] = y
-	return y
-
-
 # A wet thump with a hiss that dulls quickly, then a few droplets: a tomato splatting.
 func _splat() -> PackedFloat32Array:
 	var samples := _empty(0.45)
@@ -336,18 +270,22 @@ func _add_chirp(samples: PackedFloat32Array, start: float) -> void:
 		samples[first + i] += sin(phase) * sin(PI * k) * 0.25
 
 
-# A slow, cheerful tune with a soft low note per bar: a music box for the menu. Generated past
-# MENU_SECONDS so the last notes ring out; _fold wraps that ring onto the start.
-func _music_box() -> PackedFloat32Array:
-	var samples := _empty(MENU_SECONDS + 2.0)
-	for bar in MENU_BARS.size():
-		var start: float = bar * MENU_BEAT * 4.0
-		_add_note(samples, _midi_hz(MENU_BARS[bar][0]), start, 2.0, 0.18)
-		for beat in 4:
-			var note: int = MENU_BARS[bar][1][beat]
+# Plays bars (see MENU_BARS) at beat seconds per note, each note ringing for ring seconds, with the
+# low note every bass_every beats. The last notes ring past the end; _fold wraps that onto the start
+# so the tune loops seamlessly.
+func _tune(bars: Array, beat: float, ring: float, bass_every: int) -> PackedFloat32Array:
+	var beats_per_bar: int = bars[0][1].size()
+	var seconds: float = bars.size() * beats_per_bar * beat
+	var samples := _empty(seconds + 2.0)
+	for bar in bars.size():
+		var start: float = bar * beats_per_bar * beat
+		for hit in range(0, beats_per_bar, bass_every):
+			_add_note(samples, _midi_hz(bars[bar][0]), start + hit * beat, bass_every * beat, 0.18)
+		for b in beats_per_bar:
+			var note: int = bars[bar][1][b]
 			if note != 0:
-				_add_note(samples, _midi_hz(note), start + beat * MENU_BEAT, 1.2, 0.3)
-	return _normalize(samples, 0.35)
+				_add_note(samples, _midi_hz(note), start + b * beat, ring, 0.3)
+	return _fold(_normalize(samples, 0.35), seconds)
 
 
 func _midi_hz(note: int) -> float:
