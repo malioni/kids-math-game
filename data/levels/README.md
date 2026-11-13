@@ -118,3 +118,27 @@ same to everyone else; the fox's amount is never shown.
 | `items` | Array | One entry per fruit (1–3), in plate-row order |
 | `items[].item` | String | `strawberry`, `apple` or `banana`; the key for the fruit's icon in the world scene |
 | `items[].share.min/max` | int | Inclusive range for how many of that fruit each plate should get (2–10) |
+
+## Memory level schema (world_memory)
+
+Memory levels store how many pairs to deal and where the animals come from.
+`MemoryPuzzleGenerator` deals every `must_include` animal, picks the rest at random from `pool`
+(no repeats), puts each animal in twice and shuffles the deck.
+
+{
+  "id": "world_memory_05",
+  "world": "memory",
+  "pairs": 4,
+  "must_include": ["fox"],
+  "pool": ["rabbit", "bear", "owl", "frog", "hedgehog", "mouse", "duck", "pig", "cat", "deer", "squirrel"],
+  "preview_seconds": 1.5
+}
+
+| Field | Type | Description |
+|---|---|---|
+| `pairs` | int | Pairs on the board (2–10); the deck has `pairs × 2` cards, dealt into a fixed grid per size |
+| `must_include` | Array | Animals always dealt (the fox) |
+| `pool` | Array | Animals the other pairs are drawn from; needs at least `pairs − must_include.size()` |
+| `preview_seconds` | float | How long every card shows face up before the first turn; 0 for no peek |
+
+Each animal name is a key into `MemoryMechanic.card_textures`, set in the world scene.

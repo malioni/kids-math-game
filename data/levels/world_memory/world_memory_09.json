@@ -1,0 +1,8 @@
+{
+  "id": "world_memory_09",
+  "world": "memory",
+  "pairs": 6,
+  "must_include": ["fox"],
+  "pool": ["rabbit", "bear", "owl", "frog", "hedgehog", "mouse", "duck", "pig", "cat", "deer", "squirrel"],
+  "preview_seconds": 1.0
+}

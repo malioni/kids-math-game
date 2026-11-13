@@ -156,7 +156,7 @@ func test_world_modes_shuffle_resumes_at_shuffle_level() -> void:
 
 
 func test_world_modes_shuffle_win_with_only_this_world_left_loads_next_level_in_place() -> void:
-	_finish_shuffle(["sky", "market", "picnic"])
+	_finish_shuffle(["sky", "market", "picnic", "memory"])
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
 	await _win(world)
@@ -165,7 +165,7 @@ func test_world_modes_shuffle_win_with_only_this_world_left_loads_next_level_in_
 
 
 func test_world_modes_shuffle_win_with_other_worlds_left_requests_one_of_them() -> void:
-	_finish_shuffle(["market", "picnic"])
+	_finish_shuffle(["market", "picnic", "memory"])
 	SaveManager.set_progress(_shuffle_key("forest"), 10)
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
@@ -174,7 +174,7 @@ func test_world_modes_shuffle_win_with_other_worlds_left_requests_one_of_them() 
 
 
 func test_world_modes_shuffle_all_done_shows_star_screen() -> void:
-	_finish_shuffle(["sky", "market", "picnic"])
+	_finish_shuffle(["sky", "market", "picnic", "memory"])
 	SaveManager.set_progress(_shuffle_key("forest"), 10)
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
@@ -186,7 +186,7 @@ func test_world_modes_shuffle_all_done_shows_star_screen() -> void:
 
 
 func test_world_modes_shuffle_restart_starts_fresh_shuffle() -> void:
-	_finish_shuffle(["forest", "sky", "market", "picnic"])
+	_finish_shuffle(["forest", "sky", "market", "picnic", "memory"])
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
 	await wait_process_frames(2)
@@ -273,13 +273,13 @@ func test_world_modes_hard_badge_counts_11_to_20() -> void:
 
 
 func test_world_modes_shuffle_badge_counts_through_every_world() -> void:
-	_finish_shuffle(["sky", "market", "picnic"])
+	_finish_shuffle(["sky", "market", "picnic", "memory"])
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
 	var total: int = 10 * GameRegistry.get_worlds().size()
-	assert_eq(_badge_text(world), "31/%d" % total)
+	assert_eq(_badge_text(world), "41/%d" % total)
 	await _win(world)
-	assert_eq(_badge_text(world), "32/%d" % total)
+	assert_eq(_badge_text(world), "42/%d" % total)
 
 
 func test_world_modes_home_requested_goes_to_menu_and_keeps_mode() -> void:

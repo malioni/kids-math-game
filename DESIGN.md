@@ -31,6 +31,7 @@ A tablet game for children aged 4–7 where mathematical concepts are the physic
 | Multiplication (equal groups) | Counting in equal groups, groups × group size |
 | Pattern recognition | Repeating sequences, odd-one-out |
 | Spatial reasoning | Shapes, positions, rotations, sequences |
+| Memory & attention | Remembering where things are, matching what looks the same |
 
 ## Mechanic Library
 
@@ -46,6 +47,7 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 | `BalloonPopMechanic` | Subtraction | Pop numbered balloons until their total lift equals the basket's weight |
 | `MarketMechanic` | Multiplication | Fill the fox's order with equal-sized bags from crates that never run out |
 | `SharingMechanic` | Division | Fill the fox's plate so the baskets can share the same amount with every friend |
+| `MemoryMechanic` | Memory & attention | Turn over two cards at a time to find every pair of animals |
 
 ## World Plan
 
@@ -101,12 +103,26 @@ fox's amount is never shown — the child works out total ÷ plates.
 - **Win condition:** Every plate gets the same of every fruit and the baskets are empty — everyone cheers
 - **Fail state:** Too much and the last friends come up short (they look sad); too little and fruit is left in the basket. The fox is sad; gentle retry with the same baskets, no penalty
 
+### World 5: Memory Meadow
+
+Animal cards lie face down in a grid in a meadow clearing, the fox beside them. The child turns
+over two at a time: a matching pair pops off the board and the fox hops; a mismatch shows both
+faces for a moment, then turns back over. The fox's card is always one of the pairs; the others
+are picked at random from 11 animals (rabbit, bear, owl, frog, hedgehog, mouse, duck, pig, cat,
+deer, squirrel), so replays differ.
+
+- **Teaches:** Visual memory and attention (the first world that isn't arithmetic)
+- **Mechanic:** `MemoryMechanic`
+- **Levels:** 20 levels, from 2 pairs (4 cards) at level 1 to 6 pairs at level 10, then 6 pairs again at level 11 rising to 10 pairs (a 5×4 grid) at level 20. Easy levels start with a short peek (every card face up for 1–2 s); hard levels start face down
+- **Win condition:** Every pair found — the fox celebrates
+- **Fail state:** None. There is no limit on turns, so a mismatch just turns back over
+
 ### Planned Future Worlds
 
 | World | Theme | Skill focus |
 |-------|-------|-------------|
-| World 5: The Garden | Plant seeds in rows | Addition, grouping |
-| World 6: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
+| World 6: The Garden | Plant seeds in rows | Addition, grouping |
+| World 7: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
 
 ## Progression System
 
@@ -116,7 +132,7 @@ fox's amount is never shown — the child works out total ÷ plates.
 - **Transitions:** every level change, world switch and menu ↔ world change fades through a dark cover in about 0.3 s; taps are ignored while the screen is covered. Levels inside a world change without reloading the scene
 - A level badge (world icon + level number) sits in the top-left corner; tapping it opens a picker to jump to any level of any world (worlds are a strip of cards, like the menu's). After the last level of the difficulty, a star screen offers a restart from the difficulty's first level, home, or another world from a strip of cards
 - **Difficulty:** every world's levels split into Easy (1–10) and Hard (11–20) (`data/levels/difficulty.json`). A grown-up picks it with two icon buttons in the picker (a hill and a mountain); it applies to every world, and progress is kept separately per difficulty. The child-facing badge never names it, but counts to the end of it: 4/10 on easy, 14/20 on hard
-- **Shuffle:** the picker's shuffle tab (where the picker opens while shuffling) has continue and start-over buttons. Shuffle plays a random world after every win, always that world's next unplayed level of the current difficulty. Shuffle keeps its own place in each world, and the badge shows the place in the whole shuffle (e.g. 7/40 with four worlds); when every world's levels are played the star screen shows and restart starts a fresh shuffle. Picking a level leaves shuffle
+- **Shuffle:** the picker's shuffle tab (where the picker opens while shuffling) has continue and start-over buttons. Shuffle plays a random world after every win, always that world's next unplayed level of the current difficulty. Shuffle keeps its own place in each world, and the badge shows the place in the whole shuffle (e.g. 7/50 with five worlds); when every world's levels are played the star screen shows and restart starts a fresh shuffle. Picking a level leaves shuffle
 - **Sound:** every world has a quiet background loop and the menu has its own; right and wrong answers, placing and removing pieces, the star screen and taps all make a sound. A grown-up can turn background sound and effects off separately with two icons in the level picker
 - **Parent view:** Session summaries accessible via a separate parent-only screen (PIN-gated)
 - **Possible later, after more playtesting:** track per-skill mastery silently and adapt difficulty, e.g. if a child struggles at N=4, repeat N=3 variants before retrying
