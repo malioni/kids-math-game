@@ -1,6 +1,8 @@
 # Level Data Schema and LevelLoader Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Status:** done in #11. The level schema has changed since (`mechanic`, `narrative_key` and `skill_tags` were dropped in #35); `docs/kids-math-game-context.md` describes the current one.
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Implement a `LevelLoader` autoload that reads JSON level files from `data/levels/` and exposes a typed GDScript API for loading individual levels and world level lists.
 
@@ -19,7 +21,7 @@
 - Create: `data/levels/world_forest/world_forest_02.json`
 - Delete: `data/levels/world_forest/.gitkeep`
 
-- [ ] **Step 1: Write the schema README**
+- [x] **Step 1: Write the schema README**
 
 Create `data/levels/README.md`:
 
@@ -64,7 +66,7 @@ Each world folder contains a `levels.json` — a JSON array of level IDs in inte
 | `skill_tags` | Array[String] | Skill areas exercised; used by Progression |
 ```
 
-- [ ] **Step 2: Write the world index file**
+- [x] **Step 2: Write the world index file**
 
 Create `data/levels/world_forest/levels.json`:
 
@@ -72,7 +74,7 @@ Create `data/levels/world_forest/levels.json`:
 ["world_forest_01", "world_forest_02"]
 ```
 
-- [ ] **Step 3: Write placeholder level files**
+- [x] **Step 3: Write placeholder level files**
 
 Create `data/levels/world_forest/world_forest_01.json`:
 
@@ -100,13 +102,13 @@ Create `data/levels/world_forest/world_forest_02.json`:
 }
 ```
 
-- [ ] **Step 4: Remove the placeholder**
+- [x] **Step 4: Remove the placeholder**
 
 ```bash
 git rm data/levels/world_forest/.gitkeep
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add data/levels/README.md data/levels/world_forest/
@@ -120,7 +122,7 @@ git commit -m "Add level schema docs and world_forest placeholder level files"
 **Files:**
 - Create: `tests/test_level_loader.gd`
 
-- [ ] **Step 1: Write the test file**
+- [x] **Step 1: Write the test file**
 
 Create `tests/test_level_loader.gd`:
 
@@ -201,7 +203,7 @@ func test_get_levels_for_world_missing_index_returns_empty_array() -> void:
 	assert_eq(result, [])
 ```
 
-- [ ] **Step 2: Run tests to confirm they fail**
+- [x] **Step 2: Run tests to confirm they fail**
 
 ```bash
 /Applications/Godot-2.app/Contents/MacOS/Godot --path . --headless -s addons/gut/gut_cmdln.gd -gconfig=.gut_config.json 2>&1 | grep -A5 "test_level_loader"
@@ -209,7 +211,7 @@ func test_get_levels_for_world_missing_index_returns_empty_array() -> void:
 
 Expected: errors because `LevelLoader` autoload does not exist yet.
 
-- [ ] **Step 3: Commit failing tests**
+- [x] **Step 3: Commit failing tests**
 
 ```bash
 git add tests/test_level_loader.gd
@@ -225,7 +227,7 @@ git commit -m "Add failing tests for LevelLoader"
 - Modify: `project.godot` — add `LevelLoader` to `[autoload]`
 - Delete: `scripts/systems/.gitkeep`
 
-- [ ] **Step 1: Write the implementation**
+- [x] **Step 1: Write the implementation**
 
 Create `scripts/systems/level_loader.gd`:
 
@@ -276,7 +278,7 @@ func get_levels_for_world(world_name: String) -> Array[Dictionary]:
 	return levels
 ```
 
-- [ ] **Step 2: Register the autoload in project.godot**
+- [x] **Step 2: Register the autoload in project.godot**
 
 Open `project.godot` and add `LevelLoader` to the `[autoload]` section:
 
@@ -289,13 +291,13 @@ SaveManager="*res://scripts/autoloads/save_manager.gd"
 LevelLoader="*res://scripts/systems/level_loader.gd"
 ```
 
-- [ ] **Step 3: Remove the placeholder**
+- [x] **Step 3: Remove the placeholder**
 
 ```bash
 git rm scripts/systems/.gitkeep
 ```
 
-- [ ] **Step 4: Run the Godot importer to register the new script**
+- [x] **Step 4: Run the Godot importer to register the new script**
 
 ```bash
 /Applications/Godot-2.app/Contents/MacOS/Godot --path . --headless --import 2>&1 | tail -5
@@ -303,7 +305,7 @@ git rm scripts/systems/.gitkeep
 
 Expected: exits cleanly with no script errors.
 
-- [ ] **Step 5: Run all tests and confirm they pass**
+- [x] **Step 5: Run all tests and confirm they pass**
 
 ```bash
 /Applications/Godot-2.app/Contents/MacOS/Godot --path . --headless -s addons/gut/gut_cmdln.gd -gconfig=.gut_config.json 2>&1 | tail -20
@@ -311,7 +313,7 @@ Expected: exits cleanly with no script errors.
 
 Expected: `---- All tests passed! ----` with 19 passing (14 existing + 5 new).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/systems/level_loader.gd project.godot
@@ -326,7 +328,7 @@ Closes #4"
 
 **Files:** none
 
-- [ ] **Step 1: Push branch and open PR**
+- [x] **Step 1: Push branch and open PR**
 
 ```bash
 git push
