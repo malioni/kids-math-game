@@ -1,7 +1,8 @@
 extends SceneTree
 
 ## Generates the placeholder sounds into assets/audio/: shared feedback sounds, each world's place,
-## remove and background loop, the market's splat, and the menu's tune. Every sound is built in
+## remove and background loop, the market's splat, the memory match chime, and the menu's
+## tune. Every sound is built in
 ## code, so nothing is downloaded or licensed; real sounds can replace them later under the same
 ## names. Run from the project root:
 ##   Godot --path . --headless -s tools/make_audio_placeholders.gd
@@ -14,7 +15,7 @@ const LOOP_SECONDS := 8.0
 ## Extra audio generated past the loop's end and blended into its start, so it repeats gaplessly.
 const BLEND_SECONDS := 1.0
 ## Pitch, in Hz, of each world's place sound; remove is higher and lighter.
-const PLACE_HZ := {"forest": 180.0, "sky": 520.0, "market": 140.0, "picnic": 330.0}
+const PLACE_HZ := {"forest": 180.0, "sky": 520.0, "market": 140.0, "picnic": 330.0, "memory": 400.0}
 ## The tunes, one bar per row: a low note, then the melody, one note per beat, as MIDI note numbers
 ## (0 is a rest). _tune says how often the low note sounds.
 ## The menu: slow and calm, a music box.
@@ -54,10 +55,12 @@ func _init() -> void:
 		_save(world + "/remove", _blip.bind(hz * 2.5, 0.08, 0.4))
 	_save("sky/remove", _pop)
 	_save("market/splat", _splat)
+	_save("memory/match", _notes.bind([659.25, 987.77], 0.09, 0.35))
 	_save("forest/ambience", func() -> PackedFloat32Array: return _seamless(_water()))
 	_save("sky/ambience", func() -> PackedFloat32Array: return _seamless(_wind()))
 	_save("market/ambience", _tune.bind(MARKET_BARS, 0.25, 0.35, 4))
 	_save("picnic/ambience", func() -> PackedFloat32Array: return _seamless(_birds()))
+	_save("memory/ambience", func() -> PackedFloat32Array: return _seamless(_chimes()))
 	_save("menu/ambience", _tune.bind(MENU_BARS, 0.5, 1.2, 4))
 	quit()
 
@@ -255,6 +258,21 @@ func _birds() -> PackedFloat32Array:
 			_add_chirp(samples, start + note * 0.14)
 		start += _rng.randf_range(0.8, 2.0)
 	return _normalize(samples, 0.45)
+
+
+# A soft breeze with a few low chimes at random times: a calm meadow.
+func _chimes() -> PackedFloat32Array:
+	var samples := _loop_buffer()
+	var low: float = 0.0
+	for i in samples.size():
+		low += 0.01 * (_rng.randf_range(-1.0, 1.0) - low)
+		samples[i] = low * 0.5
+	var chime_hz: Array[float] = [261.63, 329.63, 392.0, 440.0]
+	var start: float = 0.4
+	while start < LOOP_SECONDS + BLEND_SECONDS - 1.5:
+		_add_note(samples, chime_hz[_rng.randi_range(0, chime_hz.size() - 1)], start, 1.5, 0.12)
+		start += _rng.randf_range(1.2, 2.4)
+	return _normalize(samples, 0.4)
 
 
 func _add_chirp(samples: PackedFloat32Array, start: float) -> void:

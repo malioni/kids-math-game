@@ -1,0 +1,205 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/worlds/memory.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/bg_memory.png" id="bg"]
+[ext_resource type="PackedScene" path="res://scenes/mechanics/memory_mechanic.tscn" id="mechanic"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_fox.png" id="fox"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_rabbit.png" id="rabbit"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_bear.png" id="bear"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_owl.png" id="owl"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_frog.png" id="frog"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_hedgehog.png" id="hedgehog"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_mouse.png" id="mouse"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_duck.png" id="duck"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_pig.png" id="pig"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_cat.png" id="cat"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_deer.png" id="deer"]
+[ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_squirrel.png" id="squirrel"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="retry_icon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_idle.png" id="fox_idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_celebrate.png" id="fox_celebrate"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_sad.png" id="fox_sad"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="level_hud_scene"]
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_0"]
+atlas = ExtResource("fox_idle")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_1"]
+atlas = ExtResource("fox_idle")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_2"]
+atlas = ExtResource("fox_idle")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_idle_3"]
+atlas = ExtResource("fox_idle")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_0"]
+atlas = ExtResource("fox_celebrate")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_1"]
+atlas = ExtResource("fox_celebrate")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_2"]
+atlas = ExtResource("fox_celebrate")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_celebrate_3"]
+atlas = ExtResource("fox_celebrate")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_sad_0"]
+atlas = ExtResource("fox_sad")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_sad_1"]
+atlas = ExtResource("fox_sad")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_sad_2"]
+atlas = ExtResource("fox_sad")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="Atlas_sad_3"]
+atlas = ExtResource("fox_sad")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="FoxFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_idle_3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_celebrate_3")
+}],
+"loop": true,
+"name": &"celebrate",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Atlas_sad_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_sad_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_sad_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Atlas_sad_3")
+}],
+"loop": true,
+"name": &"sad",
+"speed": 4.0
+}]
+
+[sub_resource type="Gradient" id="Gradient_confetti"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.82, 0.47, 1, 0.88, 0.22, 0.18, 1, 0.95, 0.52, 0.12, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_confetti"]
+gradient = SubResource("Gradient_confetti")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_confetti"]
+direction = Vector3(0, -1, 0)
+spread = 60.0
+initial_velocity_min = 200.0
+initial_velocity_max = 350.0
+gravity = Vector3(0, 400, 0)
+scale_min = 4.0
+scale_max = 8.0
+color_ramp = SubResource("GradientTexture1D_confetti")
+
+[node name="Memory" type="Node2D"]
+script = ExtResource("script")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(640, 360)
+texture = ExtResource("bg")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="Character" type="AnimatedSprite2D" parent="."]
+position = Vector2(150, 470)
+scale = Vector2(2.5, 2.5)
+sprite_frames = SubResource("FoxFrames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="MemoryMechanic" parent="." instance=ExtResource("mechanic")]
+position = Vector2(640, 360)
+card_textures = {
+"bear": ExtResource("bear"),
+"cat": ExtResource("cat"),
+"deer": ExtResource("deer"),
+"duck": ExtResource("duck"),
+"fox": ExtResource("fox"),
+"frog": ExtResource("frog"),
+"hedgehog": ExtResource("hedgehog"),
+"mouse": ExtResource("mouse"),
+"owl": ExtResource("owl"),
+"pig": ExtResource("pig"),
+"rabbit": ExtResource("rabbit"),
+"squirrel": ExtResource("squirrel")
+}
+
+[node name="CelebrationParticles" type="GPUParticles2D" parent="."]
+position = Vector2(160, 330)
+emitting = false
+amount = 60
+lifetime = 1.2
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_confetti")
+
+[node name="RetryPrompt" type="CanvasLayer" parent="."]
+
+[node name="RetryIcon" type="TextureButton" parent="RetryPrompt"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = -80.0
+offset_right = 80.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("retry_icon")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="LevelHud" parent="." instance=ExtResource("level_hud_scene")]
