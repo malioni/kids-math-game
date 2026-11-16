@@ -80,3 +80,11 @@ func test_fox_frames_every_world_uses_the_shared_frames_at_its_old_size() -> voi
 		assert_true(FOX_SIZE.has(id), "add %s to FOX_SIZE" % id)
 		assert_almost_eq(fox.scale.y * CELL, float(FOX_SIZE.get(id, 0.0)), 0.01, id)
 		root.free()
+
+
+func test_fox_frames_main_menu_uses_the_shared_frames_at_scale_one() -> void:
+	var root: Node = load("res://scenes/ui/main_menu.tscn").instantiate()
+	var fox: AnimatedSprite2D = root.get_node("PlayArea/Fox")
+	assert_eq(fox.sprite_frames.resource_path, FRAMES_PATH)
+	assert_eq(fox.scale, Vector2.ONE)
+	root.free()

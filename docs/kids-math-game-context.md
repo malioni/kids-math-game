@@ -1,6 +1,6 @@
 # Kids Math Game: project context
 
-_Last updated 2026-11-05. Everything below describes `main` through PR #36: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), menu Play opening the centred world (#30), checks before every deploy (#33), the win and lose flow moving into `WorldBase` (#34), the save kept in memory (#35), and small fixes (#36)._
+_Last updated 2026-11-16. Everything below describes `main` through PR #36: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), menu Play opening the centred world (#30), checks before every deploy (#33), the win and lose flow moving into `WorldBase` (#34), the save kept in memory (#35), small fixes (#36), and on the `vector-art` branch the vector fox, market art and the throw._
 
 ## What it is
 
@@ -20,12 +20,12 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 
 **World 3: The Market (multiplication as equal groups).** The fox is the customer and holds up an order slip: an amount and a picture per item (e.g. 12 tomatoes). Each ordered item has a crate of equal-sized bags that never runs out, each bag showing how many it holds. The child drags or taps bags onto the table (one row per item) and presses Go. The number on the table is never shown, so the child works out bags × bag size.
 - Bag sizes: tomatoes 2–4, potatoes 5–7, carrots 8–10 (never 1, so it's never just counting). The answer takes 2–10 bags.
-- Every item exact → the fox cheers. Any item short or over → the fox throws a tomato at the table (a splat; until the fox has throw frames its fall lurch stands in); retry keeps the same order.
+- Every item exact → the fox cheers. Any item short or over → the fox lobs a tomato at the table (a six-frame underhand throw; the tomato leaves the paw on frame 3, flies in an arc and splats); retry keeps the same order.
 - Tapping a placed bag sends it back; the row closes the gap.
 
 **World 4: The Picnic (division as fair sharing).** The fox sits at a plate with 1–4 friends (2–5 plates in all). Each fruit's basket shows only its total (e.g. 12 strawberries). The child drags or taps fruit onto the fox's plate (one row per fruit) and presses Go; the baskets then deal the fox's amount to every friend in turn. The fox's amount is never shown, so the child works out total ÷ plates.
 - Every plate equal and the baskets empty → everyone cheers.
-- Too much → the last friends come up short and look sad. Too little → fruit is left in the basket. Either way the fox plays its sad animation (`character_sad.png`, 4 frames, looping until retry); retry keeps the same baskets.
+- Too much → the last friends come up short and look sad. Too little → fruit is left in the basket. Either way the fox plays its sad animation (`character_sad.svg`, 4 frames, looping until retry); retry keeps the same baskets.
 
 **Level HUD (every world).** A badge in the top-left of the play area: world icon + level number + the end of the current difficulty (e.g. 4/10 on easy, 14/20 on hard). While shuffling it shows a small shuffle icon and the place in the whole shuffle (e.g. 7/40 with four worlds). Tapping the badge opens the picker:
 - A tab per world, showing the current difficulty's 10 levels by their real numbers, current level highlighted, all open. Picking a level loads it and sets that world's saved level for the difficulty (it can lower it). Picking a level in another world switches scenes. Picking a level leaves shuffle.
@@ -38,10 +38,10 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 
 - Four worlds, 20 levels each, split Easy (1–10) / Hard (11–20) by `data/levels/difficulty.json`.
 - Every puzzle is generated at load from per-level ranges, so replays differ. Progress is saved locally per world, per difficulty, and separately for shuffle.
-- All art is programmer-art placeholder (`assets/sprites/forest_bridge/`, `sky_balloons/`, `market/`, `picnic/`, `ui/`, see the READMEs there), at final filenames and sizes so real art can drop in. Several placeholders are drawn by headless tools in `tools/` (`make_picnic_placeholders.gd`, `make_mode_icons.gd`, `make_fox_sad_placeholder.gd`). The author said the placeholders are fine for now. The market's sprites (`assets/sprites/market/`, `ui/icon_world_market.svg`) are hand-drawn SVG vector art.
+- Art is being redrawn as vector art (issue #7; spec `docs/superpowers/specs/2026-11-16-vector-art-design.md`). Done: the fox (`assets/sprites/fox/`, six sheets and the shared `fox_frames.tres`, all written by `tools/make_fox_sheets.gd` from a table of poses) and the market (`assets/sprites/market/`, hand-drawn SVGs). Still programmer-art PNGs, drawn by the remaining `tools/make_*_placeholders.gd` scripts: `forest_bridge/`, `sky_balloons/`, `picnic/`, `memory/` and `ui/` (stage 2).
 - Every pull request runs lint, tests and a headless boot (`.github/workflows/test.yml`). Every push to `main` runs the same checks, then builds the Web preset and publishes it to GitHub Pages at https://malioni.github.io/kids-math-game/ (`.github/workflows/deploy-web.yml`).
 - 466 GUT tests passing (2026-11-12); headless boot and lint clean. `gdlint` isn't installed on the Mac right now (`pip install gdtoolkit`); CI runs it.
-- Not yet done: final art (issue #7), adaptive difficulty, the PIN-gated parent view, native Android/iOS exports (only a Web preset exists), and playtesting with the target age.
+- Not yet done: the rest of the final art (issue #7, stage 2), adaptive difficulty, the PIN-gated parent view, native Android/iOS exports (only a Web preset exists), and playtesting with the target age.
 - Placeholder sounds generated by `tools/make_audio_placeholders.gd` (see `assets/audio/README.md`): a rising chime for a right answer and three falling notes for a wrong one, complete, tap, and each world's place, remove and background loop. Tuned after the first listen (#38–#40): the menu and the market play short tunes (a slow music box and a bouncy plucked tune), the forest is a bubbling river, and the market adds a splat when the tomato lands. Each sound is seeded from its own name, so changing one leaves the others byte-for-byte the same. A grown-up can turn background sound and effects off with the toggles in the picker's bottom-right corner; Easy/Hard sit in the bottom-left.
 
 ## Tech stack and tools
@@ -83,7 +83,7 @@ Strict layers (from `CLAUDE.md`): `scenes/` are presentation only; `scripts/mech
 | `scripts/mechanics/market_puzzle_generator.gd` | `MarketPuzzleGenerator` (static). `generate(params, rng) -> Array[{item, bag_size, bag_count, quantity}]`, one order per level item. |
 | `scripts/mechanics/market_mechanic.gd` + `.tscn` | `MarketMechanic`. `setup(orders)`, `reset()`, `confirm()`, `set_interactive()`, `get_orders()`, `get_placed_count(item)`, `get_placed_total(item)`, `get_placed_bags(item)`, `get_ready_bag(item)`. Signals `correct`, `incorrect`, `bags_changed(item, count)`. Exports `item_icons`, `go_texture`, `crate_texture`, table/row layout, `max_bags_per_row` (12). |
 | `scripts/mechanics/bag_drag.gd` + `.tscn` | `BagDrag` (`DragPiece`): `configure(item_id, size, icon)`, `get_width()`. |
-| `scripts/worlds/market.gd` + `scenes/worlds/market/` | Market flow: fox cheer, or tomato throw + splat (with `market/splat` when it lands) and retry. Exports `throw_duration`, `splat_duration`. |
+| `scripts/worlds/market.gd` + `scenes/worlds/market/` | Market flow: fox cheer, or the underhand throw (tomato released on frame 3 of `throw`, arcing `_ARC_HEIGHT` px above the straight line), splat pop with `market/splat`, and retry. Exports `throw_duration`, `splat_duration`. |
 | `scripts/mechanics/sharing_puzzle_generator.gd` | `SharingPuzzleGenerator` (static). `generate(params, rng) -> {plates, orders: [{item, share, total}]}`. |
 | `scripts/mechanics/sharing_mechanic.gd` + `.tscn` | `SharingMechanic`. `setup(plates, orders)`, `reset()`, `confirm()` (deals to the friends, `deal_step` s per step), `set_interactive()`, `is_dealing()`, `get_orders()`, `get_plate_count()`, `get_placed_count(item)`, `get_placed_pieces(item)`, `get_ready_piece(item)`, `get_basket_count(item)`, `get_dealt_count(guest, item)`, `get_guest(guest)`. Signals `correct`, `incorrect`. Exports textures, `guest_frames`, `guest_tints` and layout. |
 | `scripts/mechanics/fruit_drag.gd` + `.tscn` | `FruitDrag` (`DragPiece`): `configure(item_id, icon)`, `get_width()`. |
@@ -218,16 +218,16 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 - `change_scene_to_file` in a test replaces GUT's own scene; set `GameRegistry.change_scenes = false` in tests that make a world switch (shuffle does this).
 - Tests touching difficulty, mode or progress must call `SaveFixture.clear()` first. The suite uses `user://test_save.cfg`, set in `tests/pre_run_hook.gd`, so it leaves the real save alone.
 - In tests, don't rely on a very short duration outlasting a frame. A slow machine can finish a 0.01 s celebration before the next check, so set a longer duration when checking the state during it.
-- Each fox frame must stay inside its own 64 px cell with an empty column at each edge, or texture filtering bleeds a neighbour's pixels in (the stray tail tip fixed in #24).
+- Each fox frame must leave the two outermost columns of its 160-unit cell empty, or a neighbour's pixels bleed in (the stray tail tip fixed in #24); `tests/test_fox_frames.gd` checks every frame.
+- The thrown tomato leaves the paw at `_HAND_OFFSET` in `scripts/worlds/market.gd`, which is the paw position `tools/make_fox_sheets.gd` prints when it runs. The tomato the fox holds (the generator's `_tomato`) is a scaled copy of `assets/sprites/market/icon_tomato.svg`, so change the pose, the offset and the icon together. The main menu (`scenes/ui/main_menu.tscn`) shows the same shared fox frames at scale 1.
 - Sprites are SVGs imported as `DPITexture` (importer `svg`), which re-renders them at the screen's real resolution. A new SVG imports as a fixed-size texture by default, so run `tools/import_svgs.sh` after adding one; `tests/test_sprites.gd` fails otherwise. Checked sharp at double zoom on desktop and in the web build (2026-11-16) for `Sprite2D`, `AtlasTexture`, `AnimatedSprite2D`, `NinePatchRect`, `TextureRect` and `TextureButton`.
 
 ## Open ideas and next steps
 
 - Playtest every world with the target age and tune the level JSON in `data/levels/world_*/`.
-- Final art (#7) and real sounds to replace the placeholders.
+- Stage 2 of the vector art (#7): forest, sky, picnic, memory and UI. Real sounds to replace the placeholders.
 - Adaptive difficulty (e.g. repeat easier variants after a failure), after more playtesting. Today Easy/Hard is a manual grown-up choice, and DESIGN.md says so. `skill_tags` and `narrative_key` were removed from the level JSON in #35 because nothing read them; they're in git history if this or a story needs them.
 - Parent view (PIN-gated session summaries).
 - Skill areas with no world yet: counting, comparison, patterns and spatial reasoning (mechanics `CountingMechanic`, `SortingMechanic`, `MatchingMechanic`, `BalanceMechanic` in DESIGN.md are unbuilt). Planned worlds: Garden (addition and grouping), Kitchen (addition and subtraction).
 - Native Android/iOS builds.
-- Market: throw frames for the fox (the fall lurch stands in now).
 - Sky Balloons: burst particles; optionally hide the lift total on later levels so the child also has to add.
