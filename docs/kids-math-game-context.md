@@ -219,6 +219,7 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 - Tests touching difficulty, mode or progress must call `SaveFixture.clear()` first. The suite uses `user://test_save.cfg`, set in `tests/pre_run_hook.gd`, so it leaves the real save alone.
 - In tests, don't rely on a very short duration outlasting a frame. A slow machine can finish a 0.01 s celebration before the next check, so set a longer duration when checking the state during it.
 - Each fox frame must stay inside its own 64 px cell with an empty column at each edge, or texture filtering bleeds a neighbour's pixels in (the stray tail tip fixed in #24).
+- Sprites are SVGs imported as `DPITexture` (importer `svg`), which re-renders them at the screen's real resolution. A new SVG imports as a fixed-size texture by default, so run `tools/import_svgs.sh` after adding one; `tests/test_sprites.gd` fails otherwise. Checked sharp at double zoom on desktop and in the web build (2026-11-16) for `Sprite2D`, `AtlasTexture`, `AnimatedSprite2D`, `NinePatchRect`, `TextureRect` and `TextureButton`.
 
 ## Open ideas and next steps
 
