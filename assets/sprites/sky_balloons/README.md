@@ -12,4 +12,4 @@ the **same filename and dimensions** and the scenes pick it up unchanged.
 | `sandbag.png` | 120×120 | Weight sign; leave the face blank (the target is a Label) |
 | `lift_badge.png` | 120×120 | Where the strings meet; leave the face blank (the lift total is a Label) |
 
-The fox reuses the Forest Bridge character sheets (idle, celebrate, fall).
+The fox uses the shared sheets in `assets/sprites/fox/` (idle, celebrate, fall).

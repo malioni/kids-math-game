@@ -17,8 +17,6 @@ dimensions** and the scenes pick it up unchanged.
 | `icon_carrot.png` | 64×64 | Carrot icon |
 | `splat.png` | 200×200 | Tomato splat shown over the table after a throw |
 
-The fox reuses the Forest Bridge character sheets (idle, celebrate). It has no throw frames yet,
-so the throw plays the 3-frame `character_fall.png` lurch; a `character_throw.png` sheet would
-replace that.
+The fox uses the shared sheets in `assets/sprites/fox/` (idle, celebrate, throw).
 
 The Go and retry buttons reuse `forest_bridge/go_icon.png` and `forest_bridge/retry_icon.png`.

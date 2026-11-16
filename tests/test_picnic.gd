@@ -92,7 +92,7 @@ func test_picnic_sad_animation_uses_sad_sheet_and_loops() -> void:
 	assert_eq(frames.get_frame_count("sad"), 4)
 	assert_true(frames.get_animation_loop("sad"))
 	var first: AtlasTexture = frames.get_frame_texture("sad", 0)
-	assert_eq(first.atlas.resource_path, "res://assets/sprites/forest_bridge/character_sad.png")
+	assert_eq(first.atlas.resource_path, "res://assets/sprites/fox/character_sad.svg")
 	assert_eq(_mechanic.guest_frames, frames, "friends share the fox's frames, so they cry too")
 
 

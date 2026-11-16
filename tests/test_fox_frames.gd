@@ -15,6 +15,14 @@ const EXPECTED := {
 	"sad": [4, 4.0, true],
 	"throw": [6, 10.0, false],
 }
+# World id -> the fox's height on screen in px, which the redraw must not change.
+const FOX_SIZE := {
+	"forest": 64.0,
+	"sky": 83.2,
+	"market": 160.0,
+	"picnic": 160.0,
+	"memory": 160.0,
+}
 
 var _frames: SpriteFrames
 
@@ -61,3 +69,14 @@ func _column_has_paint(image: Image, x: int) -> bool:
 		if image.get_pixel(x, y).a > 0.0:
 			return true
 	return false
+
+
+func test_fox_frames_every_world_uses_the_shared_frames_at_its_old_size() -> void:
+	for world: Dictionary in GameRegistry.get_worlds():
+		var id: String = world["id"]
+		var root: Node = load(world["scene"]).instantiate()
+		var fox: AnimatedSprite2D = root.find_child("Character", true, false)
+		assert_eq(fox.sprite_frames, _frames, "%s has its own copy of the fox's frames" % id)
+		assert_true(FOX_SIZE.has(id), "add %s to FOX_SIZE" % id)
+		assert_almost_eq(fox.scale.y * CELL, float(FOX_SIZE.get(id, 0.0)), 0.01, id)
+		root.free()
