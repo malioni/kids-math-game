@@ -93,3 +93,5 @@ ignore_texture_size = true
 stretch_mode = 5
 
 [node name="LevelHud" parent="." instance=ExtResource("level_hud_scene")]
+
+[connection signal="animation_finished" from="Character" to="." method="_on_character_animation_finished"]
