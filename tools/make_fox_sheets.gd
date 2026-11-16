@@ -488,14 +488,41 @@ func _arm(shoulder: Vector2, angle: float, reach: float, held: String) -> String
 	return arm + "</g>\n"
 
 
-# The tomato in the paw: the same colours as market/icon_tomato.svg, which takes over once it flies.
+# The tomato in the paw: market/icon_tomato.svg's body, leaf and highlight, scaled down to the paw.
+# The leaf keeps the icon's full size while the body shrinks, so its tips show on both sides of the
+# paw that holds it by the stem.
 func _tomato(at: Vector2) -> String:
+	var body: float = 0.56
+	var leaf: float = 1.0
 	return (
-		'<circle cx="%s" cy="%s" r="14" fill="url(#tomato)"/>\n' % [_n(at.x), _n(at.y)]
-		+ (
-			'<path d="M%s %s l-6 -4 l5 -1 l1 -5 l1 5 l5 1 Z" fill="#4D9E40" stroke-width="2"/>\n'
-			% [_n(at.x), _n(at.y - 9.0)]
+		(
+			'<g transform="translate(%s %s) scale(%s)" stroke-width="%s">\n'
+			% [_n(at.x - 32.0 * body), _n(at.y - 37.0 * body), _n(body), _n(3.0 / body)]
 		)
+		+ (
+			'<path d="M32 16 C46 12 58 22 58 36 C58 50 46 59 32 59 C18 59 6 50 6 36'
+			+ ' C6 22 18 12 32 16 Z" fill="url(#tomato)"/>\n'
+		)
+		+ (
+			'<ellipse cx="20" cy="40" rx="4.5" ry="7.5" fill="#FFFFFF" fill-opacity="0.35"'
+			+ ' stroke="none" transform="rotate(25 20 40)"/>\n'
+		)
+		+ "</g>\n"
+		+ (
+			'<g transform="translate(%s %s) scale(%s)" stroke-width="%s">\n'
+			% [
+				_n(at.x - 32.0 * leaf),
+				_n(at.y - 19.0 * body - 18.0 * leaf),
+				_n(leaf),
+				_n(2.0 / leaf)
+			]
+		)
+		+ (
+			'<path d="M32 18 C28 13 22 11 17 13 C21 16 23 19 27 20 C24 23 23 26 24 29 C28 27 31 24'
+			+ ' 32 21 C33 24 36 27 40 29 C41 26 40 23 37 20 C41 19 43 16 47 13 C42 11 36 13 32 18 Z"'
+			+ ' fill="#4D9E40"/>\n'
+		)
+		+ "</g>\n"
 	)
 
 
