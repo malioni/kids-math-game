@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="330" viewBox="0 0 760 330">
+<defs>
+<linearGradient id="plank" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#B98552"/>
+<stop offset="0.35" stop-color="#A87444"/>
+<stop offset="1" stop-color="#8E5F35"/>
+</linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#8E5F35"/>
+<stop offset="1" stop-color="#5A391D"/>
+</linearGradient>
+<linearGradient id="light" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+<stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+<stop offset="1" stop-color="#3D2617" stop-opacity="0.14"/>
+</linearGradient>
+</defs>
+<rect x="1.5" y="1.5" width="757" height="327" rx="10" fill="url(#rim)" stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="12" y="12" width="736" height="51" fill="url(#plank)"/>
+<rect x="12" y="63" width="736" height="51" fill="url(#plank)"/>
+<rect x="12" y="114" width="736" height="51" fill="url(#plank)"/>
+<rect x="12" y="165" width="736" height="51" fill="url(#plank)"/>
+<rect x="12" y="216" width="736" height="51" fill="url(#plank)"/>
+<rect x="12" y="267" width="736" height="51" fill="url(#plank)"/>
+<rect x="12" y="12" width="736" height="306" fill="url(#light)"/>
+<g stroke="#5A391D" stroke-width="2.5" stroke-linecap="butt">
+<path d="M12 63 L748 63"/>
+<path d="M12 114 L748 114"/>
+<path d="M12 165 L748 165"/>
+<path d="M12 216 L748 216"/>
+<path d="M12 267 L748 267"/>
+</g>
+<g stroke="#5A391D" stroke-width="2.5" stroke-linecap="butt">
+<path d="M250 12 L250 63"/>
+<path d="M520 63 L520 114"/>
+<path d="M140 114 L140 165"/>
+<path d="M610 114 L610 165"/>
+<path d="M380 165 L380 216"/>
+<path d="M200 216 L200 267"/>
+<path d="M660 216 L660 267"/>
+<path d="M470 267 L470 318"/>
+</g>
+<g fill="none" stroke="#7E5530" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.55">
+<path d="M40 35 C90 32 170 38 220 35"/>
+<path d="M300 47.7 C360 44.7 440 50.7 500 47.7"/>
+<path d="M60 93.6 C140 90.6 220 96.6 300 93.6"/>
+<path d="M560 80.8 C600 77.8 680 83.8 720 80.8"/>
+<path d="M180 139.5 C330 136.5 410 142.5 560 139.5"/>
+<path d="M30 185.4 C145 182.4 225 188.4 340 185.4"/>
+<path d="M420 198.2 C520 195.2 600 201.2 700 198.2"/>
+<path d="M240 233.8 C390 230.8 470 236.8 620 233.8"/>
+<path d="M40 297.6 C195 294.6 275 300.6 430 297.6"/>
+<path d="M500 287.4 C570 284.4 650 290.4 720 287.4"/>
+</g>
+<g fill="#7E5530" fill-opacity="0.6">
+<ellipse cx="430" cy="142" rx="7" ry="3.5"/>
+<ellipse cx="110" cy="241.5" rx="6" ry="3"/>
+<ellipse cx="640" cy="80.9" rx="6" ry="3"/>
+</g>
+<g stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="2" stroke-linecap="butt">
+<path d="M12 14.5 L748 14.5"/>
+<path d="M12 65.5 L748 65.5"/>
+<path d="M12 116.5 L748 116.5"/>
+<path d="M12 167.5 L748 167.5"/>
+<path d="M12 218.5 L748 218.5"/>
+<path d="M12 269.5 L748 269.5"/>
+</g>
+<rect x="11" y="11" width="738" height="308" fill="none" stroke="#3D2617" stroke-width="2"/>
+<path d="M8 6 L752 6" stroke="#B98552" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+</svg>

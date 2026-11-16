@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+<defs>
+<radialGradient id="paper" cx="0.3" cy="0.2" r="1">
+<stop offset="0" stop-color="#F8ECD0"/>
+<stop offset="0.6" stop-color="#EDDBB3"/>
+<stop offset="1" stop-color="#DCC394"/>
+</radialGradient>
+<linearGradient id="side" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#D7BD8C"/>
+<stop offset="1" stop-color="#B8996B"/>
+</linearGradient>
+<linearGradient id="fold" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F8ECD0"/>
+<stop offset="1" stop-color="#E3CDA0"/>
+</linearGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M7 9 L13 6 L19 9 L25 6 L31 9 L37 6 L43 9 L49 6 L55 9 L61 6 L67 9 L73 6 L79 9 L85 6 L90 9 L91 88 C91 91 89 92 86 92 L10 92 C7 92 5 91 5 88 Z" fill="url(#paper)"/>
+<path d="M87 14 L91 12 L91 88 C91 91 89.5 92 87 92 Z" fill="url(#side)" stroke-width="2"/>
+<path d="M7 9 L13 6 L19 9 L25 6 L31 9 L37 6 L43 9 L49 6 L55 9 L61 6 L67 9 L73 6 L79 9 L85 6 L90 9 L91 13 L6 13 Z" fill="url(#fold)"/>
+</g>
+<path d="M9 15.5 L87 15.5" stroke="#B8996B" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.8"/>
+<path d="M9 9.5 L15 7.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+</svg>
