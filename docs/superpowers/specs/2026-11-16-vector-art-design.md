@@ -49,6 +49,10 @@ cut from a sheet with `AtlasTexture`, and one nine-patch piece, viewed on deskto
 size and in the web build. Each must show correctly, and the plain sprite and the fox frame must stay sharp
 at double size.
 
+The desktop half was run on 2026-11-16 in a scratch project at double zoom: `Sprite2D`, a sprite cut with
+`AtlasTexture`, `AnimatedSprite2D`, `NinePatchRect`, `TextureRect` and `TextureButton` all stayed sharp with
+the scalable import, and all were visibly soft with the normal import. The web build is still to check.
+
 - If the scalable import fails for a kind of use (nine-patch is the most likely), that kind uses Godot's
   normal SVG import, which is smooth at the base size and slightly soft when stretched.
 - If it fails in the web build, everything uses the normal SVG import.
@@ -144,8 +148,10 @@ shadow, the order slip, the three produce icons and the splat.
 
 All of this lives in `scripts/worlds/market.gd`, a world script, so the layer rules hold.
 
-- The `throw` animation is six frames at 10 fps (0.6 s): frames 0–1 wind up, leaning back with the tomato in
-  the raised paw; frame 2 swings; frame 3 releases, the paw forward and empty; frames 4–5 follow through.
+- The `throw` animation is six frames at 10 fps (0.6 s). It is an underhand lob, because the fox's head is
+  large and an overarm swing would cross its face: frames 0–1 wind up, leaning back with the tomato drawn
+  back behind the fox; frame 2 swings the paw down and through; frame 3 releases, the paw forward and empty;
+  frames 4–5 follow through.
 - `_play_lose()` plays `throw` and waits for the release frame (`_RELEASE_FRAME := 3`). The tomato then
   appears at the paw and flies to the table over `throw_duration`.
 - The flight is an arc: x moves evenly, and y follows the straight line minus a hump that peaks
@@ -180,9 +186,12 @@ New tests:
 - `test_market.gd`: after a wrong answer the flying tomato is hidden before the release frame and visible
   from it.
 - `test_market.gd`: halfway through the flight the tomato is above the straight line from paw to table.
-- `test_market.gd`: a level change during the wind-up leaves the tomato and splat hidden.
-- Each world's test: its fox uses `fox_frames.tres` and has every animation that world plays.
-  `test_picnic.gd` keeps its check that the friends share the fox's frames.
+- `test_market.gd`: a level change during the wind-up or the flight leaves the tomato and splat hidden.
+- `test_fox_frames.gd`: the shared frames have all six animations with the counts, speeds and loop settings
+  above; every pose stays inside its cell; every registered world's fox uses `fox_frames.tres` at its old
+  on-screen size. `test_picnic.gd` keeps its check that the friends share the fox's frames.
+- `test_sprites.gd`: every SVG under `assets/sprites/` is imported as a scalable texture, and each redrawn
+  sprite keeps its size.
 
 Checks run before each pull request: the full GUT suite, `gdlint scripts/ scenes/` and
 `gdformat --check scripts/ scenes/`.
