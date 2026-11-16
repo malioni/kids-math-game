@@ -118,13 +118,13 @@ region = Rect2(800, 0, 160, 160)
 [resource]
 animations = [{
 "frames": [{
-"duration": 1.0,
+"duration": 4.0,
 "texture": SubResource("idle_0")
 }, {
-"duration": 1.0,
+"duration": 4.0,
 "texture": SubResource("idle_1")
 }, {
-"duration": 1.0,
+"duration": 4.0,
 "texture": SubResource("idle_2")
 }, {
 "duration": 1.0,

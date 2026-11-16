@@ -11,7 +11,7 @@ Do not edit the SVGs by hand; the next run overwrites them.
 
 | Sheet | Frames | Speed (fps) | Loops | Used by |
 |---|---|---|---|---|
-| `character_idle.svg` | 4 | 6 | yes | every world |
+| `character_idle.svg` | 4 | 6 | yes | every world; the three open-eyed frames are held 4 times as long, so it blinks about every 2 s |
 | `character_walk.svg` | 6 | 10 | yes | Forest Bridge |
 | `character_celebrate.svg` | 4 | 8 | yes | every world |
 | `character_fall.svg` | 3 | 8 | no | Forest Bridge, Sky Balloons |

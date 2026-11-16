@@ -39,6 +39,9 @@ const REST := {
 	"head": 0.0,  # head tilted about the neck; positive nods down, negative looks up
 	"arm_front": 15.0,  # 0 hangs down, 90 points forward, 180 up; negative reaches back
 	"arm_back": -10.0,
+	"reach_front": 0.0,  # arm stretched this much past ARM_LENGTH, for a big reach
+	"reach_back": 0.0,
+	"front_arm_behind_head": false,  # a raised front arm passes behind the head, clear of the face
 	"leg_front": 0.0,  # foot swung forward (+) or back (-)
 	"leg_back": 0.0,
 	"lift_front": 0.0,  # foot raised off the ground, as it passes the other one
@@ -49,6 +52,7 @@ const REST := {
 	"mouth": "smile",  # smile, open, frown
 	"tears": 0.0,  # 0 for none, up to 1 as the tears run down
 	"held": "",  # "" or tomato, in the front paw
+	"hold": 1.0,  # how long the frame shows, in frames at the sheet's speed (SpriteFrames duration)
 }
 
 # Each animation's speed (frames per second), whether it loops, and one pose per frame. A pose lists
@@ -60,9 +64,10 @@ const SHEETS := {
 		"loop": true,
 		"poses":
 		[
-			{},
-			{"squash": 1.0, "tail": 3.0},
-			{"squash": 2.0, "tail": 6.0},
+			# The open-eyed frames are held, so the fox blinks about every 2 s, not every loop.
+			{"hold": 4.0},
+			{"squash": 1.0, "tail": 3.0, "hold": 4.0},
+			{"squash": 2.0, "tail": 6.0, "hold": 4.0},
 			{"squash": 1.0, "tail": 3.0, "eyes": "closed"},
 		],
 	},
@@ -81,7 +86,8 @@ const SHEETS := {
 			{"lift_front": 5.0, "arm_front": 10.0, "arm_back": 0.0, "hop": 3.0, "tail": 2.0},
 		],
 	},
-	# A crouch, then a hop with the arms out; the ears leave no room for a higher hop in the cell.
+	# A crouch, then a hop with both arms up. A raised front arm passes behind the head, so its paw
+	# shows beside the ear and never covers the face. The ears leave no room for a higher hop.
 	"celebrate":
 	{
 		"speed": 8.0,
@@ -90,8 +96,7 @@ const SHEETS := {
 		[
 			{
 				"squash": 2.5,
-				"arm_front": 80.0,
-				"arm_back": -120.0,
+				"arm_front": 30.0,
 				"head": -2.0,
 				"eyes": "happy",
 				"mouth": "open",
@@ -99,8 +104,11 @@ const SHEETS := {
 			},
 			{
 				"hop": 5.0,
-				"arm_front": 100.0,
-				"arm_back": -150.0,
+				"arm_front": 150.0,
+				"reach_front": 38.0,
+				"front_arm_behind_head": true,
+				"arm_back": -160.0,
+				"reach_back": 22.0,
 				"head": -4.0,
 				"eyes": "happy",
 				"mouth": "open",
@@ -108,9 +116,12 @@ const SHEETS := {
 				"lift_front": 2.0
 			},
 			{
-				"hop": 8.0,
-				"arm_front": 105.0,
+				"hop": 7.0,
+				"arm_front": 148.0,
+				"reach_front": 40.0,
+				"front_arm_behind_head": true,
 				"arm_back": -165.0,
+				"reach_back": 24.0,
 				"head": -4.0,
 				"eyes": "happy",
 				"mouth": "open",
@@ -120,8 +131,11 @@ const SHEETS := {
 			},
 			{
 				"hop": 3.0,
-				"arm_front": 95.0,
-				"arm_back": -145.0,
+				"arm_front": 147.0,
+				"reach_front": 40.0,
+				"front_arm_behind_head": true,
+				"arm_back": -155.0,
+				"reach_back": 20.0,
 				"head": -3.0,
 				"eyes": "happy",
 				"mouth": "open",
@@ -129,21 +143,23 @@ const SHEETS := {
 			},
 		],
 	},
+	# A startled flail: the arms fling to a new place on every frame, unlike the cheer.
 	"fall":
 	{
 		"speed": 8.0,
 		"loop": false,
 		"poses":
 		[
-			{"eyes": "wide", "mouth": "open", "arm_front": 70.0, "arm_back": -100.0, "tail": 10.0},
+			{"eyes": "wide", "mouth": "open", "arm_front": 55.0, "tail": 10.0},
 			{
 				"lean": -8.0,
 				"head": -6.0,
 				"eyes": "wide",
 				"mouth": "open",
-				"arm_front": 100.0,
-				"arm_back": -160.0,
-				"tail": 20.0,
+				"arm_front": 110.0,
+				"arm_back": -125.0,
+				"reach_back": 18.0,
+				"tail": 8.0,
 				"leg_front": 5.0,
 				"leg_back": -5.0
 			},
@@ -151,8 +167,9 @@ const SHEETS := {
 				"lean": 6.0,
 				"eyes": "wide",
 				"mouth": "open",
-				"arm_front": 85.0,
-				"arm_back": -135.0,
+				"arm_front": 20.0,
+				"arm_back": -150.0,
+				"reach_back": 20.0,
 				"tail": 30.0,
 				"leg_front": -4.0,
 				"leg_back": 4.0,
@@ -292,6 +309,9 @@ func _defs() -> String:
 
 
 func _fox(pose: Dictionary) -> String:
+	var front_arm: String = _arm(
+		SHOULDER_FRONT, pose["arm_front"], pose["reach_front"], pose["held"]
+	)
 	return (
 		(
 			'<g transform="translate(0 %s) rotate(%s %s %s)" stroke="%s" stroke-width="3"'
@@ -301,10 +321,11 @@ func _fox(pose: Dictionary) -> String:
 		+ _tail(pose["tail"])
 		+ _leg(66.0, pose["leg_back"], pose["lift_back"])
 		+ _leg(90.0, pose["leg_front"], pose["lift_front"])
-		+ _arm(SHOULDER_BACK, pose["arm_back"], "")
+		+ _arm(SHOULDER_BACK, pose["arm_back"], pose["reach_back"], "")
 		+ _body(pose["squash"])
+		+ (front_arm if pose["front_arm_behind_head"] else "")
 		+ _head(pose)
-		+ _arm(SHOULDER_FRONT, pose["arm_front"], pose["held"])
+		+ ("" if pose["front_arm_behind_head"] else front_arm)
 		+ "</g>\n"
 	)
 
@@ -328,7 +349,12 @@ func _leg(hip_x: float, step: float, lift: float) -> String:
 	return (
 		(
 			'<g transform="translate(0 %s) rotate(%s %s %s)">\n'
-			% [_n(-lift), _n(-rad_to_deg(asin(step / length))), _n(hip_x), _n(LEG_TOP)]
+			% [
+				_n(-lift),
+				_n(-rad_to_deg(asin(clampf(step / length, -1.0, 1.0)))),
+				_n(hip_x),
+				_n(LEG_TOP)
+			]
 		)
 		+ (
 			'<rect x="%s" y="%s" width="13" height="%s" rx="5" fill="url(#dark)"/>\n'
@@ -442,8 +468,10 @@ func _tears(amount: float) -> String:
 	return tears
 
 
-# An arm hanging from a shoulder, turned by `angle`, with anything it holds drawn at the paw.
-func _arm(shoulder: Vector2, angle: float, held: String) -> String:
+# An arm hanging from a shoulder, turned by `angle` and `reach` longer than ARM_LENGTH, with
+# anything it holds drawn at the paw.
+func _arm(shoulder: Vector2, angle: float, reach: float, held: String) -> String:
+	var length: float = ARM_LENGTH + reach
 	var arm: String = (
 		'<g transform="rotate(%s %s %s)">\n' % [_n(-angle), _n(shoulder.x), _n(shoulder.y)]
 	)
@@ -451,11 +479,11 @@ func _arm(shoulder: Vector2, angle: float, held: String) -> String:
 		arm += _tomato(shoulder + Vector2(0, HOLD_REACH))
 	arm += (
 		'<rect x="%s" y="%s" width="12" height="%s" rx="6" fill="url(#fur)"/>\n'
-		% [_n(shoulder.x - 6.0), _n(shoulder.y - 5.0), _n(ARM_LENGTH + 5.0)]
+		% [_n(shoulder.x - 6.0), _n(shoulder.y - 5.0), _n(length + 5.0)]
 	)
 	arm += (
 		'<ellipse cx="%s" cy="%s" rx="6" ry="5" fill="url(#dark)" stroke="none"/>\n'
-		% [_n(shoulder.x), _n(shoulder.y + ARM_LENGTH - 5.0)]
+		% [_n(shoulder.x), _n(shoulder.y + length - 5.0)]
 	)
 	return arm + "</g>\n"
 
@@ -497,8 +525,9 @@ func _sprite_frames() -> String:
 				% [sheet_name, i, sheet_name]
 			)
 			cells += "region = Rect2(%d, 0, %d, %d)\n\n" % [i * CELL, CELL, CELL]
+			var hold: float = REST.merged(sheet["poses"][i], true)["hold"]
 			frames.append(
-				'{\n"duration": 1.0,\n"texture": SubResource("%s_%d")\n}' % [sheet_name, i]
+				'{\n"duration": %.1f,\n"texture": SubResource("%s_%d")\n}' % [hold, sheet_name, i]
 			)
 		animations.append(
 			(
