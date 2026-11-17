@@ -31,7 +31,7 @@ const _POP_DURATION := 0.15
 ## Tints given to the friends in turn, so they look different from each other.
 @export var guest_tints: Array[Color] = [Color.WHITE]
 ## Scale of each friend's sprite.
-@export var guest_scale: float = 2.0
+@export var guest_scale: float = 0.8
 ## The fox's plate in local pixels; fruit released inside it is placed.
 @export var plate_rect: Rect2 = Rect2(-390, -30, 640, 260)
 ## Local y of each fruit's row on the fox's plate, top to bottom. Order i uses row i.

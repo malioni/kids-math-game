@@ -92,8 +92,15 @@ func test_picnic_sad_animation_uses_sad_sheet_and_loops() -> void:
 	assert_eq(frames.get_frame_count("sad"), 4)
 	assert_true(frames.get_animation_loop("sad"))
 	var first: AtlasTexture = frames.get_frame_texture("sad", 0)
-	assert_eq(first.atlas.resource_path, "res://assets/sprites/forest_bridge/character_sad.png")
+	assert_eq(first.atlas.resource_path, "res://assets/sprites/fox/character_sad.svg")
 	assert_eq(_mechanic.guest_frames, frames, "friends share the fox's frames, so they cry too")
+
+
+func test_picnic_friends_are_drawn_at_the_old_size() -> void:
+	# The fox's frames are 160 units, so 0.8 keeps a friend 128 px, as before the redraw.
+	var animal: AnimatedSprite2D = _mechanic.get_guest(0)
+	assert_almost_eq(animal.scale.x * 160.0, 128.0, 0.01)
+	assert_almost_eq(animal.scale.y * 160.0, 128.0, 0.01)
 
 
 func test_picnic_retry_keeps_same_orders_and_clears_plate() -> void:

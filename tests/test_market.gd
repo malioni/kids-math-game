@@ -3,7 +3,8 @@ extends GutTest
 const SCENE := preload("res://scenes/worlds/market/market.tscn")
 const _SEED := 1234
 const _SETTLE := 0.3
-# The throw animation is 3 frames at 6 fps, then the tomato flies and the splat shows.
+# The paw lets go on frame 3 of the throw at 10 fps (0.3 s), then the tomato flies and the splat
+# shows.
 const _THROW_SETTLE := 0.9
 
 var _world: Node2D
@@ -88,6 +89,60 @@ func test_market_incorrect_shows_retry_after_throw() -> void:
 	assert_eq(_world._current_index, 0)
 
 
+func test_market_throw_animation_uses_its_own_sheet() -> void:
+	var frames: SpriteFrames = _world.get_node("Character").sprite_frames
+	assert_eq(frames.get_frame_count("throw"), 6)
+	assert_false(frames.get_animation_loop("throw"))
+	var first: AtlasTexture = frames.get_frame_texture("throw", 0)
+	assert_eq(first.atlas.resource_path, "res://assets/sprites/fox/character_throw.svg")
+
+
+func test_market_tomato_leaves_the_paw_on_the_release_frame() -> void:
+	var fox: AnimatedSprite2D = _world.get_node("Character")
+	var tomato: Sprite2D = _world.get_node("FlyingTomato")
+	# Long enough that a slow frame can't land the tomato before the last check.
+	_world.throw_duration = 1.0
+	_mechanic.confirm()
+	for i in 120:
+		if fox.frame >= 3:
+			break
+		assert_false(
+			tomato.visible, "tomato flying on frame %d, before the paw lets go" % fox.frame
+		)
+		await wait_process_frames(1)
+	assert_true(tomato.visible, "the tomato leaves the paw on frame 3")
+
+
+func test_market_tomato_still_flies_if_the_release_frame_is_skipped() -> void:
+	var fox: AnimatedSprite2D = _world.get_node("Character")
+	_world.throw_duration = 1.0
+	_mechanic.confirm()
+	fox.frame = 5
+	assert_true(_world.get_node("FlyingTomato").visible)
+
+
+func test_market_tomato_flies_in_an_arc() -> void:
+	var tomato: Sprite2D = _world.get_node("FlyingTomato")
+	var splat: Sprite2D = _world.get_node("Splat")
+	# Long enough that the check below lands mid-flight even after a slow frame.
+	_world.throw_duration = 1.0
+	_mechanic.confirm()
+	await wait_until(func() -> bool: return tomato.visible, 2.0)
+	var from: Vector2 = tomato.position
+	await wait_seconds(0.5)
+	assert_true(tomato.visible, "still in the air")
+	var along: float = inverse_lerp(from.x, splat.position.x, tomato.position.x)
+	var straight_y: float = lerpf(from.y, splat.position.y, along)
+	assert_lt(tomato.position.y, straight_y - 50.0, "the tomato rises above the straight line")
+
+
+func test_market_fox_goes_back_to_idle_after_the_throw() -> void:
+	var fox: AnimatedSprite2D = _world.get_node("Character")
+	_mechanic.confirm()
+	await wait_until(func() -> bool: return fox.animation == &"idle", 2.0)
+	assert_eq(fox.animation, &"idle")
+
+
 func test_market_incorrect_chimes_then_splats_when_tomato_lands() -> void:
 	watch_signals(AudioManager)
 	_mechanic.confirm()
@@ -123,8 +178,50 @@ func test_market_level_change_during_throw_does_not_show_retry() -> void:
 	await wait_seconds(_THROW_SETTLE)
 	assert_false(_retry.visible)
 	assert_false(_world.get_node("Splat").visible)
+	assert_false(_world.get_node("FlyingTomato").visible)
 	assert_eq(_world._current_index, 7)
 	assert_eq(_mechanic.get_orders().size(), 2)
+
+
+func test_market_level_change_during_flight_leaves_nothing_behind() -> void:
+	var tomato: Sprite2D = _world.get_node("FlyingTomato")
+	_world.throw_duration = 1.0
+	_mechanic.confirm()
+	await wait_until(func() -> bool: return tomato.visible, 2.0)
+	_hud.level_chosen.emit("market", 7)
+	assert_false(tomato.visible)
+	await wait_seconds(1.0 + _SETTLE)
+	assert_false(tomato.visible)
+	assert_false(_world.get_node("Splat").visible)
+	assert_false(_retry.visible)
+	assert_eq(_world.get_node("Character").animation, &"idle")
+
+
+func test_market_level_change_during_splat_leaves_nothing_behind() -> void:
+	var splat: Sprite2D = _world.get_node("Splat")
+	_world.splat_duration = 1.0
+	_mechanic.confirm()
+	await wait_until(func() -> bool: return splat.visible, 2.0)
+	_hud.level_chosen.emit("market", 7)
+	assert_false(splat.visible)
+	await wait_seconds(1.0 + _SETTLE)
+	assert_false(splat.visible)
+	assert_false(_world.get_node("FlyingTomato").visible)
+	assert_false(_retry.visible)
+	assert_eq(_world.get_node("Character").animation, &"idle")
+
+
+func test_market_wrong_again_after_retry_throws_again() -> void:
+	_mechanic.confirm()
+	await wait_seconds(_THROW_SETTLE)
+	_retry.pressed.emit()
+	_mechanic.confirm()
+	assert_eq(_world.get_node("Character").animation, &"throw")
+	assert_eq(_world.get_node("Character").frame, 0)
+	assert_false(_world.get_node("FlyingTomato").visible)
+	await wait_seconds(_THROW_SETTLE)
+	assert_true(_world.get_node("Splat").visible)
+	assert_true(_retry.visible)
 
 
 func test_market_every_level_solvable_in_order() -> void:

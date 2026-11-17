@@ -2,9 +2,9 @@ extends GutTest
 
 const SCENE := preload("res://scenes/mechanics/market_mechanic.tscn")
 const ICONS := {
-	"tomato": preload("res://assets/sprites/market/icon_tomato.png"),
-	"potato": preload("res://assets/sprites/market/icon_potato.png"),
-	"carrot": preload("res://assets/sprites/market/icon_carrot.png"),
+	"tomato": preload("res://assets/sprites/market/icon_tomato.svg"),
+	"potato": preload("res://assets/sprites/market/icon_potato.svg"),
+	"carrot": preload("res://assets/sprites/market/icon_carrot.svg"),
 }
 const ORIGIN := Vector2(640, 400)
 const SETTLE := 0.3

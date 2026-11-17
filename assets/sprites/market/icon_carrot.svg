@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#FFA44A"/>
+<stop offset="0.45" stop-color="#F2851F"/>
+<stop offset="1" stop-color="#D0660F"/>
+</linearGradient>
+<linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#6CBB57"/>
+<stop offset="1" stop-color="#357A2D"/>
+</linearGradient>
+</defs>
+<g transform="translate(8 56) rotate(-45)">
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M45 -2 C50 -11 56 -13 62 -12 C59 -7 54 -3 47 -1 Z" fill="url(#leaf)"/>
+<path d="M45 2 C50 11 56 13 62 12 C59 7 54 3 47 1 Z" fill="url(#leaf)"/>
+<path d="M44 0 C51 -5 58 -5 64 0 C58 5 51 5 44 0 Z" fill="url(#leaf)"/>
+<path d="M0 0 C10 -3 30 -11 40 -11 C46 -11 48 -6 48 0 C48 6 46 11 40 11 C30 11 10 3 0 0 Z" fill="url(#skin)"/>
+</g>
+<path d="M10 -2 C16 -4 22 -6.5 28 -8" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round"/>
+<g fill="none" stroke="#B5560C" stroke-width="2" stroke-linecap="round">
+<path d="M15 4.2 Q17 2.5 16.5 0.5"/>
+<path d="M27 7.6 Q29.5 5.5 29 3"/>
+<path d="M38 -10 Q40 -7.5 39 -5"/>
+</g>
+</g>
+</svg>

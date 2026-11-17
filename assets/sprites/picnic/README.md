@@ -14,8 +14,7 @@ dimensions** and the scenes pick it up unchanged.
 | `icon_apple.png` | 64×64 | Apple (green, so it reads differently from the strawberry) |
 | `icon_banana.png` | 64×64 | Banana |
 
-The fox and its friends reuse the Forest Bridge character sheets (idle, celebrate, and the sad
-sheet `forest_bridge/character_sad.png`). The friends are tinted copies of the fox; final art
-should give them their own animals.
+The fox and its friends use the shared sheets in `assets/sprites/fox/` (idle, celebrate, sad). The friends
+are tinted copies of the fox; later art could give them their own animals.
 
 The Go and retry buttons reuse `forest_bridge/go_icon.png` and `forest_bridge/retry_icon.png`.

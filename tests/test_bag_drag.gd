@@ -1,7 +1,7 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/mechanics/bag_drag.tscn")
-const ICON := preload("res://assets/sprites/market/icon_tomato.png")
+const ICON := preload("res://assets/sprites/market/icon_tomato.svg")
 const HOME := Vector2(200, 200)
 
 var _bag: BagDrag

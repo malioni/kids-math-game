@@ -16,112 +16,8 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_deer.png" id="deer"]
 [ext_resource type="Texture2D" path="res://assets/sprites/memory/animal_squirrel.png" id="squirrel"]
 [ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="retry_icon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_idle.png" id="fox_idle"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_celebrate.png" id="fox_celebrate"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/character_sad.png" id="fox_sad"]
 [ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="level_hud_scene"]
-
-[sub_resource type="AtlasTexture" id="Atlas_idle_0"]
-atlas = ExtResource("fox_idle")
-region = Rect2(0, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_idle_1"]
-atlas = ExtResource("fox_idle")
-region = Rect2(64, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_idle_2"]
-atlas = ExtResource("fox_idle")
-region = Rect2(128, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_idle_3"]
-atlas = ExtResource("fox_idle")
-region = Rect2(192, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_celebrate_0"]
-atlas = ExtResource("fox_celebrate")
-region = Rect2(0, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_celebrate_1"]
-atlas = ExtResource("fox_celebrate")
-region = Rect2(64, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_celebrate_2"]
-atlas = ExtResource("fox_celebrate")
-region = Rect2(128, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_celebrate_3"]
-atlas = ExtResource("fox_celebrate")
-region = Rect2(192, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_sad_0"]
-atlas = ExtResource("fox_sad")
-region = Rect2(0, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_sad_1"]
-atlas = ExtResource("fox_sad")
-region = Rect2(64, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_sad_2"]
-atlas = ExtResource("fox_sad")
-region = Rect2(128, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="Atlas_sad_3"]
-atlas = ExtResource("fox_sad")
-region = Rect2(192, 0, 64, 64)
-
-[sub_resource type="SpriteFrames" id="FoxFrames"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("Atlas_idle_0")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_idle_1")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_idle_2")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_idle_3")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 6.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("Atlas_celebrate_0")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_celebrate_1")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_celebrate_2")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_celebrate_3")
-}],
-"loop": true,
-"name": &"celebrate",
-"speed": 8.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("Atlas_sad_0")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_sad_1")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_sad_2")
-}, {
-"duration": 1.0,
-"texture": SubResource("Atlas_sad_3")
-}],
-"loop": true,
-"name": &"sad",
-"speed": 4.0
-}]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/fox/fox_frames.tres" id="fox_frames"]
 
 [sub_resource type="Gradient" id="Gradient_confetti"]
 offsets = PackedFloat32Array(0, 0.5, 1)
@@ -152,8 +48,7 @@ position = Vector2(640, 360)
 
 [node name="Character" type="AnimatedSprite2D" parent="."]
 position = Vector2(150, 470)
-scale = Vector2(2.5, 2.5)
-sprite_frames = SubResource("FoxFrames")
+sprite_frames = ExtResource("fox_frames")
 animation = &"idle"
 autoplay = "idle"
 

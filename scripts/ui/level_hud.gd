@@ -107,7 +107,7 @@ func _ready() -> void:
 
 ## Shows the given level (0-based) of the world on the badge and closes any open overlay. The badge
 ## counts to the end of the difficulty (e.g. 4/10 on easy, 14/20 on hard), or in shuffle mode shows
-## the place in the whole shuffle (e.g. 7/40).
+## the place in the whole shuffle (e.g. 7/50).
 func show_level(world_id: String, index: int) -> void:
 	_world_id = world_id
 	_level_index = index
