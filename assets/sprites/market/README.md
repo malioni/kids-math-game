@@ -21,6 +21,7 @@ right) per shape, no text. Use only shapes, paths, gradients and transforms; God
 handle filters, masks, text or embedded images reliably.
 
 The fox uses the shared sheets in `assets/sprites/fox/` (idle, celebrate, throw). The tomato in its paw
-during the throw is drawn by `tools/make_fox_sheets.gd` to match `icon_tomato.svg`.
+during the throw is a scaled copy of `icon_tomato.svg`, drawn by `_tomato` in `tools/make_fox_sheets.gd`; restyle
+the tomato in both places.
 
 The Go and retry buttons reuse `forest_bridge/go_icon.png` and `forest_bridge/retry_icon.png`.

@@ -18,6 +18,10 @@ Do not edit the SVGs by hand; the next run overwrites them.
 | `character_sad.svg` | 4 | 4 | yes | Picnic (the fox and its friends) |
 | `character_throw.svg` | 6 | 10 | no | Market; the paw lets go on frame 3 |
 
+After any edit to throw frame 3's pose, the tool prints the paw position ("Throw release, paw from the
+cell centre: ..."). Copy that value into `_HAND_OFFSET` in `scripts/worlds/market.gd`, which starts the
+tomato's flight from it; `_RELEASE_FRAME` there must match `RELEASE_FRAME` in the tool.
+
 Each sheet is a horizontal strip of 160×160 cells. Every pose must leave the two outermost columns of its
 cell empty, or it shows at the edge of the neighbouring frame; `tests/test_fox_frames.gd` checks this.
 

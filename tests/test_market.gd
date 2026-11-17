@@ -197,6 +197,20 @@ func test_market_level_change_during_flight_leaves_nothing_behind() -> void:
 	assert_eq(_world.get_node("Character").animation, &"idle")
 
 
+func test_market_level_change_during_splat_leaves_nothing_behind() -> void:
+	var splat: Sprite2D = _world.get_node("Splat")
+	_world.splat_duration = 1.0
+	_mechanic.confirm()
+	await wait_until(func() -> bool: return splat.visible, 2.0)
+	_hud.level_chosen.emit("market", 7)
+	assert_false(splat.visible)
+	await wait_seconds(1.0 + _SETTLE)
+	assert_false(splat.visible)
+	assert_false(_world.get_node("FlyingTomato").visible)
+	assert_false(_retry.visible)
+	assert_eq(_world.get_node("Character").animation, &"idle")
+
+
 func test_market_wrong_again_after_retry_throws_again() -> void:
 	_mechanic.confirm()
 	await wait_seconds(_THROW_SETTLE)

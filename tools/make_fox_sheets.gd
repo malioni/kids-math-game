@@ -12,8 +12,8 @@ extends SceneTree
 
 const OUT := "res://assets/sprites/fox/"
 const CELL := 160
-# The lowest point of the feet. The feet sat on the bottom edge of the old 64 px cells, so this
-# keeps the fox standing where it stood.
+# The lowest point of the feet. The feet sat on the bottom edge of the old 64 px cells; every pose
+# must leave an empty margin at each edge of its cell, so they stop 3 units above the bottom edge.
 const BASELINE := 157.0
 const SHOULDER_FRONT := Vector2(98, 102)
 const SHOULDER_BACK := Vector2(64, 102)

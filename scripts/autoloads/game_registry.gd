@@ -141,7 +141,7 @@ func shuffle_next_index(world_id: String) -> int:
 
 
 ## Returns where the current shuffle is (x, 1-based: the level being played) out of every world's
-## levels at the current difficulty (y), e.g. (1, 40) at the start of a shuffle with four worlds.
+## levels at the current difficulty (y), e.g. (1, 50) at the start of a shuffle with five worlds.
 func shuffle_position() -> Vector2i:
 	var level_range: Vector2i = get_level_range()
 	var size: int = level_range.y - level_range.x + 1
