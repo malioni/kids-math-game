@@ -13,7 +13,7 @@ file's name and size: the scenes are laid out around them, and `tests/test_sprit
 | `target_sign.svg` | 120×100 | The bridge-length sign; the face stays blank (the number is a Label on top) |
 | `home.svg` | 120×120 | The fox's home on the far bank |
 | `go_icon.svg` | 80×80 | The Go button, in every world that has one |
-| `retry_icon.svg` | 80×80 | The retry button, in every world; with a "1" drawn in its middle it is the restart button on the world-complete screen |
+| `retry_icon.svg` | 80×80 | The retry button, in every world; with a "1" on its corner it is the restart button on the world-complete screen |
 
 Style: a `#3D2617` outline 3 units wide with round joins, one highlight (top left) and one shade (bottom
 right) per shape, no text. The background has no dark outline and keeps its shapes pale, so the planks and

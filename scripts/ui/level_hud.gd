@@ -26,11 +26,11 @@ signal home_requested
 
 # The picker page id of the shuffle card.
 const _SHUFFLE_PAGE := "shuffle"
-const _SHUFFLE_ICON := preload("res://assets/sprites/ui/icon_shuffle.png")
-const _MUSIC_ON := preload("res://assets/sprites/ui/icon_music_on.png")
-const _MUSIC_OFF := preload("res://assets/sprites/ui/icon_music_off.png")
-const _EFFECTS_ON := preload("res://assets/sprites/ui/icon_effects_on.png")
-const _EFFECTS_OFF := preload("res://assets/sprites/ui/icon_effects_off.png")
+const _SHUFFLE_ICON := preload("res://assets/sprites/ui/icon_shuffle.svg")
+const _MUSIC_ON := preload("res://assets/sprites/ui/icon_music_on.svg")
+const _MUSIC_OFF := preload("res://assets/sprites/ui/icon_music_off.svg")
+const _EFFECTS_ON := preload("res://assets/sprites/ui/icon_effects_on.svg")
+const _EFFECTS_OFF := preload("res://assets/sprites/ui/icon_effects_off.svg")
 
 const _CREAM := Color(1.0, 0.96, 0.86)
 const _CURRENT := Color(1.0, 0.72, 0.3)

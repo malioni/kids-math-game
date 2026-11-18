@@ -59,6 +59,20 @@ const SIZES := {
 	"memory/animal_deer.svg": Vector2(128, 128),
 	"memory/animal_squirrel.svg": Vector2(128, 128),
 	"ui/icon_world_memory.svg": Vector2(128, 128),
+	"ui/bg_menu.svg": Vector2(1800, 1000),
+	"ui/card_frame.svg": Vector2(96, 96),
+	"ui/icon_arrow.svg": Vector2(128, 128),
+	"ui/icon_close.svg": Vector2(128, 128),
+	"ui/icon_easy.svg": Vector2(128, 128),
+	"ui/icon_hard.svg": Vector2(128, 128),
+	"ui/icon_home.svg": Vector2(128, 128),
+	"ui/icon_play.svg": Vector2(200, 200),
+	"ui/icon_shuffle.svg": Vector2(128, 128),
+	"ui/icon_star.svg": Vector2(200, 200),
+	"ui/icon_music_on.svg": Vector2(128, 128),
+	"ui/icon_music_off.svg": Vector2(128, 128),
+	"ui/icon_effects_on.svg": Vector2(128, 128),
+	"ui/icon_effects_off.svg": Vector2(128, 128),
 }
 
 
