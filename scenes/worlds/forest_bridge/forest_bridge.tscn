@@ -1,12 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/worlds/forest_bridge.gd" id="1_r6ik2"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/bg_river.png" id="2_snsyn"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/bridge_platform.png" id="3_l16ox"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/bg_river.svg" id="2_snsyn"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/bridge_platform.svg" id="3_l16ox"]
 [ext_resource type="PackedScene" path="res://scenes/mechanics/placement_mechanic.tscn" id="4_qwf10"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/home.png" id="5_qbtwk"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="10_jkb70"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.png" id="go_icon_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/home.svg" id="5_qbtwk"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.svg" id="10_jkb70"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.svg" id="go_icon_tex"]
 [ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="level_hud_scene"]
 [ext_resource type="SpriteFrames" path="res://assets/sprites/fox/fox_frames.tres" id="fox_frames"]
 
@@ -99,13 +99,10 @@ tracks/1/path = NodePath("Character")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 2),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "values": [{
 "args": [&"walk"],
-"method": &"play"
-}, {
-"args": [&"idle"],
 "method": &"play"
 }]
 }

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<radialGradient id="fur" cx="0.36" cy="0.32" r="0.85">
+<stop offset="0" stop-color="#BC6E43"/>
+<stop offset="0.45" stop-color="#9E542D"/>
+<stop offset="1" stop-color="#7C3F20"/>
+</radialGradient>
+<radialGradient id="tail" cx="0.3" cy="0.25" r="0.9">
+<stop offset="0" stop-color="#C97E52"/>
+<stop offset="0.45" stop-color="#A85E35"/>
+<stop offset="1" stop-color="#7C3F20"/>
+</radialGradient>
+<radialGradient id="cheek" cx="0.4" cy="0.3" r="0.85">
+<stop offset="0" stop-color="#FFFFFF"/>
+<stop offset="0.45" stop-color="#F8ECD0"/>
+<stop offset="1" stop-color="#E2CFA6"/>
+</radialGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M76 116 C106 122 124 102 123 74 C122 54 124 30 116 16 C108 4 92 2 86 12 C82 20 88 28 96 26 C98 34 92 44 86 52 L80 100 Z" fill="url(#tail)"/>
+<path d="M20 52 C16 40 18 26 24 15 L22 7 L28 11 L31 5 L33 13 C38 24 40 36 38 46 Z" fill="url(#fur)"/>
+<path d="M64 46 C64 34 68 24 74 15 L74 7 L79 12 L84 7 L84 15 C88 26 88 38 82 50 Z" fill="url(#fur)"/>
+<circle cx="51" cy="76" r="40" fill="url(#fur)"/>
+<circle cx="35" cy="97" r="16" fill="url(#cheek)"/>
+<circle cx="67" cy="97" r="16" fill="url(#cheek)"/>
+</g>
+<path d="M104 98 C114 86 116 66 112 46" fill="none" stroke="#7C3F20" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.6"/>
+<g fill="#F8ECD0">
+<path d="M25 44 C23 36 24 28 27 22 C31 28 33 36 32 42 Z"/>
+<path d="M71 42 C71 34 74 27 78 22 C81 28 81 36 78 44 Z"/>
+</g>
+<g fill="#3D2617">
+<ellipse cx="38" cy="68" rx="5.5" ry="6.5"/>
+<ellipse cx="64" cy="68" rx="5.5" ry="6.5"/>
+</g>
+<g fill="#FFFFFF">
+<circle cx="39.8" cy="65.7" r="2.0"/>
+<circle cx="65.8" cy="65.7" r="2.0"/>
+</g>
+<path d="M45 81 C45 78 57 78 57 81 C57 84 54 86 51 86 C48 86 45 84 45 81 Z" fill="#3D2617"/>
+<path d="M51 86 L51 91" fill="none" stroke="#3D2617" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="30" cy="52" rx="9" ry="5" fill="#FFFFFF" fill-opacity="0.35" transform="rotate(-35 30 52)"/>
+<ellipse cx="106" cy="28" rx="3" ry="8" fill="#FFFFFF" fill-opacity="0.35" transform="rotate(-35 106 28)"/>
+</svg>

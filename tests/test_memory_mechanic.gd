@@ -2,9 +2,9 @@ extends GutTest
 
 const SCENE := preload("res://scenes/mechanics/memory_mechanic.tscn")
 const TEXTURES := {
-	"fox": preload("res://assets/sprites/memory/animal_fox.png"),
-	"owl": preload("res://assets/sprites/memory/animal_owl.png"),
-	"frog": preload("res://assets/sprites/memory/animal_frog.png"),
+	"fox": preload("res://assets/sprites/memory/animal_fox.svg"),
+	"owl": preload("res://assets/sprites/memory/animal_owl.svg"),
+	"frog": preload("res://assets/sprites/memory/animal_frog.svg"),
 }
 const ORIGIN := Vector2(640, 360)
 const DELAY := 0.02

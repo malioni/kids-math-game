@@ -18,6 +18,13 @@ Do not edit the SVGs by hand; the next run overwrites them.
 | `character_sad.svg` | 4 | 4 | yes | Picnic (the fox and its friends) |
 | `character_throw.svg` | 6 | 10 | no | Market; the paw lets go on frame 3 |
 
+The fox faces right, turned a little towards the viewer. In the tool, `SHOULDER_FRONT` is the near arm,
+drawn over the body and hung from the tail side of the belly; `SHOULDER_BACK` is the far arm, drawn behind
+the body at the chest: it is hidden at rest (`idle`, `sad`, `throw`) and seen when it is raised or swung
+(`walk`, `celebrate`, `fall`). Moving the near shoulder to the chest side makes the body look turned away
+under the head. In `celebrate` the near arm rises on the tail side and the far arm on the nose side, so a paw shows on
+each side of the head.
+
 After any edit to throw frame 3's pose, the tool prints the paw position ("Throw release, paw from the
 cell centre: ..."). Copy that value into `_HAND_OFFSET` in `scripts/worlds/market.gd`, which starts the
 tomato's flight from it; `_RELEASE_FRAME` there must match `RELEASE_FRAME` in the tool.

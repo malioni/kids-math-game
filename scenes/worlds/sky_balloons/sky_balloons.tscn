@@ -1,11 +1,11 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/worlds/sky_balloons.gd" id="1_sky"]
-[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/bg_sky.png" id="2_bg"]
-[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/cloud.png" id="3_cloud"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/bg_sky.svg" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/cloud.svg" id="3_cloud"]
 [ext_resource type="PackedScene" path="res://scenes/mechanics/balloon_pop_mechanic.tscn" id="4_mech"]
-[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/basket.png" id="5_basket"]
-[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.png" id="9_retry"]
+[ext_resource type="Texture2D" path="res://assets/sprites/sky_balloons/basket.svg" id="5_basket"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.svg" id="9_retry"]
 [ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="10_hud"]
 [ext_resource type="SpriteFrames" path="res://assets/sprites/fox/fox_frames.tres" id="fox_frames"]
 

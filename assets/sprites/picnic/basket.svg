@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80">
+<defs>
+<linearGradient id="wicker" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#D9AB64"/>
+<stop offset="0.5" stop-color="#CC9951"/>
+<stop offset="1" stop-color="#A9783B"/>
+</linearGradient>
+<linearGradient id="strand" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#E0B470"/>
+<stop offset="1" stop-color="#CC9951"/>
+</linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#E0B470"/>
+<stop offset="0.55" stop-color="#CC9951"/>
+<stop offset="1" stop-color="#996B33"/>
+</linearGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M10 21 L110 21 L101 70 C100.3 73 98.5 74.5 95.5 74.5 L24.5 74.5 C21.5 74.5 19.7 73 19 70 Z" fill="url(#wicker)"/>
+</g>
+<g fill="url(#strand)" stroke="#996B33" stroke-width="1.2">
+<rect x="17" y="28" width="16" height="8" rx="4"/>
+<rect x="35" y="28" width="16" height="8" rx="4"/>
+<rect x="53" y="28" width="16" height="8" rx="4"/>
+<rect x="71" y="28" width="16" height="8" rx="4"/>
+<rect x="89" y="28" width="14.5" height="8" rx="4"/>
+<rect x="18.5" y="40" width="7" height="8" rx="3.5"/>
+<rect x="27.5" y="40" width="16" height="8" rx="4"/>
+<rect x="45.5" y="40" width="16" height="8" rx="4"/>
+<rect x="63.5" y="40" width="16" height="8" rx="4"/>
+<rect x="81.5" y="40" width="16" height="8" rx="4"/>
+<rect x="99.5" y="40" width="2.5" height="8" rx="1.25"/>
+<rect x="20.8" y="52" width="16" height="8" rx="4"/>
+<rect x="38.8" y="52" width="16" height="8" rx="4"/>
+<rect x="56.8" y="52" width="16" height="8" rx="4"/>
+<rect x="74.8" y="52" width="16" height="8" rx="4"/>
+<rect x="92.8" y="52" width="6.5" height="8" rx="3.25"/>
+<rect x="23" y="63" width="9" height="7" rx="3.5"/>
+<rect x="34" y="63" width="16" height="7" rx="3.5"/>
+<rect x="52" y="63" width="16" height="7" rx="3.5"/>
+<rect x="70" y="63" width="16" height="7" rx="3.5"/>
+<rect x="88" y="63" width="9" height="7" rx="3.5"/>
+</g>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="3.5" y="13.5" width="113" height="11" rx="5.5" fill="url(#rim)"/>
+</g>
+<g fill="none" stroke="#996B33" stroke-width="1.6" stroke-linecap="round" stroke-opacity="0.85">
+<path d="M12 16.5 L16 21.5"/><path d="M24 16.5 L28 21.5"/><path d="M36 16.5 L40 21.5"/><path d="M48 16.5 L52 21.5"/><path d="M60 16.5 L64 21.5"/><path d="M72 16.5 L76 21.5"/><path d="M84 16.5 L88 21.5"/><path d="M96 16.5 L100 21.5"/><path d="M108 16.5 L111 20"/>
+</g>
+<path d="M10 16.5 L38 16.5" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+<path d="M20 30 L30 30" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round"/>
+</svg>

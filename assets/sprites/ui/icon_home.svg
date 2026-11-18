@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<linearGradient id="wall" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#FFF8E4"/>
+<stop offset="0.55" stop-color="#FFEFCC"/>
+<stop offset="1" stop-color="#E5CC9C"/>
+</linearGradient>
+<linearGradient id="roof" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#E5704F"/>
+<stop offset="0.55" stop-color="#CC5133"/>
+<stop offset="1" stop-color="#A63B22"/>
+</linearGradient>
+<linearGradient id="door" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#A8744A"/>
+<stop offset="0.55" stop-color="#8C5933"/>
+<stop offset="1" stop-color="#6B4024"/>
+</linearGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<rect x="26" y="56" width="76" height="62" rx="4" fill="url(#wall)"/>
+<path d="M14 64 C11 64 10 61 12 59 L60 16 C62 14 66 14 68 16 L116 59 C118 61 117 64 114 64 Z" fill="url(#roof)"/>
+<path d="M54 118 L54 90 C54 84 58 81 64 81 C70 81 74 84 74 90 L74 118 Z" fill="url(#door)"/>
+</g>
+<circle cx="69.5" cy="101" r="2.3" fill="#3D2617"/>
+<path d="M25 56 L58 26" fill="none" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="4" stroke-linecap="round"/>
+<path d="M33 72 L33 104" fill="none" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="4" stroke-linecap="round"/>
+</svg>

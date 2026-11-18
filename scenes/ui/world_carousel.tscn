@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/world_carousel.gd" id="1_carousel"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_arrow.png" id="2_arrow"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_arrow.svg" id="2_arrow"]
 
 [node name="WorldCarousel" type="Control"]
 clip_contents = true

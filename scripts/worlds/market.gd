@@ -4,7 +4,7 @@ extends WorldBase
 ## bags. A right order makes the fox cheer; a wrong one gets a tomato lobbed at the table.
 
 # Where the tomato leaves the fox's paw, relative to the fox. tools/make_fox_sheets.gd prints it.
-const _HAND_OFFSET := Vector2(60, 36)
+const _HAND_OFFSET := Vector2(56, 34)
 # The throw animation's frame on which the paw lets go.
 const _RELEASE_FRAME := 3
 # How far above the straight line from paw to table the tomato peaks, in px.

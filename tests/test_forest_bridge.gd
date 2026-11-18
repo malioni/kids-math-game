@@ -140,6 +140,22 @@ func test_forest_bridge_mechanic_not_interactive_during_walk() -> void:
 	assert_false(_mechanic.get_node("GoButton").disabled)
 
 
+func test_forest_bridge_fox_celebrates_after_crossing() -> void:
+	# A long celebration, so the check is sure to land inside it.
+	_world.celebrate_duration = 5.0
+	_fill_and_confirm(_mechanic)
+	await wait_seconds(_SETTLE)
+	assert_eq(_level_index(_world), 0, "the next level loaded before the check")
+	assert_eq(_world.get_node("Character").animation, &"celebrate")
+
+
+func test_forest_bridge_fox_is_idle_again_on_the_next_level() -> void:
+	_fill_and_confirm(_mechanic)
+	await wait_seconds(_SETTLE)
+	assert_eq(_level_index(_world), 1)
+	assert_eq(_world.get_node("Character").animation, &"idle")
+
+
 func test_forest_bridge_incorrect_does_not_advance_level() -> void:
 	_drop_one_short_and_confirm(_mechanic)
 	await wait_seconds(_SETTLE)

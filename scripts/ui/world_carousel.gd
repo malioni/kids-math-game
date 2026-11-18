@@ -21,7 +21,7 @@ const _SNAP_DURATION := 0.2
 const _OVERSCROLL := 0.3
 const _CREAM := Color(1.0, 0.96, 0.86)
 const _CURRENT := Color(1.0, 0.72, 0.3)
-const _FRAME := preload("res://assets/sprites/ui/card_frame.png")
+const _FRAME := preload("res://assets/sprites/ui/card_frame.svg")
 const _FRAME_MARGIN := 24.0
 
 ## Size of the centred card.

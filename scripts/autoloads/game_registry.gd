@@ -18,12 +18,12 @@ const WORLDS: Array[Dictionary] = [
 	{
 		"id": "forest",
 		"scene": "res://scenes/worlds/forest_bridge/forest_bridge.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_forest.png",
+		"icon": "res://assets/sprites/ui/icon_world_forest.svg",
 	},
 	{
 		"id": "sky",
 		"scene": "res://scenes/worlds/sky_balloons/sky_balloons.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_sky.png",
+		"icon": "res://assets/sprites/ui/icon_world_sky.svg",
 	},
 	{
 		"id": "market",
@@ -33,12 +33,12 @@ const WORLDS: Array[Dictionary] = [
 	{
 		"id": "picnic",
 		"scene": "res://scenes/worlds/picnic/picnic.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_picnic.png",
+		"icon": "res://assets/sprites/ui/icon_world_picnic.svg",
 	},
 	{
 		"id": "memory",
 		"scene": "res://scenes/worlds/memory/memory.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_memory.png",
+		"icon": "res://assets/sprites/ui/icon_world_memory.svg",
 	},
 ]
 

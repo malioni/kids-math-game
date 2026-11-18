@@ -15,8 +15,11 @@ const CELL := 160
 # The lowest point of the feet. The feet sat on the bottom edge of the old 64 px cells; every pose
 # must leave an empty margin at each edge of its cell, so they stop 3 units above the bottom edge.
 const BASELINE := 157.0
-const SHOULDER_FRONT := Vector2(98, 102)
-const SHOULDER_BACK := Vector2(64, 102)
+# The fox faces right, turned a little towards the viewer: the near arm (drawn over the body) hangs
+# from the tail side of the belly, and the far arm sits behind the body at the chest (hidden at
+# rest, seen when it is raised or swung).
+const SHOULDER_FRONT := Vector2(72, 102)
+const SHOULDER_BACK := Vector2(100, 102)
 const ARM_LENGTH := 30.0
 # Where the legs join the body.
 const LEG_TOP := 134.0
@@ -104,11 +107,11 @@ const SHEETS := {
 			},
 			{
 				"hop": 5.0,
-				"arm_front": 150.0,
-				"reach_front": 38.0,
+				"arm_front": -150.0,
+				"reach_front": 28.0,
 				"front_arm_behind_head": true,
-				"arm_back": -160.0,
-				"reach_back": 22.0,
+				"arm_back": 150.0,
+				"reach_back": 38.0,
 				"head": -4.0,
 				"eyes": "happy",
 				"mouth": "open",
@@ -117,11 +120,11 @@ const SHEETS := {
 			},
 			{
 				"hop": 7.0,
-				"arm_front": 148.0,
-				"reach_front": 40.0,
+				"arm_front": -155.0,
+				"reach_front": 30.0,
 				"front_arm_behind_head": true,
-				"arm_back": -165.0,
-				"reach_back": 24.0,
+				"arm_back": 148.0,
+				"reach_back": 40.0,
 				"head": -4.0,
 				"eyes": "happy",
 				"mouth": "open",
@@ -131,11 +134,11 @@ const SHEETS := {
 			},
 			{
 				"hop": 3.0,
-				"arm_front": 147.0,
-				"reach_front": 40.0,
+				"arm_front": -148.0,
+				"reach_front": 26.0,
 				"front_arm_behind_head": true,
-				"arm_back": -155.0,
-				"reach_back": 20.0,
+				"arm_back": 147.0,
+				"reach_back": 40.0,
 				"head": -3.0,
 				"eyes": "happy",
 				"mouth": "open",
@@ -156,9 +159,11 @@ const SHEETS := {
 				"head": -6.0,
 				"eyes": "wide",
 				"mouth": "open",
-				"arm_front": 110.0,
-				"arm_back": -125.0,
-				"reach_back": 18.0,
+				"arm_front": -125.0,
+				"reach_front": 18.0,
+				"front_arm_behind_head": true,
+				"arm_back": 100.0,
+				"reach_back": 14.0,
 				"tail": 8.0,
 				"leg_front": 5.0,
 				"leg_back": -5.0
@@ -167,9 +172,11 @@ const SHEETS := {
 				"lean": 6.0,
 				"eyes": "wide",
 				"mouth": "open",
-				"arm_front": 20.0,
-				"arm_back": -150.0,
-				"reach_back": 20.0,
+				"arm_front": -150.0,
+				"reach_front": 20.0,
+				"front_arm_behind_head": true,
+				"arm_back": 60.0,
+				"reach_back": 6.0,
 				"tail": 30.0,
 				"leg_front": -4.0,
 				"leg_back": 4.0,
@@ -236,18 +243,31 @@ const SHEETS := {
 		"loop": false,
 		"poses":
 		[
-			{"lean": -4.0, "arm_front": -60.0, "held": "tomato", "brows": "cross"},
+			{"lean": -4.0, "arm_front": 25.0, "held": "tomato", "brows": "cross"},
 			{
 				"lean": -10.0,
-				"arm_front": -100.0,
+				"arm_front": -10.0,
 				"held": "tomato",
 				"brows": "cross",
 				"tail": 10.0,
 				"leg_back": -4.0
 			},
-			{"arm_front": 25.0, "held": "tomato", "brows": "cross", "leg_front": 4.0},
-			{"lean": 8.0, "arm_front": 80.0, "mouth": "open", "leg_front": 6.0},
-			{"lean": 10.0, "head": -6.0, "arm_front": 105.0, "mouth": "open", "leg_front": 6.0},
+			{"arm_front": 50.0, "held": "tomato", "brows": "cross", "leg_front": 4.0},
+			{
+				"lean": 8.0,
+				"arm_front": 85.0,
+				"reach_front": 22.0,
+				"mouth": "open",
+				"leg_front": 6.0
+			},
+			{
+				"lean": 10.0,
+				"head": -6.0,
+				"arm_front": 100.0,
+				"reach_front": 20.0,
+				"mouth": "open",
+				"leg_front": 6.0
+			},
 			{"lean": 4.0, "arm_front": 60.0},
 		],
 	},
@@ -476,7 +496,7 @@ func _arm(shoulder: Vector2, angle: float, reach: float, held: String) -> String
 		'<g transform="rotate(%s %s %s)">\n' % [_n(-angle), _n(shoulder.x), _n(shoulder.y)]
 	)
 	if held == "tomato":
-		arm += _tomato(shoulder + Vector2(0, HOLD_REACH))
+		arm += _tomato(shoulder + Vector2(0, HOLD_REACH + reach))
 	arm += (
 		'<rect x="%s" y="%s" width="12" height="%s" rx="6" fill="url(#fur)"/>\n'
 		% [_n(shoulder.x - 6.0), _n(shoulder.y - 5.0), _n(length + 5.0)]
@@ -529,7 +549,9 @@ func _tomato(at: Vector2) -> String:
 # Where an item held in the front paw sits in the cell, for a pose.
 func _paw(pose: Dictionary) -> Vector2:
 	var arm: float = deg_to_rad(pose["arm_front"])
-	var paw: Vector2 = SHOULDER_FRONT + Vector2(sin(arm), cos(arm)) * HOLD_REACH
+	var paw: Vector2 = (
+		SHOULDER_FRONT + Vector2(sin(arm), cos(arm)) * (HOLD_REACH + pose["reach_front"])
+	)
 	var feet := Vector2(CELL / 2.0, BASELINE)
 	return feet + (paw - feet).rotated(deg_to_rad(pose["lean"])) - Vector2(0, pose["hop"])
 

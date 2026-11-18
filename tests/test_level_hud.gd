@@ -311,11 +311,11 @@ func test_level_hud_level_button_plays_tap() -> void:
 func test_level_hud_music_button_toggles_and_shows_it() -> void:
 	hud.open_picker()
 	var music: Button = hud.get_sound_buttons()[0]
-	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_on.png")
+	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_on.svg")
 	music.pressed.emit()
 	assert_false(AudioManager.is_music_enabled())
 	assert_true(AudioManager.is_effects_enabled())
-	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_off.png")
+	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_off.svg")
 	assert_true(hud.is_picker_open(), "a sound toggle keeps the picker open")
 	music.pressed.emit()
 	assert_true(AudioManager.is_music_enabled())
@@ -327,14 +327,14 @@ func test_level_hud_effects_button_toggles_and_shows_it() -> void:
 	effects.pressed.emit()
 	assert_false(AudioManager.is_effects_enabled())
 	assert_true(AudioManager.is_music_enabled())
-	assert_eq(effects.icon.resource_path, "res://assets/sprites/ui/icon_effects_off.png")
+	assert_eq(effects.icon.resource_path, "res://assets/sprites/ui/icon_effects_off.svg")
 
 
 func test_level_hud_sound_buttons_show_saved_settings_when_opened() -> void:
 	AudioManager.set_music_enabled(false)
 	hud.open_picker()
 	assert_eq(
-		hud.get_sound_buttons()[0].icon.resource_path, "res://assets/sprites/ui/icon_music_off.png"
+		hud.get_sound_buttons()[0].icon.resource_path, "res://assets/sprites/ui/icon_music_off.svg"
 	)
 
 

@@ -17,9 +17,9 @@
 <g transform="translate(0 -0.0) rotate(-24.75 90.0 134.0)">
 <rect x="83.5" y="134.0" width="13" height="21.5" rx="5" fill="url(#dark)"/>
 </g>
-<g transform="rotate(-30.0 64.0 102.0)">
-<rect x="58.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="64.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(-30.0 100.0 102.0)">
+<rect x="94.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="100.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 <ellipse cx="78" cy="112.0" rx="30.0" ry="34.0" fill="url(#fur)"/>
 <ellipse cx="86" cy="118.0" rx="15" ry="19.0" fill="url(#cream)" stroke="none"/>
@@ -38,9 +38,9 @@
 <circle cx="110.5" cy="54.0" r="1.6" fill="#FFFFFF" stroke="none"/>
 <path d="M102 80 q8 7 16 0" fill="none"/>
 </g>
-<g transform="rotate(25.0 98.0 102.0)">
-<rect x="92.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="98.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(25.0 72.0 102.0)">
+<rect x="66.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="72.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 </g>
 </g>
@@ -56,9 +56,9 @@
 <g transform="translate(0 -0.0) rotate(-13.45 90.0 134.0)">
 <rect x="83.5" y="134.0" width="13" height="21.5" rx="5" fill="url(#dark)"/>
 </g>
-<g transform="rotate(10.0 64.0 102.0)">
-<rect x="58.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="64.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(10.0 100.0 102.0)">
+<rect x="94.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="100.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 <ellipse cx="78" cy="113.5" rx="30.75" ry="32.5" fill="url(#fur)"/>
 <ellipse cx="86" cy="119.5" rx="15" ry="17.5" fill="url(#cream)" stroke="none"/>
@@ -77,9 +77,9 @@
 <circle cx="110.5" cy="54.0" r="1.6" fill="#FFFFFF" stroke="none"/>
 <path d="M102 80 q8 7 16 0" fill="none"/>
 </g>
-<g transform="rotate(12.0 98.0 102.0)">
-<rect x="92.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="98.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(12.0 72.0 102.0)">
+<rect x="66.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="72.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 </g>
 </g>
@@ -95,9 +95,9 @@
 <g transform="translate(0 -0.0) rotate(-0.0 90.0 134.0)">
 <rect x="83.5" y="134.0" width="13" height="21.5" rx="5" fill="url(#dark)"/>
 </g>
-<g transform="rotate(-0.0 64.0 102.0)">
-<rect x="58.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="64.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(-0.0 100.0 102.0)">
+<rect x="94.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="100.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 <ellipse cx="78" cy="112.0" rx="30.0" ry="34.0" fill="url(#fur)"/>
 <ellipse cx="86" cy="118.0" rx="15" ry="19.0" fill="url(#cream)" stroke="none"/>
@@ -116,9 +116,9 @@
 <circle cx="110.5" cy="54.0" r="1.6" fill="#FFFFFF" stroke="none"/>
 <path d="M102 80 q8 7 16 0" fill="none"/>
 </g>
-<g transform="rotate(-10.0 98.0 102.0)">
-<rect x="92.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="98.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(-10.0 72.0 102.0)">
+<rect x="66.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="72.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 </g>
 </g>
@@ -134,9 +134,9 @@
 <g transform="translate(0 -0.0) rotate(24.75 90.0 134.0)">
 <rect x="83.5" y="134.0" width="13" height="21.5" rx="5" fill="url(#dark)"/>
 </g>
-<g transform="rotate(25.0 64.0 102.0)">
-<rect x="58.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="64.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(25.0 100.0 102.0)">
+<rect x="94.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="100.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 <ellipse cx="78" cy="112.0" rx="30.0" ry="34.0" fill="url(#fur)"/>
 <ellipse cx="86" cy="118.0" rx="15" ry="19.0" fill="url(#cream)" stroke="none"/>
@@ -155,9 +155,9 @@
 <circle cx="110.5" cy="54.0" r="1.6" fill="#FFFFFF" stroke="none"/>
 <path d="M102 80 q8 7 16 0" fill="none"/>
 </g>
-<g transform="rotate(-35.0 98.0 102.0)">
-<rect x="92.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="98.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(-35.0 72.0 102.0)">
+<rect x="66.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="72.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 </g>
 </g>
@@ -173,9 +173,9 @@
 <g transform="translate(0 -0.0) rotate(13.45 90.0 134.0)">
 <rect x="83.5" y="134.0" width="13" height="21.5" rx="5" fill="url(#dark)"/>
 </g>
-<g transform="rotate(10.0 64.0 102.0)">
-<rect x="58.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="64.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(10.0 100.0 102.0)">
+<rect x="94.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="100.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 <ellipse cx="78" cy="113.5" rx="30.75" ry="32.5" fill="url(#fur)"/>
 <ellipse cx="86" cy="119.5" rx="15" ry="17.5" fill="url(#cream)" stroke="none"/>
@@ -194,9 +194,9 @@
 <circle cx="110.5" cy="54.0" r="1.6" fill="#FFFFFF" stroke="none"/>
 <path d="M102 80 q8 7 16 0" fill="none"/>
 </g>
-<g transform="rotate(-22.0 98.0 102.0)">
-<rect x="92.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="98.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(-22.0 72.0 102.0)">
+<rect x="66.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="72.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 </g>
 </g>
@@ -212,9 +212,9 @@
 <g transform="translate(0 -5.0) rotate(-0.0 90.0 134.0)">
 <rect x="83.5" y="134.0" width="13" height="21.5" rx="5" fill="url(#dark)"/>
 </g>
-<g transform="rotate(-0.0 64.0 102.0)">
-<rect x="58.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="64.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(-0.0 100.0 102.0)">
+<rect x="94.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="100.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 <ellipse cx="78" cy="112.0" rx="30.0" ry="34.0" fill="url(#fur)"/>
 <ellipse cx="86" cy="118.0" rx="15" ry="19.0" fill="url(#cream)" stroke="none"/>
@@ -233,9 +233,9 @@
 <circle cx="110.5" cy="54.0" r="1.6" fill="#FFFFFF" stroke="none"/>
 <path d="M102 80 q8 7 16 0" fill="none"/>
 </g>
-<g transform="rotate(-10.0 98.0 102.0)">
-<rect x="92.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
-<ellipse cx="98.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
+<g transform="rotate(-10.0 72.0 102.0)">
+<rect x="66.0" y="97.0" width="12" height="35.0" rx="6" fill="url(#fur)"/>
+<ellipse cx="72.0" cy="127.0" rx="6" ry="5" fill="url(#dark)" stroke="none"/>
 </g>
 </g>
 </g>
