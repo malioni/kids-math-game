@@ -136,7 +136,7 @@ The fox moves from `assets/sprites/forest_bridge/` to `assets/sprites/fox/` beca
 ### Pose
 
 The fox faces right with its head turned a little towards the viewer. Its body is turned the same way: the
-near arm hangs from the left half of the belly (the tail side), and the far arm shows a little at the chest.
+near arm hangs from the left half of the belly (the tail side), and the far arm sits behind the body at the chest, hidden at rest and seen when it is raised or swung.
 In stage 1 the near shoulder was on the chest side, which made the body look turned away under the head.
 
 Stage 2 moves the shoulders and retunes the poses that depend on them:

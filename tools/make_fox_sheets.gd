@@ -16,7 +16,8 @@ const CELL := 160
 # must leave an empty margin at each edge of its cell, so they stop 3 units above the bottom edge.
 const BASELINE := 157.0
 # The fox faces right, turned a little towards the viewer: the near arm (drawn over the body) hangs
-# from the tail side of the belly, and the far arm (drawn behind the body) shows at the chest.
+# from the tail side of the belly, and the far arm sits behind the body at the chest (hidden at
+# rest, seen when it is raised or swung).
 const SHOULDER_FRONT := Vector2(72, 102)
 const SHOULDER_BACK := Vector2(100, 102)
 const ARM_LENGTH := 30.0
