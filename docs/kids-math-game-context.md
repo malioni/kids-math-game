@@ -1,6 +1,6 @@
 # Kids Math Game: project context
 
-_Last updated 2026-11-16. Everything below describes `main` through PR #36: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), menu Play opening the centred world (#30), checks before every deploy (#33), the win and lose flow moving into `WorldBase` (#34), the save kept in memory (#35), small fixes (#36), and on the `vector-art` branch the vector fox, market art and the throw._
+_Last updated 2026-11-18. Everything below describes `main` through PR #44: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), menu Play opening the centred world (#30), checks before every deploy (#33), the win and lose flow moving into `WorldBase` (#34), the save kept in memory (#35), small fixes (#36), the sound rework (#38–#41), World 5, Memory Meadow (#42), and the vector art redraw (#43, #44)._
 
 ## What it is
 
@@ -27,6 +27,11 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 - Every plate equal and the baskets empty → everyone cheers.
 - Too much → the last friends come up short and look sad. Too little → fruit is left in the basket. Either way the fox plays its sad animation (`character_sad.svg`, 4 frames, looping until retry); retry keeps the same baskets.
 
+**World 5: Memory Meadow (visual memory and attention).** Animal cards lie face down in a grid on a meadow, and the fox is always one of the pairs. The child turns over two cards at a time; taps are ignored while two unmatched cards are up.
+- A matching pair pops off the board with `memory/match`, and the fox does a short hop. Clearing the board goes through the normal win flow.
+- A mismatch shows both faces for 1 s, then turns them back with `memory/remove`. There's no limit on turns, so a mismatch is never wrong: `MemoryMechanic` never emits `incorrect`, and the retry prompt is never shown.
+- On easy levels every card shows face up for a short peek before turning down (2 s, falling to 1 s); hard levels have no peek. The first world that isn't arithmetic.
+
 **Level HUD (every world).** A badge in the top-left of the play area: world icon + level number + the end of the current difficulty (e.g. 4/10 on easy, 14/20 on hard). While shuffling it shows a small shuffle icon and the place in the whole shuffle (e.g. 7/50 on easy with five worlds). Tapping the badge opens the picker:
 - A tab per world, showing the current difficulty's 10 levels by their real numbers, current level highlighted, all open. Picking a level loads it and sets that world's saved level for the difficulty (it can lower it). Picking a level in another world switches scenes. Picking a level leaves shuffle.
 - Two icon buttons, Easy (a hill) and Hard (a snowy mountain), set the difficulty for the whole game. This is the grown-up's control; the child never sees it named.
@@ -40,7 +45,7 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 - Every puzzle is generated at load from per-level ranges, so replays differ. Progress is saved locally per world, per difficulty, and separately for shuffle.
 - All art is vector art (issue #7; spec `docs/superpowers/specs/2026-11-16-vector-art-design.md`): hand-drawn SVGs under `assets/sprites/`, imported as scalable textures, at the sizes the scenes were laid out around. The fox's six sheets and the shared `fox_frames.tres` are written by `tools/make_fox_sheets.gd` from a table of poses; everything else is drawn by hand. Each sprite folder's README lists its files and what must not move.
 - Every pull request runs lint, tests and a headless boot (`.github/workflows/test.yml`). Every push to `main` runs the same checks, then builds the Web preset and publishes it to GitHub Pages at https://malioni.github.io/kids-math-game/ (`.github/workflows/deploy-web.yml`).
-- 540 GUT tests passing (2026-11-16); headless boot and `gdlint` clean, and `gdformat --check` clean except `scripts/systems/level_loader.gd`, which it already reports on `main`. gdtoolkit 4.5.0 is installed with pipx (`~/.local/bin/gdlint`).
+- 541 GUT tests passing (2026-11-18); headless boot and `gdlint` clean, and `gdformat --check` clean except `scripts/systems/level_loader.gd`, which it already reports on `main`. gdtoolkit 4.5.0 is installed with pipx (`~/.local/bin/gdlint`).
 - Not yet done: adaptive difficulty, the PIN-gated parent view, native Android/iOS exports (only a Web preset exists), and playtesting with the target age.
 - Placeholder sounds generated by `tools/make_audio_placeholders.gd` (see `assets/audio/README.md`): a rising chime for a right answer and three falling notes for a wrong one, complete, tap, and each world's place, remove and background loop. Tuned after the first listen (#38–#40): the menu and the market play short tunes (a slow music box and a bouncy plucked tune), the forest is a bubbling river, and the market adds a splat when the tomato lands. Each sound is seeded from its own name, so changing one leaves the others byte-for-byte the same. A grown-up can turn background sound and effects off with the toggles in the picker's bottom-right corner; Easy/Hard sit in the bottom-left.
 
@@ -88,6 +93,10 @@ Strict layers (from `CLAUDE.md`): `scenes/` are presentation only; `scripts/mech
 | `scripts/mechanics/sharing_mechanic.gd` + `.tscn` | `SharingMechanic`. `setup(plates, orders)`, `reset()`, `confirm()` (deals to the friends, `deal_step` s per step), `set_interactive()`, `is_dealing()`, `get_orders()`, `get_plate_count()`, `get_placed_count(item)`, `get_placed_pieces(item)`, `get_ready_piece(item)`, `get_basket_count(item)`, `get_dealt_count(guest, item)`, `get_guest(guest)`. Signals `correct`, `incorrect`. Exports textures, `guest_frames`, `guest_tints` and layout. |
 | `scripts/mechanics/fruit_drag.gd` + `.tscn` | `FruitDrag` (`DragPiece`): `configure(item_id, icon)`, `get_width()`. |
 | `scripts/worlds/picnic.gd` + `scenes/worlds/picnic/` | Picnic flow: everyone cheers, or the fox's sad loop and retry. Exports `sad_duration`. |
+| `scripts/mechanics/memory_puzzle_generator.gd` | `MemoryPuzzleGenerator` (static). `generate(params, rng) -> Array[String]`: a shuffled deck, every animal twice. |
+| `scripts/mechanics/memory_mechanic.gd` + `.tscn` | `MemoryMechanic`. `setup(deck, preview_seconds)`, `reset()` (same deck, all face down, no peek), `set_interactive()`, `tap_card(index)`, `get_cards()`, `get_deck()`, `get_matched_count()`, `is_solved()`, `is_previewing()`, `grid_for(card_count)` (static; 4–20 cards). Signals `pair_matched(animal)`, `correct`; `piece_placed` when a card turns over, `piece_removed` when a mismatch turns back. Exports `card_textures`, `board_rect`, `card_gap`, `max_card_size`, `match_delay`, `mismatch_delay`. |
+| `scripts/mechanics/memory_card.gd` + `.tscn` | `MemoryCard`: `setup(animal, face_texture, card_size)`, `show_face()` / `show_back()` (a squash turn), `mark_matched()`, `is_face_up()`, `is_matched()`, `contains_global_point()`; signal `tapped`. |
+| `scripts/worlds/memory.gd` + `scenes/worlds/memory/` | Memory flow: the match sound and the fox's hop per pair (skipped for the last pair, which goes into the win flow). Exports `hop_duration`. |
 | `scripts/ui/level_hud.gd` + `scenes/ui/level_hud.tscn` | `LevelHud` (CanvasLayer 5). `show_level(world_id, index)`, `open_picker()`, `close_picker()`, `is_picker_open()`, `show_world_complete()`, `is_world_complete_shown()`, plus test accessors (`get_difficulty_buttons()`, `get_level_buttons()`, `get_world_tabs()`, `get_shuffle_tab()`, `is_shuffle_page_shown()`, `get_shuffle_buttons()`, `get_sound_buttons()` for the music and effects toggles in the picker). Signals `level_chosen(world_id, index)` (index −1 = resume that world), `restart_requested`, `difficulty_chosen(difficulty)`, `shuffle_requested(from_start)`. Badge anchored to the play area's top-left so it stays inside the iPhone safe area. |
 | `scripts/autoloads/game_registry.gd` | `WORLDS` list (id, scene, icon): forest, sky, market, picnic, memory. `get_worlds()`, `get_world(id)`, `go_to_world(id, level_index = -1)`, `go_to_menu()`, `request_level()` / `take_requested_level()`. Every world needs levels for all of every difficulty's range; a test enforces it. Difficulty and mode read through to `SaveManager`: `get_difficulty()` / `set_difficulty()`, `is_shuffle()` / `set_shuffle()`, `get_level_range()` (0-based `Vector2i`). Shuffle: `shuffle_next_index(id)`, `shuffle_position()` (place in the whole run, for the badge), `next_shuffle_world()`, `reset_shuffle()`, `start_shuffle()`. Test seam: `change_scenes = false` makes `go_to_world()` only record `last_world_request`. |
 | `scripts/autoloads/save_manager.gd` | `ConfigFile` at `save_path` (`user://save.cfg`), read once by `reload()` and kept in memory; every change is written straight away. Progress keys come from `progress_key(world, difficulty, shuffle)`: `"forest:easy"`, `"shuffle:forest:hard"`, … (1-indexed levels). `save_progress` (only raises) / `set_progress` (exact) / `load_progress` / `reset_progress`, `save_last_world` / `load_last_world`, `save_difficulty` / `load_difficulty` (default `easy`), `save_play_mode` / `load_play_mode` (`worlds` / `shuffle`), `migrate_progress(worlds)` (old per-world keys → per-difficulty). |
@@ -180,6 +189,16 @@ Per item, pick a bag size and a bag count from their ranges; the order is size �
 
 Pick the number of plates (the fox's included), then a share per fruit; each basket holds plates × share. Levels 1–5 share strawberries; 6–10 add apples; 11–20 add bananas. Plates and shares start low each time a fruit joins and rise to 5 plates of 7–10 each at level 20, so the biggest basket is 50.
 
+### Memory generation
+
+```json
+{ "id": "world_memory_05", "world": "memory", "pairs": 4, "must_include": ["fox"],
+  "pool": ["rabbit", "bear", "owl", "frog", "hedgehog", "mouse", "duck", "pig", "cat", "deer", "squirrel"],
+  "preview_seconds": 1.5 }
+```
+
+Deal every `must_include` animal, fill up to `pairs` with distinct random picks from `pool`, put each in twice and shuffle with the level's RNG. No rejection step: every deck is solvable. Pairs rise from 2 to 6 on easy (peek 2 s, then 1.5 s, then 1 s) and from 6 to 10 on hard (no peek), two levels per size.
+
 ## Difficulty and shuffle
 
 - `data/levels/difficulty.json`: `{"easy": {"first": 1, "last": 10}, "hard": {"first": 11, "last": 20}}`, read by `LevelLoader.get_difficulty_range()` as a 0-based `Vector2i`.
@@ -199,7 +218,7 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 ## Workflow
 
 - One feature per branch, squash-merged to `main` through PRs. Because of the squash, `git branch -d` refuses merged branches; check the PR is merged and nothing is unpushed, then use `-D`. Commits are authored as `malioni <47998755+malioni@users.noreply.github.com>`.
-- `.claude/commands/` holds the project's agent workflow: `/plan` (writes `PLAN.md`), `/plan-review`, `/implement`, `/write-tests`, `/review`, `/write-docs`, `/ship` (all of them in sequence). `PLAN.md` at the repo root holds the current feature's plan, with a revision note at the top whenever implementation departed from it. It currently holds the main menu plan (#29); the next `/plan` replaces it.
+- `.claude/commands/` holds the project's agent workflow: `/plan` (writes `PLAN.md`), `/plan-review`, `/implement`, `/write-tests`, `/review`, `/write-docs`, `/ship` (all of them in sequence). `PLAN.md` at the repo root holds the current feature's plan, with a revision note at the top whenever implementation departed from it. It currently holds the Memory Meadow plan (#42); the next `/plan` replaces it.
 - Godot also runs in the Cowork Linux VM (download the `linux.arm64` 4.6 build from GitHub releases into `$HOME`, rsync the repo to a scratch copy, `--import`, then run GUT / `xvfb-run` screenshots there). Run Godot on the scratch copy, not the mounted folder, since deletes are blocked in the mount.
 - Before committing: run GUT, `gdlint scripts/ scenes/`, and a headless boot. For visual changes, render screenshots: `xvfb-run` + `--rendering-driver opengl3`, and `--resolution 1688x780` for an iPhone shape.
 
@@ -212,7 +231,7 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 - `set_process_input()` on a parent doesn't reach child pieces; use the mechanic's `set_interactive()`.
 - Compute piece and bridge positions from the placed total, not from node positions, because pieces may still be mid-tween.
 - `bridge_collapse` animates only `Character:position:y`, so the fall happens wherever the walk tween left the fox. Play `RESET` (then `advance(0)`) before each level load and each retry.
-- `WorldBase` re-checks `_load_count` after `_play_win()` and `_play_lose()`, because the player can pick another level mid-animation. Kill running tweens in `_restore_stage()`, so those hooks stop rather than carry on.
+- `WorldBase` re-checks `_load_count` after `_play_win()` and `_play_lose()`, because the player can pick another level mid-animation. Kill running tweens in `_restore_stage()`, so those hooks stop rather than carry on. A hook that changes the stage after an `await` must check `_load_count` itself too: the market's throw once waited out a level change and then joined the next level's throw, splatting twice.
 - gdlint rejects enum names starting with `_` (`enum-name`).
 - `Array.shuffle()` uses the global RNG; the generators have their own seeded shuffle, so puzzles are reproducible from a seed.
 - `change_scene_to_file` in a test replaces GUT's own scene; set `GameRegistry.change_scenes = false` in tests that make a world switch (shuffle does this).
