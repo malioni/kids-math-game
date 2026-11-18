@@ -9,7 +9,7 @@ art at the same filenames and sizes.
 | `icon_world_forest.svg` | 128×128 | Forest Bridge world icon (badge, and its card on the menu, picker and world-complete screen) |
 | `icon_world_sky.svg` | 128×128 | Sky Balloons world icon |
 | `icon_world_market.svg` | 128×128 | Market world icon (hand-drawn SVG; see `assets/sprites/market/README.md` for the style) |
-| `icon_world_picnic.png` | 128×128 | Picnic world icon (drawn by `tools/make_picnic_placeholders.gd`) |
+| `icon_world_picnic.svg` | 128×128 | Picnic world icon |
 | `icon_shuffle.png` | 128×128 | Shuffle tab in the picker and the badge's shuffle sticker (drawn by `tools/make_mode_icons.gd`) |
 | `icon_easy.png` | 128×128 | Easy difficulty button (a hill; `tools/make_mode_icons.gd`) |
 | `icon_hard.png` | 128×128 | Hard difficulty button (a mountain; `tools/make_mode_icons.gd`) |

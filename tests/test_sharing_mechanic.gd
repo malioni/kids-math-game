@@ -2,9 +2,9 @@ extends GutTest
 
 const SCENE := preload("res://scenes/mechanics/sharing_mechanic.tscn")
 const ICONS := {
-	"strawberry": preload("res://assets/sprites/picnic/icon_strawberry.png"),
-	"apple": preload("res://assets/sprites/picnic/icon_apple.png"),
-	"banana": preload("res://assets/sprites/picnic/icon_banana.png"),
+	"strawberry": preload("res://assets/sprites/picnic/icon_strawberry.svg"),
+	"apple": preload("res://assets/sprites/picnic/icon_apple.svg"),
+	"banana": preload("res://assets/sprites/picnic/icon_banana.svg"),
 }
 const ORIGIN := Vector2(640, 360)
 # A point over the fox's plate, in global space.

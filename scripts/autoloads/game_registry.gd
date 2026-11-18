@@ -33,7 +33,7 @@ const WORLDS: Array[Dictionary] = [
 	{
 		"id": "picnic",
 		"scene": "res://scenes/worlds/picnic/picnic.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_picnic.png",
+		"icon": "res://assets/sprites/ui/icon_world_picnic.svg",
 	},
 	{
 		"id": "memory",

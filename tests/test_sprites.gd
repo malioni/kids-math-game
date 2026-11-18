@@ -35,6 +35,14 @@ const SIZES := {
 	"sky_balloons/sandbag.svg": Vector2(120, 120),
 	"sky_balloons/lift_badge.svg": Vector2(120, 120),
 	"ui/icon_world_sky.svg": Vector2(128, 128),
+	"picnic/bg_picnic.svg": Vector2(1800, 1000),
+	"picnic/tray.svg": Vector2(640, 260),
+	"picnic/guest_plate.svg": Vector2(170, 100),
+	"picnic/basket.svg": Vector2(120, 80),
+	"picnic/icon_strawberry.svg": Vector2(64, 64),
+	"picnic/icon_apple.svg": Vector2(64, 64),
+	"picnic/icon_banana.svg": Vector2(64, 64),
+	"ui/icon_world_picnic.svg": Vector2(128, 128),
 }
 
 
