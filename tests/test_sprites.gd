@@ -1,7 +1,8 @@
 extends GutTest
 
-## Checks on the sprite files themselves. Every SVG must be imported as a scalable texture, or it
-## turns soft when the window is stretched; tools/import_svgs.sh sets that up for a new file.
+## Checks on the sprite files themselves. Every sprite is an SVG imported as a scalable texture, or
+## it turns soft when the window is stretched (tools/import_svgs.sh sets that up for a new file),
+## and each keeps the size its scene was laid out around.
 
 const SPRITES := "res://assets/sprites/"
 
@@ -76,18 +77,18 @@ const SIZES := {
 }
 
 
-func _svg_paths(dir_path: String) -> Array[String]:
+func _paths(dir_path: String, extension: String) -> Array[String]:
 	var paths: Array[String] = []
 	for dir_name: String in DirAccess.get_directories_at(dir_path):
-		paths.append_array(_svg_paths(dir_path + dir_name + "/"))
+		paths.append_array(_paths(dir_path + dir_name + "/", extension))
 	for file_name: String in DirAccess.get_files_at(dir_path):
-		if file_name.ends_with(".svg"):
+		if file_name.ends_with(extension):
 			paths.append(dir_path + file_name)
 	return paths
 
 
 func test_sprites_every_svg_is_scalable() -> void:
-	var paths: Array[String] = _svg_paths(SPRITES)
+	var paths: Array[String] = _paths(SPRITES, ".svg")
 	assert_gt(paths.size(), 0, "no SVG sprites found")
 	for path: String in paths:
 		assert_true(load(path) is DPITexture, "%s: run tools/import_svgs.sh" % path)
@@ -99,3 +100,16 @@ func test_sprites_redrawn_sprites_keep_their_sizes() -> void:
 		if ResourceLoader.exists(SPRITES + file):
 			var texture: Texture2D = load(SPRITES + file)
 			assert_eq(texture.get_size(), SIZES[file], file)
+
+
+func test_sprites_no_png_is_left() -> void:
+	var left: Array[String] = _paths(SPRITES, ".png")
+	assert_eq(left.size(), 0, "sprites are SVGs (see the READMEs), but found %s" % [left])
+
+
+func test_sprites_every_svg_has_a_recorded_size() -> void:
+	for path: String in _paths(SPRITES, ".svg"):
+		var file: String = path.trim_prefix(SPRITES)
+		# The fox's sheets are checked frame by frame in test_fox_frames.gd.
+		if not file.begins_with("fox/"):
+			assert_true(SIZES.has(file), "%s: add its size to SIZES" % file)
