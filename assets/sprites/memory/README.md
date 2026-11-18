@@ -14,4 +14,4 @@ dimensions** and the scenes pick it up unchanged.
 Cards are scaled to fit the board, from 200 px (4 cards) down to about 155 px (20 cards).
 
 The fox beside the board uses the shared sheets in `assets/sprites/fox/` (idle and celebrate). The retry
-button reuses `forest_bridge/retry_icon.png`, though this world never shows it.
+button reuses `forest_bridge/retry_icon.svg`, though this world never shows it.

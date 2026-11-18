@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+<defs>
+<linearGradient id="earth" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#A9764A"/>
+<stop offset="0.55" stop-color="#8A5C34"/>
+<stop offset="1" stop-color="#5E3D20"/>
+</linearGradient>
+<linearGradient id="moss" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#96B96A"/>
+<stop offset="0.55" stop-color="#7A9E52"/>
+<stop offset="1" stop-color="#5C803E"/>
+</linearGradient>
+<linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#7E5530"/>
+<stop offset="1" stop-color="#4A2E18"/>
+</linearGradient>
+<radialGradient id="glow" cx="0.45" cy="0.42" r="0.65">
+<stop offset="0" stop-color="#FFF4D6"/>
+<stop offset="0.45" stop-color="#FFE3A0"/>
+<stop offset="1" stop-color="#FFD278"/>
+</radialGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M6 117.5 C5 76 26 38 60 38 C94 38 115 76 114 117.5 Z" fill="url(#earth)"/>
+<path d="M10 66 C10 34 32 16 60 16 C88 16 110 34 110 66 C104 70 98 64 92 68 C86 72 80 66 74 69 C68 72 62 66 56 69 C50 72 44 66 38 69 C32 72 26 65 20 69 C16 71 12 69 10 66 Z" fill="url(#moss)"/>
+<ellipse cx="50" cy="94" rx="20" ry="23.5" fill="url(#frame)"/>
+<ellipse cx="50" cy="95" rx="13" ry="16.5" fill="url(#glow)"/>
+<circle cx="88" cy="88" r="9" fill="url(#frame)"/>
+<circle cx="88" cy="88" r="5" fill="url(#glow)" stroke-width="2"/>
+</g>
+<path d="M88 79 L88 97 M79 88 L97 88" stroke="#3D2617" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="38" cy="32" rx="14" ry="6" fill="#FFFFFF" fill-opacity="0.35" transform="rotate(-25 38 32)"/>
+<ellipse cx="19" cy="88" rx="3.5" ry="10" fill="#FFFFFF" fill-opacity="0.2" transform="rotate(12 19 88)"/>
+<ellipse cx="45" cy="88" rx="3" ry="6" fill="#FFFFFF" fill-opacity="0.5"/>
+</svg>

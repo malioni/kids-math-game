@@ -6,7 +6,7 @@ art at the same filenames and sizes.
 
 | File | Size | Use |
 |---|---|---|
-| `icon_world_forest.png` | 128×128 | Forest Bridge world icon (badge, and its card on the menu, picker and world-complete screen) |
+| `icon_world_forest.svg` | 128×128 | Forest Bridge world icon (badge, and its card on the menu, picker and world-complete screen) |
 | `icon_world_sky.png` | 128×128 | Sky Balloons world icon |
 | `icon_world_market.svg` | 128×128 | Market world icon (hand-drawn SVG; see `assets/sprites/market/README.md` for the style) |
 | `icon_world_picnic.png` | 128×128 | Picnic world icon (drawn by `tools/make_picnic_placeholders.gd`) |
@@ -21,4 +21,4 @@ art at the same filenames and sizes.
 | `card_frame.png` | 96×96 | World card frame, a 9-patch with 24 px margins; white so the carousel can tint it (`tools/make_menu_placeholders.gd`) |
 | `bg_menu.png` | 1800×1000 | Main menu background, with the 1280×720 play area centred (`tools/make_menu_placeholders.gd`) |
 
-The restart button reuses `forest_bridge/retry_icon.png` with a "1" drawn on top.
+The restart button reuses `forest_bridge/retry_icon.svg` with a "1" drawn on top.

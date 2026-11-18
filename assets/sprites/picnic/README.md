@@ -17,4 +17,4 @@ dimensions** and the scenes pick it up unchanged.
 The fox and its friends use the shared sheets in `assets/sprites/fox/` (idle, celebrate, sad). The friends
 are tinted copies of the fox; later art could give them their own animals.
 
-The Go and retry buttons reuse `forest_bridge/go_icon.png` and `forest_bridge/retry_icon.png`.
+The Go and retry buttons reuse `forest_bridge/go_icon.svg` and `forest_bridge/retry_icon.svg`.

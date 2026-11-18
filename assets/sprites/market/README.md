@@ -24,4 +24,4 @@ The fox uses the shared sheets in `assets/sprites/fox/` (idle, celebrate, throw)
 during the throw is a scaled copy of `icon_tomato.svg`, drawn by `_tomato` in `tools/make_fox_sheets.gd`; restyle
 the tomato in both places.
 
-The Go and retry buttons reuse `forest_bridge/go_icon.png` and `forest_bridge/retry_icon.png`.
+The Go and retry buttons reuse `forest_bridge/go_icon.svg` and `forest_bridge/retry_icon.svg`.

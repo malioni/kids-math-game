@@ -5,8 +5,8 @@ extends GutTest
 
 const SPRITES := "res://assets/sprites/"
 
-# The market's sprites and the sizes its layout was built around.
-const MARKET_SIZES := {
+# Every redrawn sprite and the size its scene was laid out around.
+const SIZES := {
 	"market/bg_market.svg": Vector2(1800, 1000),
 	"market/table.svg": Vector2(760, 330),
 	"market/crate.svg": Vector2(150, 110),
@@ -18,6 +18,16 @@ const MARKET_SIZES := {
 	"market/icon_carrot.svg": Vector2(64, 64),
 	"market/splat.svg": Vector2(200, 200),
 	"ui/icon_world_market.svg": Vector2(128, 128),
+	"forest_bridge/bg_river.svg": Vector2(1800, 1000),
+	"forest_bridge/bridge_platform.svg": Vector2(400, 80),
+	"forest_bridge/plank.svg": Vector2(100, 40),
+	"forest_bridge/plank_shadow.svg": Vector2(100, 20),
+	"forest_bridge/gap_slot_empty.svg": Vector2(80, 80),
+	"forest_bridge/target_sign.svg": Vector2(120, 100),
+	"forest_bridge/home.svg": Vector2(120, 120),
+	"forest_bridge/go_icon.svg": Vector2(80, 80),
+	"forest_bridge/retry_icon.svg": Vector2(80, 80),
+	"ui/icon_world_forest.svg": Vector2(128, 128),
 }
 
 
@@ -38,9 +48,9 @@ func test_sprites_every_svg_is_scalable() -> void:
 		assert_true(load(path) is DPITexture, "%s: run tools/import_svgs.sh" % path)
 
 
-func test_sprites_market_sprites_keep_their_sizes() -> void:
-	for file: String in MARKET_SIZES:
+func test_sprites_redrawn_sprites_keep_their_sizes() -> void:
+	for file: String in SIZES:
 		assert_true(ResourceLoader.exists(SPRITES + file), "%s is missing" % file)
 		if ResourceLoader.exists(SPRITES + file):
 			var texture: Texture2D = load(SPRITES + file)
-			assert_eq(texture.get_size(), MARKET_SIZES[file], file)
+			assert_eq(texture.get_size(), SIZES[file], file)

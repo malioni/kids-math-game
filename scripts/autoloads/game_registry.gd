@@ -18,7 +18,7 @@ const WORLDS: Array[Dictionary] = [
 	{
 		"id": "forest",
 		"scene": "res://scenes/worlds/forest_bridge/forest_bridge.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_forest.png",
+		"icon": "res://assets/sprites/ui/icon_world_forest.svg",
 	},
 	{
 		"id": "sky",

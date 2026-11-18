@@ -1,7 +1,7 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/ui/world_carousel.tscn")
-const _ICON := preload("res://assets/sprites/ui/icon_world_forest.png")
+const _ICON := preload("res://assets/sprites/ui/icon_world_forest.svg")
 const _SNAP := 0.3
 
 var carousel: WorldCarousel

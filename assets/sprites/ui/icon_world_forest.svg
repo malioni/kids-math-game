@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#96C8CD"/>
+<stop offset="0.45" stop-color="#60A0B0"/>
+<stop offset="1" stop-color="#3F7F92"/>
+</linearGradient>
+<linearGradient id="grass" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#96B96A"/>
+<stop offset="0.5" stop-color="#7A9E52"/>
+<stop offset="1" stop-color="#5C803E"/>
+</linearGradient>
+<linearGradient id="fir" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#6E9A4E"/>
+<stop offset="1" stop-color="#3D6630"/>
+</linearGradient>
+<linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#B98552"/>
+<stop offset="0.5" stop-color="#9E6B3D"/>
+<stop offset="1" stop-color="#6B4524"/>
+</linearGradient>
+<linearGradient id="post" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#7E5530"/>
+<stop offset="1" stop-color="#4A2E18"/>
+</linearGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M28 84 C28 76 100 76 100 84 L100 112 C100 124 28 124 28 112 Z" fill="url(#water)"/>
+<path d="M5 122 L5 84 C5 76 12 72 22 72 L38 72 C46 72 48 78 46 88 L42 122 Z" fill="url(#grass)"/>
+<path d="M123 122 L123 84 C123 76 116 72 106 72 L90 72 C82 72 80 78 82 88 L86 122 Z" fill="url(#grass)"/>
+<rect x="17.5" y="56" width="7" height="14" rx="1.5" fill="url(#post)"/>
+<rect x="103.5" y="56" width="7" height="14" rx="1.5" fill="url(#post)"/>
+<path d="M21 6 L31 22 L25 22 L35 38 L28 38 L37 56 C30 60 12 60 5 56 L14 38 L7 38 L17 22 L11 22 Z" fill="url(#fir)"/>
+<path d="M107 6 L117 22 L111 22 L121 38 L114 38 L123 56 C116 60 98 60 91 56 L100 38 L93 38 L103 22 L97 22 Z" fill="url(#fir)"/>
+<rect x="44" y="72" width="7" height="22" rx="2" fill="url(#post)"/>
+<rect x="77" y="72" width="7" height="22" rx="2" fill="url(#post)"/>
+<rect x="12" y="62" width="104" height="13" rx="3" fill="url(#wood)"/>
+</g>
+<g fill="none" stroke="#3D2617" stroke-width="2" stroke-linecap="round">
+<path d="M25 63 L25 74"/><path d="M38 63 L38 74"/><path d="M51 63 L51 74"/><path d="M64 63 L64 74"/>
+<path d="M77 63 L77 74"/><path d="M90 63 L90 74"/><path d="M103 63 L103 74"/>
+</g>
+<g fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2.5" stroke-linecap="round">
+<path d="M56 98 L70 98"/><path d="M62 108 L76 108"/><path d="M52 88 L60 88"/>
+</g>
+<path d="M16 65.5 L44 65.5" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round"/>
+<path d="M18 14 L13 21" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M104 14 L99 21" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M10 84 L10 100" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
