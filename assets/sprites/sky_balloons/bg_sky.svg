@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1000" viewBox="0 0 1800 1000">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#78B4EB"/>
+<stop offset="0.5" stop-color="#A5CFF2"/>
+<stop offset="1" stop-color="#D1EAF9"/>
+</linearGradient>
+<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+<stop offset="0" stop-color="#FFF6D2" stop-opacity="0.75"/>
+<stop offset="0.35" stop-color="#FFF6D2" stop-opacity="0.3"/>
+<stop offset="1" stop-color="#FFF6D2" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="sun" cx="0.4" cy="0.38" r="0.65">
+<stop offset="0" stop-color="#FFF8DC"/>
+<stop offset="1" stop-color="#FCE9A8"/>
+</radialGradient>
+<radialGradient id="band" cx="0.5" cy="0.5" r="0.5">
+<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
+<stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0.14"/>
+<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+</radialGradient>
+</defs>
+<rect width="1800" height="1000" fill="url(#sky)"/>
+<circle cx="1420" cy="160" r="300" fill="url(#glow)"/>
+<circle cx="1420" cy="160" r="66" fill="url(#sun)" fill-opacity="0.85"/>
+<ellipse cx="520" cy="318" rx="620" ry="34" fill="url(#band)"/>
+<ellipse cx="1260" cy="578" rx="560" ry="30" fill="url(#band)"/>
+<ellipse cx="380" cy="640" rx="380" ry="22" fill="url(#band)"/>
+<ellipse cx="900" cy="812" rx="980" ry="40" fill="url(#band)"/>
+</svg>

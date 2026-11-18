@@ -28,6 +28,13 @@ const SIZES := {
 	"forest_bridge/go_icon.svg": Vector2(80, 80),
 	"forest_bridge/retry_icon.svg": Vector2(80, 80),
 	"ui/icon_world_forest.svg": Vector2(128, 128),
+	"sky_balloons/bg_sky.svg": Vector2(1800, 1000),
+	"sky_balloons/cloud.svg": Vector2(300, 140),
+	"sky_balloons/balloon.svg": Vector2(128, 150),
+	"sky_balloons/basket.svg": Vector2(150, 90),
+	"sky_balloons/sandbag.svg": Vector2(120, 120),
+	"sky_balloons/lift_badge.svg": Vector2(120, 120),
+	"ui/icon_world_sky.svg": Vector2(128, 128),
 }
 
 

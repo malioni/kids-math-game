@@ -23,7 +23,7 @@ const WORLDS: Array[Dictionary] = [
 	{
 		"id": "sky",
 		"scene": "res://scenes/worlds/sky_balloons/sky_balloons.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_sky.png",
+		"icon": "res://assets/sprites/ui/icon_world_sky.svg",
 	},
 	{
 		"id": "market",
