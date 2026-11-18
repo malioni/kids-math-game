@@ -38,7 +38,7 @@ const WORLDS: Array[Dictionary] = [
 	{
 		"id": "memory",
 		"scene": "res://scenes/worlds/memory/memory.tscn",
-		"icon": "res://assets/sprites/ui/icon_world_memory.png",
+		"icon": "res://assets/sprites/ui/icon_world_memory.svg",
 	},
 ]
 

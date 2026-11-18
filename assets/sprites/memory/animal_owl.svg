@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<radialGradient id="fur" cx="0.36" cy="0.32" r="0.85">
+<stop offset="0" stop-color="#919CC4"/>
+<stop offset="0.45" stop-color="#727FAD"/>
+<stop offset="1" stop-color="#56628C"/>
+</radialGradient>
+<radialGradient id="disc" cx="0.4" cy="0.35" r="0.8">
+<stop offset="0" stop-color="#FFFFFF"/>
+<stop offset="0.45" stop-color="#F6F1E2"/>
+<stop offset="1" stop-color="#E3D9BE"/>
+</radialGradient>
+<radialGradient id="beak" cx="0.4" cy="0.3" r="0.8">
+<stop offset="0" stop-color="#FFD27A"/>
+<stop offset="0.45" stop-color="#F9B733"/>
+<stop offset="1" stop-color="#D9901A"/>
+</radialGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M15 44 L10 7 C22 12 32 18 40 25 C56 19 72 19 88 25 C96 18 106 12 118 7 L113 44 C121 58 122 80 116 96 C106 115 86 123 64 123 C42 123 22 115 12 96 C6 80 7 58 15 44 Z" fill="url(#fur)"/>
+<circle cx="42" cy="62" r="22" fill="url(#disc)"/>
+<circle cx="86" cy="62" r="22" fill="url(#disc)"/>
+<path d="M56 82 L72 82 L64 100 Z" fill="url(#beak)"/>
+</g>
+<g fill="none" stroke="#56628C" stroke-width="2.5" stroke-linecap="round">
+<path d="M40 104 q4 4 8 0 M56 110 q4 4 8 0 M72 104 q4 4 8 0"/>
+</g>
+<g fill="#3D2617">
+<ellipse cx="44" cy="62" rx="10" ry="11"/>
+<ellipse cx="84" cy="62" rx="10" ry="11"/>
+</g>
+<g fill="#FFFFFF">
+<circle cx="47.3" cy="58.1" r="3.5"/>
+<circle cx="87.3" cy="58.1" r="3.5"/>
+</g>
+<ellipse cx="24" cy="34" rx="4" ry="9" fill="#FFFFFF" fill-opacity="0.35" transform="rotate(-25 24 34)"/>
+</svg>

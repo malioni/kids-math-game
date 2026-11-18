@@ -1,7 +1,7 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/mechanics/memory_card.tscn")
-const FOX := preload("res://assets/sprites/memory/animal_fox.png")
+const FOX := preload("res://assets/sprites/memory/animal_fox.svg")
 
 var card: MemoryCard
 

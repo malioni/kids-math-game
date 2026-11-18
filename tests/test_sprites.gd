@@ -43,6 +43,22 @@ const SIZES := {
 	"picnic/icon_apple.svg": Vector2(64, 64),
 	"picnic/icon_banana.svg": Vector2(64, 64),
 	"ui/icon_world_picnic.svg": Vector2(128, 128),
+	"memory/bg_memory.svg": Vector2(1800, 1000),
+	"memory/card_back.svg": Vector2(160, 160),
+	"memory/card_front.svg": Vector2(160, 160),
+	"memory/animal_fox.svg": Vector2(128, 128),
+	"memory/animal_rabbit.svg": Vector2(128, 128),
+	"memory/animal_bear.svg": Vector2(128, 128),
+	"memory/animal_owl.svg": Vector2(128, 128),
+	"memory/animal_frog.svg": Vector2(128, 128),
+	"memory/animal_hedgehog.svg": Vector2(128, 128),
+	"memory/animal_mouse.svg": Vector2(128, 128),
+	"memory/animal_duck.svg": Vector2(128, 128),
+	"memory/animal_pig.svg": Vector2(128, 128),
+	"memory/animal_cat.svg": Vector2(128, 128),
+	"memory/animal_deer.svg": Vector2(128, 128),
+	"memory/animal_squirrel.svg": Vector2(128, 128),
+	"ui/icon_world_memory.svg": Vector2(128, 128),
 }
 
 
