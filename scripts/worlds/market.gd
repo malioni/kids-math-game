@@ -49,12 +49,14 @@ func _restore_stage() -> void:
 
 
 func _play_lose() -> void:
+	# A level change mid-throw leaves this waiting; the check stops it from joining the next throw.
+	var load_count: int = _load_count
 	_character.play("throw")
 	# A slow frame can skip past the release frame, so wait for it or any later one. A level change
 	# or a retry plays idle, which ends the wait.
 	while _character.animation == &"throw" and _character.frame < _RELEASE_FRAME:
 		await _character.frame_changed
-	if _character.animation != &"throw":
+	if _character.animation != &"throw" or load_count != _load_count:
 		return
 	_throw_from = _character.position + _HAND_OFFSET
 	_set_flight(0.0)
@@ -62,6 +64,8 @@ func _play_lose() -> void:
 	_throw_tween = create_tween()
 	_throw_tween.tween_method(_set_flight, 0.0, 1.0, throw_duration)
 	await _throw_tween.finished
+	if load_count != _load_count:
+		return
 	_flying_tomato.visible = false
 	_splat.scale = Vector2(0.6, 0.6)
 	_splat.visible = true

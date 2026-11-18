@@ -9,7 +9,12 @@ cd "$(dirname "$0")/.."
 GODOT="${GODOT:-/Applications/Godot-2.app/Contents/MacOS/Godot}"
 find assets/sprites -name '*.svg' | while IFS= read -r svg; do
 	if ! grep -qs 'type="DPITexture"' "$svg.import"; then
+		# Keep the uid of an SVG Godot already imported, so scenes that refer to it by uid still find it.
+		uid_line="$(grep -s '^uid=' "$svg.import" || true)"
 		printf '[remap]\n\nimporter="svg"\ntype="DPITexture"\n' > "$svg.import"
+		if [ -n "$uid_line" ]; then
+			printf '%s\n' "$uid_line" >> "$svg.import"
+		fi
 		echo "Marked $svg as scalable"
 	fi
 done

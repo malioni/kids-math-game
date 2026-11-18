@@ -211,6 +211,17 @@ func test_market_level_change_during_splat_leaves_nothing_behind() -> void:
 	assert_eq(_world.get_node("Character").animation, &"idle")
 
 
+func test_market_throw_cut_short_by_level_change_does_not_join_the_next_throw() -> void:
+	watch_signals(AudioManager)
+	_mechanic.confirm()
+	_hud.level_chosen.emit("market", 7)
+	await wait_until(func() -> bool: return _world._current_index == 7, 2.0)
+	_mechanic.confirm()
+	await wait_seconds(_THROW_SETTLE)
+	assert_eq(_sfx_played().count("market/splat"), 1)
+	assert_true(_retry.visible)
+
+
 func test_market_wrong_again_after_retry_throws_again() -> void:
 	_mechanic.confirm()
 	await wait_seconds(_THROW_SETTLE)
