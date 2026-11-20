@@ -19,7 +19,7 @@ name: `"win"` is `win.wav`, `"forest/place"` is `forest/place.wav`.
 | `drive/place` | A command goes into the program |
 | `drive/remove` | A step comes off the program |
 | `drive/step` | The car drives one square: a short, soft thud |
-| `drive/bump` | The car bumps an obstacle or the field's edge, before the sad animation |
+| `drive/bump` | The car bumps an obstacle or the field's edge, with its bump animation |
 | `drive/honk` | The car reaches its garage: two quick notes, before the celebration |
 | `drive/ambience` | Loops quietly in the Country Drive: a meadow |
 
