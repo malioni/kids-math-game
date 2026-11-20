@@ -55,7 +55,8 @@ Decisions the user made:
 │ │ ← │  │  │  │  │  │💧│  │  │                              │
 │ ├───┤  └──┴──┴──┴──┴──┴──┴──┘                              │
 │ │ → │                                                      │
-│ └───┘  [ →2 ][ ↓ ][ →4 ][ ↑ ]                         [GO] │
+│ └───┘                                                      │
+│ [ →2 ][ ↓ ][ →4 ][ ↑ ][    ][    ][    ][    ]  …     [GO] │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -67,8 +68,9 @@ Decisions the user made:
   squares, one per square.
 - **Command buttons:** a column on the left, below the level badge. Easy: ↑ ↓ ← →. Hard: forward, turn
   left, turn right.
-- **Program strip:** along the bottom, left of the Go button. At most **10 tiles**; when it is full, the
-  command buttons stop adding (they dim).
+- **Program strip:** along the bottom, the full width from the left edge of the safe area (under the
+  command buttons) to the Go button, about 980 px. At most **12 tiles** of about 76 px; when it is full,
+  the command buttons stop adding (they dim).
 - **Go button** at the bottom right, the same size (120 px) as the other worlds' Go buttons.
 
 ### Commands
@@ -133,7 +135,7 @@ Level files live in `data/levels/world_drive/` (`levels.json` plus `world_drive_
 - `cols`, `rows`: field size.
 - `obstacles`: how many obstacle squares.
 - `turns`: how many turns the shortest program needs (see below).
-- `max_tiles`: the shortest program may use at most this many tiles. Always below the strip's cap of 10,
+- `max_tiles`: the shortest program may use at most this many tiles. Always well below the strip's cap of 12,
   so a longer route than the best one still fits.
 
 **Turns** are counted on the shortest program: in global mode, the number of times the direction changes
@@ -155,7 +157,7 @@ Level files live in `data/levels/world_drive/` (`levels.json` plus `world_drive_
 | 19–20 | relative | 7×5 | 8–10 | 3 | 7 |
 
 In relative mode a route with *t* direction changes needs about 2*t* + 1 tiles (forward runs between turn
-tiles), so 3 turns is the most that fits comfortably in a 10-tile strip. The curve is a first guess, to be
+tiles), so 3 turns (7 tiles) is the most the curve asks for, leaving room in the 12-tile strip for a roundabout route. The curve is a first guess, to be
 tuned after playtesting like the other worlds.
 
 ## Puzzle generation
@@ -200,7 +202,7 @@ Pure logic (no nodes, `RefCounted` or static):
 
 - `scripts/mechanics/drive_program.gd`, `class_name DriveProgram`: the tile list.
   `add(command)`, `take_step(index)`, `get_tiles() -> Array[{command, count}]`, `is_full()`, `clear()`,
-  `expand() -> Array[{command, tile}]` (single moves, each with the index of its tile). `MAX_TILES := 10`.
+  `expand() -> Array[{command, tile}]` (single moves, each with the index of its tile). `MAX_TILES := 12`.
 - `scripts/mechanics/drive_simulator.gd`, `class_name DriveSimulator`: `static run(field, moves, mode)
   -> Dictionary` with `poses` (cell and facing after each move), `outcome` (`"garage"`, `"bump"`,
   `"short"`), `fail_move` (index of the bumping move, or the last move for `short`, −1 on `garage`) and
@@ -266,7 +268,7 @@ Placeholders in `tools/make_audio_placeholders.gd`: `drive` added to `PLACE_HZ` 
 ## Tests
 
 - `tests/test_drive_program.gd`: merging steps and turns, taking a step off, removing at 1, no merging
-  after a removal, the 10-tile cap, `expand()` tile indices.
+  after a removal, the 12-tile cap, `expand()` tile indices.
 - `tests/test_drive_simulator.gd`: both modes; garage exactly; through the garage and on (not a win);
   bump on an obstacle and on each edge with the right `fail_move` and `bump_kind`; short stop; car faces
   the way it moved in global mode.
