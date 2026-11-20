@@ -128,8 +128,8 @@ running lights up. The program stays on screen, so it can be fixed and run again
 - **Teaches:** Spatial reasoning and sequencing: planning a route, left and right, counting squares
 - **Mechanic:** `DriveMechanic`
 - **Levels:** 20 levels, generated from per-level ranges. Easy (1–10) uses screen arrows (up, down, left, right), on fields from 4×3 to 7×5, with up to 3 direction changes. Hard (11–20) uses forward and turn left or right, relative to the car, on fields from 4×3 to 7×5, with up to 3 turns
-- **Win condition:** The program's last move ends exactly on the garage. The car honks and the fox celebrates
-- **Fail state:** The car bumps into an obstacle or the edge of the field, or the program ends somewhere else. The fox is sad (or the car bumps); gentle retry that keeps the program and marks the tile where it went wrong
+- **Win condition:** The program's last move ends exactly on the garage. The car honks, toots and celebrates
+- **Fail state:** The car bumps into an obstacle or the edge of the field, or the program ends somewhere else. The car bumps (dizzy) or stops and looks sad; gentle retry that keeps the program and marks the tile where it went wrong
 
 ### Planned Future Worlds
 
