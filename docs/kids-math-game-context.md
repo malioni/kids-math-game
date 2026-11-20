@@ -220,7 +220,7 @@ Deal every `must_include` animal, fill up to `pairs` with distinct random picks 
   "obstacles": { "min": 5, "max": 6 }, "turns": { "min": 2, "max": 2 }, "max_tiles": 5 }
 ```
 
-Put the start in a random row of the left column and the garage in a random row of the right column, scatter a random number of obstacles (random kinds) on other squares then keep the field only if its shortest program fits `turns` and `max_tiles`; otherwise retry, up to 500 attempts, then fall back to a field with no obstacles (`fallback` true; a test checks no level needs it). The shortest program comes from a 0-1 breadth-first search over (square, facing, current command): a move that repeats the current command merges into its tile and costs 0, any other command starts a tile and costs 1. Turns are tiles − 1 in global mode and the number of turn tiles in relative mode.
+Put the start in a random row of the left column and the garage in a random row of the right column, scatter a random number of obstacles (random kinds) on other squares (never the square just left of the garage, its door), then keep the field only if its shortest program fits `turns` and `max_tiles`; otherwise retry, up to 500 attempts, then fall back to a field with no obstacles (`fallback` true; a test checks no level needs it). The shortest program comes from a 0-1 breadth-first search over (square, facing, current command): a move that repeats the current command merges into its tile and costs 0, any other command starts a tile and costs 1. Turns are tiles − 1 in global mode and the number of turn tiles in relative mode.
 
 | Levels | Mode | Field | Obstacles | Turns | Max tiles |
 |---|---|---|---|---|---|

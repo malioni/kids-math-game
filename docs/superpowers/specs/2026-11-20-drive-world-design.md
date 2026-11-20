@@ -171,8 +171,8 @@ tuned after playtesting like the other worlds.
 ```
 
 1. Start: a random row in column 0. Garage: a random row in column `cols − 1`.
-2. Obstacle count: random in `obstacles`. Each goes on a random free square that is not the start or the
-   garage, with a random kind.
+2. Obstacle count: random in `obstacles`. Each goes on a random free square that is not the start, the
+   garage or the square just left of the garage (its door), with a random kind.
 3. `fewest_tiles(field, mode)` finds the shortest program (below). Keep the field if a route exists, its
    turns are within `turns`, and its tile count is at most `max_tiles`.
 4. Otherwise try again, up to 500 attempts, all with the level's seeded `rng`. After that, fall back to the

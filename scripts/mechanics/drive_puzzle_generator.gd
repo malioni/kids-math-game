@@ -90,7 +90,8 @@ static func _random_field(params: Dictionary, rng: RandomNumberGenerator) -> Dic
 	for y in rows:
 		for x in cols:
 			var cell := Vector2i(x, y)
-			if cell != start and cell != garage:
+			# The garage door faces left, so the square in front of it stays clear.
+			if cell != start and cell != garage and cell != garage + Vector2i(-1, 0):
 				free.append(cell)
 	# Array.shuffle() uses the global random numbers, so a seeded world would get other fields.
 	for i in range(free.size() - 1, 0, -1):

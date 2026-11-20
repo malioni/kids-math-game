@@ -127,6 +127,17 @@ func test_drive_generator_impossible_params_fall_back_to_open_field() -> void:
 	assert_ne(DrivePuzzleGenerator.fewest_tiles(field, "global")["tiles"], -1)
 
 
+func test_drive_generator_garage_door_is_never_blocked() -> void:
+	var rng := RandomNumberGenerator.new()
+	for level: Dictionary in LevelLoader.get_levels_for_world("drive"):
+		for seed_value in _SEEDS_PER_LEVEL:
+			rng.seed = seed_value
+			var field := DrivePuzzleGenerator.generate(level, rng)
+			var door: Vector2i = field["garage"] + Vector2i(-1, 0)
+			for obstacle: Dictionary in field["obstacles"]:
+				assert_ne(obstacle["cell"], door, "%s seed %d" % [level["id"], seed_value])
+
+
 func test_drive_generator_every_level_fits_its_ranges_without_fallback() -> void:
 	var rng := RandomNumberGenerator.new()
 	for level: Dictionary in LevelLoader.get_levels_for_world("drive"):
