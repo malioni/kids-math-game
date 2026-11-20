@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/mechanics/drive_mechanic.gd" id="1_drive"]
+
+[node name="DriveMechanic" type="Node2D"]
+script = ExtResource("1_drive")
+
+[node name="Field" type="Node2D" parent="."]
+
+[node name="Grass" type="Node2D" parent="Field"]
+
+[node name="Obstacles" type="Node2D" parent="Field"]
+
+[node name="Garage" type="Sprite2D" parent="Field"]
+
+[node name="Car" type="AnimatedSprite2D" parent="Field"]
+z_index = 1
+
+[node name="Buttons" type="Node2D" parent="."]
+
+[node name="Strip" type="Node2D" parent="."]
+
+[node name="GoButton" type="TextureButton" parent="."]
+offset_left = 1080.0
+offset_top = 570.0
+offset_right = 1200.0
+offset_bottom = 690.0
+ignore_texture_size = true
+stretch_mode = 5

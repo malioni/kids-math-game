@@ -1,0 +1,104 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/worlds/drive.gd" id="script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/bg_drive.svg" id="bg"]
+[ext_resource type="PackedScene" path="res://scenes/mechanics/drive_mechanic.tscn" id="mechanic"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/retry_icon.svg" id="retry_icon"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_hud.tscn" id="level_hud_scene"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/drive/car_frames.tres" id="car_frames"]
+[ext_resource type="Texture2D" path="res://assets/sprites/forest_bridge/go_icon.svg" id="go"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/cmd_up.svg" id="cmd_up"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/cmd_down.svg" id="cmd_down"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/cmd_left.svg" id="cmd_left"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/cmd_right.svg" id="cmd_right"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/cmd_forward.svg" id="cmd_forward"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/cmd_turn_left.svg" id="cmd_turn_left"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/cmd_turn_right.svg" id="cmd_turn_right"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/tree.svg" id="tree"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/rock.svg" id="rock"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/bush.svg" id="bush"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/pond.svg" id="pond"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/grass_light.svg" id="grass_light"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/grass_dark.svg" id="grass_dark"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/garage.svg" id="garage"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/tile_frame.svg" id="tile_frame"]
+
+[sub_resource type="Gradient" id="Gradient_confetti"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.82, 0.47, 1, 0.88, 0.22, 0.18, 1, 0.95, 0.52, 0.12, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_confetti"]
+gradient = SubResource("Gradient_confetti")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_confetti"]
+direction = Vector3(0, -1, 0)
+spread = 60.0
+initial_velocity_min = 200.0
+initial_velocity_max = 350.0
+gravity = Vector3(0, 400, 0)
+scale_min = 4.0
+scale_max = 8.0
+color_ramp = SubResource("GradientTexture1D_confetti")
+
+[node name="Drive" type="Node2D"]
+script = ExtResource("script")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(640, 360)
+texture = ExtResource("bg")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="DriveMechanic" parent="." instance=ExtResource("mechanic")]
+position = Vector2(0, 0)
+command_textures = {
+"up": ExtResource("cmd_up"),
+"down": ExtResource("cmd_down"),
+"left": ExtResource("cmd_left"),
+"right": ExtResource("cmd_right"),
+"forward": ExtResource("cmd_forward"),
+"turn_left": ExtResource("cmd_turn_left"),
+"turn_right": ExtResource("cmd_turn_right")
+}
+obstacle_textures = {
+"bush": ExtResource("bush"),
+"pond": ExtResource("pond"),
+"rock": ExtResource("rock"),
+"tree": ExtResource("tree")
+}
+grass_textures = Array[Texture2D]([ExtResource("grass_light"), ExtResource("grass_dark")])
+garage_texture = ExtResource("garage")
+tile_texture = ExtResource("tile_frame")
+go_texture = ExtResource("go")
+car_frames = ExtResource("car_frames")
+
+[node name="CelebrationParticles" type="GPUParticles2D" parent="."]
+position = Vector2(1150, 300)
+emitting = false
+amount = 60
+lifetime = 1.2
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_confetti")
+
+[node name="RetryPrompt" type="CanvasLayer" parent="."]
+
+[node name="RetryIcon" type="TextureButton" parent="RetryPrompt"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = -80.0
+offset_right = 80.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("retry_icon")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="LevelHud" parent="." instance=ExtResource("level_hud_scene")]

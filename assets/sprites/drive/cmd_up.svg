@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+<defs>
+<radialGradient id="cream" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#FFF8E6"/><stop offset="0.55" stop-color="#FCE9C2"/><stop offset="1" stop-color="#E9C88C"/></radialGradient>
+</defs>
+<path d="M37 84 L37 48 L20 48 Q14 48 17 43 L43 12 Q48 7 53 12 L79 43 Q82 48 76 48 L59 48 L59 84 Q59 88 55 88 L41 88 Q37 88 37 84 Z" fill="url(#cream)" stroke="#3D2617" stroke-width="3.5" stroke-linejoin="round"/>
+<path d="M42 82 L42 52" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-opacity="0.8"/>
+</svg>

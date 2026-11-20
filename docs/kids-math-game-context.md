@@ -1,6 +1,6 @@
 # Kids Math Game: project context
 
-_Last updated 2026-11-18. Everything below describes `main` through PR #44: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), menu Play opening the centred world (#30), checks before every deploy (#33), the win and lose flow moving into `WorldBase` (#34), the save kept in memory (#35), small fixes (#36), the sound rework (#38–#41), World 5, Memory Meadow (#42), and the vector art redraw (#43, #44)._
+_Last updated 2026-11-20. Everything below describes `main` through PR #44, plus World 6 on the `drive-world` branch: the plank puzzle and phone layout (#17), the level HUD/picker and World 2, Sky Balloons (#18), the GitHub Pages web deploy (#19), World 3, the Market (#20–#22), World 4, the Picnic (#23), fox sprite fixes and a sad animation (#24), Easy/Hard difficulty and Shuffle mode (#25), the badge counting to the end of the difficulty (#26), the shuffle page in the picker (#27), the main menu and fade transitions (#29), menu Play opening the centred world (#30), checks before every deploy (#33), the win and lose flow moving into `WorldBase` (#34), the save kept in memory (#35), small fixes (#36), the sound rework (#38–#41), World 5, Memory Meadow (#42), and the vector art redraw (#43, #44), and World 6, Country Drive (`drive-world`, not merged yet)._
 
 ## What it is
 
@@ -32,7 +32,14 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 - A mismatch shows both faces for 1 s, then turns them back with `memory/remove`. There's no limit on turns, so a mismatch is never wrong: `MemoryMechanic` never emits `incorrect`, and the retry prompt is never shown.
 - On easy levels every card shows face up for a short peek before turning down (2 s, falling to 1 s); hard levels have no peek. The first world that isn't arithmetic.
 
-**Level HUD (every world).** A badge in the top-left of the play area: world icon + level number + the end of the current difficulty (e.g. 4/10 on easy, 14/20 on hard). While shuffling it shows a small shuffle icon and the place in the whole shuffle (e.g. 7/50 on easy with five worlds). Tapping the badge opens the picker:
+**World 6: Country Drive (spatial reasoning and sequencing).** The fox's car, seen from above, starts on the left of a grassy field and its garage is on the right, with trees, rocks, bushes and ponds in between. The child builds a program from command buttons into a strip of tiles (at most 12), then presses Go. The car drives it square by square and the running tile lights up.
+- Adding the same command as the last tile raises that tile's count; tapping a tile takes one step off it. The program is not editable while the car drives.
+- The win is the program's last move ending exactly on the garage: `drive/honk`, then the normal win flow.
+- Two ways to lose. A bump into an obstacle or the field's edge plays `drive/bump` and the car's bump animation; a program that ends anywhere else plays the sad animation. The mechanic emits `bumped(kind)` or `stopped_short`, then `incorrect`. The tile where it went wrong is marked.
+- Retry puts the car back on the start and keeps the program, so the child fixes it instead of starting again. The mechanic emits `stepped` per square and the world plays `drive/step`.
+- Easy levels use screen arrows (up, down, left, right); hard levels use forward, turn left and turn right, relative to the way the car faces. The car always starts facing right.
+
+**Level HUD (every world).** A badge in the top-left of the play area: world icon + level number + the end of the current difficulty (e.g. 4/10 on easy, 14/20 on hard). While shuffling it shows a small shuffle icon and the place in the whole shuffle (e.g. 7/60 on easy with six worlds). Tapping the badge opens the picker:
 - A tab per world, showing the current difficulty's 10 levels by their real numbers, current level highlighted, all open. Picking a level loads it and sets that world's saved level for the difficulty (it can lower it). Picking a level in another world switches scenes. Picking a level leaves shuffle.
 - Two icon buttons, Easy (a hill) and Hard (a snowy mountain), set the difficulty for the whole game. This is the grown-up's control; the child never sees it named.
 - A Shuffle tab with its own page: continue (or start shuffling) and start over (clears shuffle's place in every world and begins again). The picker opens on this page while shuffling.
@@ -41,11 +48,11 @@ A tablet- and phone-first Godot 4 game for children aged 4–7, where math is th
 
 ## Current state
 
-- Five worlds, 20 levels each, split Easy (1–10) / Hard (11–20) by `data/levels/difficulty.json`.
+- Six worlds, 20 levels each, split Easy (1–10) / Hard (11–20) by `data/levels/difficulty.json`.
 - Every puzzle is generated at load from per-level ranges, so replays differ. Progress is saved locally per world, per difficulty, and separately for shuffle.
 - All art is vector art (issue #7; spec `docs/superpowers/specs/2026-11-16-vector-art-design.md`): hand-drawn SVGs under `assets/sprites/`, imported as scalable textures, at the sizes the scenes were laid out around. The fox's six sheets and the shared `fox_frames.tres` are written by `tools/make_fox_sheets.gd` from a table of poses; everything else is drawn by hand. Each sprite folder's README lists its files and what must not move.
 - Every pull request runs lint, tests and a headless boot (`.github/workflows/test.yml`). Every push to `main` runs the same checks, then builds the Web preset and publishes it to GitHub Pages at https://malioni.github.io/kids-math-game/ (`.github/workflows/deploy-web.yml`).
-- 541 GUT tests passing (2026-11-18); headless boot and `gdlint` clean, and `gdformat --check` clean except `scripts/systems/level_loader.gd`, which it already reports on `main`. gdtoolkit 4.5.0 is installed with pipx (`~/.local/bin/gdlint`).
+- 615 GUT tests passing (2026-11-20); headless boot and `gdlint` clean, and `gdformat --check` clean except `scripts/systems/level_loader.gd`, which it already reports on `main`. gdtoolkit 4.5.0 is installed with pipx (`~/.local/bin/gdlint`).
 - Not yet done: adaptive difficulty, the PIN-gated parent view, native Android/iOS exports (only a Web preset exists), and playtesting with the target age.
 - Placeholder sounds generated by `tools/make_audio_placeholders.gd` (see `assets/audio/README.md`): a rising chime for a right answer and three falling notes for a wrong one, complete, tap, and each world's place, remove and background loop. Tuned after the first listen (#38–#40): the menu and the market play short tunes (a slow music box and a bouncy plucked tune), the forest is a bubbling river, and the market adds a splat when the tomato lands. Each sound is seeded from its own name, so changing one leaves the others byte-for-byte the same. A grown-up can turn background sound and effects off with the toggles in the picker's bottom-right corner; Easy/Hard sit in the bottom-left.
 
@@ -98,7 +105,14 @@ Strict layers (from `CLAUDE.md`): `scenes/` are presentation only; `scripts/mech
 | `scripts/mechanics/memory_card.gd` + `.tscn` | `MemoryCard`: `setup(animal, face_texture, card_size)`, `show_face()` / `show_back()` (a squash turn), `mark_matched()`, `is_face_up()`, `is_matched()`, `contains_global_point()`; signal `tapped`. |
 | `scripts/worlds/memory.gd` + `scenes/worlds/memory/` | Memory flow: the match sound and the fox's hop per pair (skipped for the last pair, which goes into the win flow). Exports `hop_duration`. |
 | `scripts/ui/level_hud.gd` + `scenes/ui/level_hud.tscn` | `LevelHud` (CanvasLayer 5). `show_level(world_id, index)`, `open_picker()`, `close_picker()`, `is_picker_open()`, `show_world_complete()`, `is_world_complete_shown()`, plus test accessors (`get_difficulty_buttons()`, `get_level_buttons()`, `get_world_tabs()`, `get_shuffle_tab()`, `is_shuffle_page_shown()`, `get_shuffle_buttons()`, `get_sound_buttons()` for the music and effects toggles in the picker). Signals `level_chosen(world_id, index)` (index −1 = resume that world), `restart_requested`, `difficulty_chosen(difficulty)`, `shuffle_requested(from_start)`. Badge anchored to the play area's top-left so it stays inside the iPhone safe area. |
-| `scripts/autoloads/game_registry.gd` | `WORLDS` list (id, scene, icon): forest, sky, market, picnic, memory. `get_worlds()`, `get_world(id)`, `go_to_world(id, level_index = -1)`, `go_to_menu()`, `request_level()` / `take_requested_level()`. Every world needs levels for all of every difficulty's range; a test enforces it. Difficulty and mode read through to `SaveManager`: `get_difficulty()` / `set_difficulty()`, `is_shuffle()` / `set_shuffle()`, `get_level_range()` (0-based `Vector2i`). Shuffle: `shuffle_next_index(id)`, `shuffle_position()` (place in the whole run, for the badge), `next_shuffle_world()`, `reset_shuffle()`, `start_shuffle()`. Test seam: `change_scenes = false` makes `go_to_world()` only record `last_world_request`. |
+| `scripts/mechanics/drive_program.gd` | `DriveProgram` (`RefCounted`). `add(command) -> bool` (merges into the last tile if same command), `can_add(command)`, `take_step(index)`, `get_tiles()` (each `{command, count}`), `is_full()`, `is_empty()`, `clear()`, `expand()` (single moves, each `{command, tile}`). `MAX_TILES` is 12. |
+| `scripts/mechanics/drive_simulator.gd` | `DriveSimulator` (static). `run(field, moves) -> {poses, outcome, fail_move, bump_kind}` where `outcome` is `garage`, `bump` or `short`; `step(cell, facing, command)`, `blocker(field, cell)` (`edge`, an obstacle kind or `""`). Global commands face a screen direction and drive one square; relative ones drive forward or turn 90°. |
+| `scripts/mechanics/drive_puzzle_generator.gd` | `DrivePuzzleGenerator` (static). `generate(params, rng) -> Dictionary` (`cols`, `rows`, `start`, `garage`, `obstacles`, `fallback`), `fewest_tiles(field, mode) -> {tiles, turns, program}`. `COMMANDS`, `KINDS`, `MAX_ATTEMPTS` (500). |
+| `scripts/mechanics/drive_mechanic.gd` + `.tscn` | `DriveMechanic`. `setup(field, mode)`, `reset()` (car back on the start, program and mark kept), `set_interactive()`, `press_command(command)`, `tap_tile(index)`, `go()`, `get_program()`, `get_car()`, `get_field()`, `get_mode()`, `get_tiles()`, `get_command_buttons()`, `get_lit_tile()`, `get_marked_tile()`, `is_driving()`, `cell_position(cell)`. Signals `bumped(kind)`, `stopped_short`, `stepped`, `correct`, `incorrect`; `piece_placed` / `piece_removed` when a step goes into or comes off the program. Exports include `command_textures`, `obstacle_textures`, `car_frames`, `field_rect`, `step_duration`, `turn_duration`. |
+| `scripts/mechanics/drive_tile.gd` + `.tscn` | `DriveTile`: `setup(icon, count)`, `set_lit()`, `set_marked()`, `is_lit()`, `is_marked()`. |
+| `scripts/worlds/drive.gd` + `scenes/worlds/drive/` | Drive flow: `drive/step` per square, `drive/honk` on the win, `drive/bump` and the car's bump or sad animation on a loss. Exports `honk_duration`, `lose_duration`. The car is the world's character. |
+| `tools/make_car_sheets.gd` | Writes the car's animation sheets (SVG) and `car_frames.tres` into `assets/sprites/drive/` from a table of poses; then run `tools/import_svgs.sh`. `tests/test_car_frames.gd` checks the edge rows and columns stay empty (the game rotates the car). |
+| `scripts/autoloads/game_registry.gd` | `WORLDS` list (id, scene, icon): forest, sky, market, picnic, memory, drive. `get_worlds()`, `get_world(id)`, `go_to_world(id, level_index = -1)`, `go_to_menu()`, `request_level()` / `take_requested_level()`. Every world needs levels for all of every difficulty's range; a test enforces it. Difficulty and mode read through to `SaveManager`: `get_difficulty()` / `set_difficulty()`, `is_shuffle()` / `set_shuffle()`, `get_level_range()` (0-based `Vector2i`). Shuffle: `shuffle_next_index(id)`, `shuffle_position()` (place in the whole run, for the badge), `next_shuffle_world()`, `reset_shuffle()`, `start_shuffle()`. Test seam: `change_scenes = false` makes `go_to_world()` only record `last_world_request`. |
 | `scripts/autoloads/save_manager.gd` | `ConfigFile` at `save_path` (`user://save.cfg`), read once by `reload()` and kept in memory; every change is written straight away. Progress keys come from `progress_key(world, difficulty, shuffle)`: `"forest:easy"`, `"shuffle:forest:hard"`, … (1-indexed levels). `save_progress` (only raises) / `set_progress` (exact) / `load_progress` / `reset_progress`, `save_last_world` / `load_last_world`, `save_difficulty` / `load_difficulty` (default `easy`), `save_play_mode` / `load_play_mode` (`worlds` / `shuffle`), `migrate_progress(worlds)` (old per-world keys → per-difficulty). |
 | `scripts/autoloads/audio_manager.gd` | `AudioManager`: `play_sfx(name)`, `play_music(name)` (0.5 s crossfade; the current loop isn't restarted), `set_/is_music_enabled()`, `set_/is_effects_enabled()` (mute the `Music` / `Effects` bus in `default_bus_layout.tres`, saved by `SaveManager`), `expected_sounds()`. Names map to `assets/audio/<name>.wav`; a missing one warns once and stays silent. Signals `sfx_played`, `music_changed`. |
 | `scripts/systems/level_loader.gd` | Autoload. `get_levels_for_world("forest")` reads `data/levels/world_forest/levels.json` and then each level file. `get_difficulty_range(difficulty) -> Vector2i` (0-based, from `difficulty.json`; unknown → easy). `DIFFICULTIES = ["easy", "hard"]`. |
@@ -199,6 +213,30 @@ Pick the number of plates (the fox's included), then a share per fruit; each bas
 
 Deal every `must_include` animal, fill up to `pairs` with distinct random picks from `pool`, put each in twice and shuffle with the level's RNG. No rejection step: every deck is solvable. Pairs rise from 2 to 6 on easy (peek 2 s, then 1.5 s, then 1 s) and from 6 to 10 on hard (no peek), two levels per size.
 
+### Drive generation
+
+```json
+{ "id": "world_drive_15", "world": "drive", "mode": "relative", "cols": 6, "rows": 4,
+  "obstacles": { "min": 5, "max": 6 }, "turns": { "min": 2, "max": 2 }, "max_tiles": 5 }
+```
+
+Put the start in a random row of the left column and the garage in a random row of the right column, scatter a random number of obstacles (random kinds) on other squares (never the square just left of the garage, its door), then keep the field only if its shortest program fits `turns` and `max_tiles`; otherwise retry, up to 500 attempts, then fall back to a field with no obstacles (`fallback` true; a test checks no level needs it). The shortest program comes from a 0-1 breadth-first search over (square, facing, current command): a move that repeats the current command merges into its tile and costs 0, any other command starts a tile and costs 1. Turns are tiles − 1 in global mode and the number of turn tiles in relative mode.
+
+| Levels | Mode | Field | Obstacles | Turns | Max tiles |
+|---|---|---|---|---|---|
+| 1–2 | global | 4×3 | 0–1 | 0–1 | 2 |
+| 3–4 | global | 5×3 | 2–3 | 1 | 3 |
+| 5–6 | global | 5×4 | 3–5 | 1–2 | 3 |
+| 7–8 | global | 6×4 | 5–7 | 2–3 | 4 |
+| 9–10 | global | 7×5 | 7–9 | 2–3 | 4 |
+| 11–12 | relative | 4×3 | 1–2 | 1 | 3 |
+| 13–14 | relative | 5×4 | 3–4 | 1–2 | 5 |
+| 15–16 | relative | 6×4 | 5–6 | 2 | 5 |
+| 17–18 | relative | 6×5 | 6–8 | 2–3 | 7 |
+| 19–20 | relative | 7×5 | 8–10 | 3 | 7 |
+
+The curve is a first guess, to be tuned after playtesting like the other worlds.
+
 ## Difficulty and shuffle
 
 - `data/levels/difficulty.json`: `{"easy": {"first": 1, "last": 10}, "hard": {"first": 11, "last": 20}}`, read by `LevelLoader.get_difficulty_range()` as a 0-based `Vector2i`.
@@ -249,6 +287,6 @@ Deal every `must_include` animal, fill up to `pairs` with distinct random picks 
 - Real sounds to replace the placeholders.
 - Adaptive difficulty (e.g. repeat easier variants after a failure), after more playtesting. Today Easy/Hard is a manual grown-up choice, and DESIGN.md says so. `skill_tags` and `narrative_key` were removed from the level JSON in #35 because nothing read them; they're in git history if this or a story needs them.
 - Parent view (PIN-gated session summaries).
-- Skill areas with no world yet: counting, comparison, patterns and spatial reasoning (mechanics `CountingMechanic`, `SortingMechanic`, `MatchingMechanic`, `BalanceMechanic` in DESIGN.md are unbuilt). Planned worlds: Garden (addition and grouping), Kitchen (addition and subtraction).
+- Skill areas with no world yet: counting, comparison and patterns (mechanics `CountingMechanic`, `SortingMechanic`, `MatchingMechanic`, `BalanceMechanic` in DESIGN.md are unbuilt). Planned worlds: Garden (addition and grouping, World 7), Kitchen (addition and subtraction, World 8).
 - Native Android/iOS builds.
 - Sky Balloons: burst particles; optionally hide the lift total on later levels so the child also has to add.

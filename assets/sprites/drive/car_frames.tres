@@ -1,0 +1,175 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/car_idle.svg" id="idle"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/car_drive.svg" id="drive"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/car_celebrate.svg" id="celebrate"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/car_bump.svg" id="bump"]
+[ext_resource type="Texture2D" path="res://assets/sprites/drive/car_sad.svg" id="sad"]
+
+[sub_resource type="AtlasTexture" id="idle_0"]
+atlas = ExtResource("idle")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="idle_1"]
+atlas = ExtResource("idle")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="idle_2"]
+atlas = ExtResource("idle")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="idle_3"]
+atlas = ExtResource("idle")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="drive_0"]
+atlas = ExtResource("drive")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="drive_1"]
+atlas = ExtResource("drive")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="drive_2"]
+atlas = ExtResource("drive")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="drive_3"]
+atlas = ExtResource("drive")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="celebrate_0"]
+atlas = ExtResource("celebrate")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="celebrate_1"]
+atlas = ExtResource("celebrate")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="celebrate_2"]
+atlas = ExtResource("celebrate")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="celebrate_3"]
+atlas = ExtResource("celebrate")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="bump_0"]
+atlas = ExtResource("bump")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="bump_1"]
+atlas = ExtResource("bump")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="bump_2"]
+atlas = ExtResource("bump")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="bump_3"]
+atlas = ExtResource("bump")
+region = Rect2(480, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="sad_0"]
+atlas = ExtResource("sad")
+region = Rect2(0, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="sad_1"]
+atlas = ExtResource("sad")
+region = Rect2(160, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="sad_2"]
+atlas = ExtResource("sad")
+region = Rect2(320, 0, 160, 160)
+
+[sub_resource type="AtlasTexture" id="sad_3"]
+atlas = ExtResource("sad")
+region = Rect2(480, 0, 160, 160)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 4.0,
+"texture": SubResource("idle_0")
+}, {
+"duration": 4.0,
+"texture": SubResource("idle_1")
+}, {
+"duration": 4.0,
+"texture": SubResource("idle_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("idle_3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("drive_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("drive_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("drive_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("drive_3")
+}],
+"loop": true,
+"name": &"drive",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("celebrate_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("celebrate_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("celebrate_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("celebrate_3")
+}],
+"loop": true,
+"name": &"celebrate",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("bump_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("bump_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("bump_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("bump_3")
+}],
+"loop": false,
+"name": &"bump",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("sad_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("sad_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("sad_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("sad_3")
+}],
+"loop": true,
+"name": &"sad",
+"speed": 4.0
+}]

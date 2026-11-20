@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<radialGradient id="stone" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#D6D2C8"/><stop offset="1" stop-color="#8A857B"/></radialGradient>
+</defs>
+<path d="M24 92 C16 72 24 44 46 32 C66 22 92 26 106 46 C118 64 114 92 98 104 C80 116 38 114 24 92 Z" transform="translate(5 5)" fill="#3D2617" fill-opacity="0.16"/>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M24 92 C16 72 24 44 46 32 C66 22 92 26 106 46 C118 64 114 92 98 104 C80 116 38 114 24 92 Z" fill="url(#stone)"/>
+<path d="M64 30 L60 46 L68 56 L62 68" fill="none" stroke-width="2.5"/>
+<path d="M100 74 L88 80 L84 94" fill="none" stroke-width="2.5"/>
+<path d="M40 82 C44 92 54 98 66 98" fill="none" stroke="#6E6A62" stroke-width="2.5" stroke-opacity="0.6"/>
+</g>
+<ellipse cx="44" cy="52" rx="12" ry="6.5" fill="#FFFFFF" fill-opacity="0.45" transform="rotate(-40 44 52)"/>
+<circle cx="84" cy="44" r="3" fill="#FFFFFF" fill-opacity="0.35"/>
+</svg>

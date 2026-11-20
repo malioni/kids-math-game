@@ -60,6 +60,23 @@ const SIZES := {
 	"memory/animal_deer.svg": Vector2(128, 128),
 	"memory/animal_squirrel.svg": Vector2(128, 128),
 	"ui/icon_world_memory.svg": Vector2(128, 128),
+	"drive/bg_drive.svg": Vector2(1800, 1000),
+	"drive/grass_light.svg": Vector2(128, 128),
+	"drive/grass_dark.svg": Vector2(128, 128),
+	"drive/tree.svg": Vector2(128, 128),
+	"drive/rock.svg": Vector2(128, 128),
+	"drive/bush.svg": Vector2(128, 128),
+	"drive/pond.svg": Vector2(128, 128),
+	"drive/garage.svg": Vector2(128, 128),
+	"drive/cmd_up.svg": Vector2(96, 96),
+	"drive/cmd_down.svg": Vector2(96, 96),
+	"drive/cmd_left.svg": Vector2(96, 96),
+	"drive/cmd_right.svg": Vector2(96, 96),
+	"drive/cmd_forward.svg": Vector2(96, 96),
+	"drive/cmd_turn_left.svg": Vector2(96, 96),
+	"drive/cmd_turn_right.svg": Vector2(96, 96),
+	"drive/tile_frame.svg": Vector2(96, 96),
+	"ui/icon_world_drive.svg": Vector2(128, 128),
 	"ui/bg_menu.svg": Vector2(1800, 1000),
 	"ui/card_frame.svg": Vector2(96, 96),
 	"ui/icon_arrow.svg": Vector2(128, 128),
@@ -110,6 +127,7 @@ func test_sprites_no_png_is_left() -> void:
 func test_sprites_every_svg_has_a_recorded_size() -> void:
 	for path: String in _paths(SPRITES, ".svg"):
 		var file: String = path.trim_prefix(SPRITES)
-		# The fox's sheets are checked frame by frame in test_fox_frames.gd.
-		if not file.begins_with("fox/"):
+		# The fox's and the car's sheets are checked frame by frame in test_fox_frames.gd and
+		# test_car_frames.gd.
+		if not file.begins_with("fox/") and not file.begins_with("drive/car_"):
 			assert_true(SIZES.has(file), "%s: add its size to SIZES" % file)

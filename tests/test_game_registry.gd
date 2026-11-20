@@ -34,9 +34,9 @@ func test_game_registry_picnic_world_registered_after_market() -> void:
 	assert_eq(ids.slice(0, 4), ["forest", "sky", "market", "picnic"])
 
 
-func test_game_registry_memory_world_registered_after_picnic() -> void:
+func test_game_registry_drive_world_registered_after_memory() -> void:
 	var ids: Array = GameRegistry.get_worlds().map(func(w: Dictionary) -> String: return w["id"])
-	assert_eq(ids, ["forest", "sky", "market", "picnic", "memory"])
+	assert_eq(ids, ["forest", "sky", "market", "picnic", "memory", "drive"])
 
 
 func test_game_registry_world_scenes_and_icons_exist() -> void:
@@ -76,7 +76,7 @@ func test_game_registry_shuffle_next_index_starts_at_range_start() -> void:
 
 
 func test_game_registry_next_shuffle_world_skips_finished_worlds() -> void:
-	for world_id in ["forest", "sky", "picnic", "memory"]:
+	for world_id in ["forest", "sky", "picnic", "memory", "drive"]:
 		_finish_shuffle(world_id)
 	for run in 20:
 		assert_eq(GameRegistry.next_shuffle_world(), "market")

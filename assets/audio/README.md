@@ -16,6 +16,12 @@ name: `"win"` is `win.wav`, `"forest/place"` is `forest/place.wav`.
 | `menu/ambience` | Loops quietly on the main menu: a 16 s music-box tune |
 | `market/splat` | The thrown tomato hits the table, after `lose` |
 | `memory/match` | A memory pair is found (not the last one, which plays `win`) |
+| `drive/place` | A command goes into the program |
+| `drive/remove` | A step comes off the program |
+| `drive/step` | The car drives one square: a short, soft thud |
+| `drive/bump` | The car bumps an obstacle or the field's edge, with its bump animation |
+| `drive/honk` | The car reaches its garage: two quick notes, before the celebration |
+| `drive/ambience` | Loops quietly in the Country Drive: a meadow |
 
 Every registered world needs its own `ambience`, `place` and `remove`; a test fails if one is missing.
 Background loops are set to repeat when played, so their files need no loop settings.

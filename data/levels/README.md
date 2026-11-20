@@ -142,3 +142,33 @@ Memory levels store how many pairs to deal and where the animals come from.
 | `preview_seconds` | float | How long every card shows face up before the first turn; 0 for no peek |
 
 Each animal name is a key into `MemoryMechanic.card_textures`, set in the world scene.
+
+## Drive level schema (world_drive)
+
+Drive levels store the size of the field and ranges for the puzzle. `DrivePuzzleGenerator` puts the
+start in the left column and the garage in the right column, scatters obstacles on other squares, and
+keeps a field only if its shortest program fits `turns` and `max_tiles`.
+
+{
+  "id": "world_drive_15",
+  "world": "drive",
+  "mode": "relative",
+  "cols": 6,
+  "rows": 4,
+  "obstacles": { "min": 5, "max": 6 },
+  "turns": { "min": 2, "max": 2 },
+  "max_tiles": 5
+}
+
+| Field | Type | Description |
+|---|---|---|
+| `mode` | String | `global` (up, down, left, right arrows) or `relative` (forward, turn left, turn right) |
+| `cols`, `rows` | int | Size of the field in squares (4×3 up to 7×5) |
+| `obstacles.min/max` | int | Inclusive range for how many obstacles stand on the field; each is a random tree, rock, bush or pond |
+| `turns.min/max` | int | Inclusive range for the shortest program's turns |
+| `max_tiles` | int | Most tiles the shortest program may need |
+
+Turns are counted by mode. In `global` mode a turn is a direction change, so the shortest program's
+turns are its tiles minus 1. In `relative` mode a turn is a turn left or right tile, and the forward
+tiles between them don't count. `max_tiles` must stay below the program strip's 12 (`DriveProgram.MAX_TILES`),
+so the player has room for a longer route than the shortest.

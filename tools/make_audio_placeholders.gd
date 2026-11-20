@@ -1,8 +1,8 @@
 extends SceneTree
 
 ## Generates the placeholder sounds into assets/audio/: shared feedback sounds, each world's place,
-## remove and background loop, the market's splat, the memory match chime, and the menu's
-## tune. Every sound is built in
+## remove and background loop, the market's splat, the memory match chime, the drive's step, bump
+## and honk, and the menu's tune. Every sound is built in
 ## code, so nothing is downloaded or licensed; real sounds can replace them later under the same
 ## names. Run from the project root:
 ##   Godot --path . --headless -s tools/make_audio_placeholders.gd
@@ -15,7 +15,9 @@ const LOOP_SECONDS := 8.0
 ## Extra audio generated past the loop's end and blended into its start, so it repeats gaplessly.
 const BLEND_SECONDS := 1.0
 ## Pitch, in Hz, of each world's place sound; remove is higher and lighter.
-const PLACE_HZ := {"forest": 180.0, "sky": 520.0, "market": 140.0, "picnic": 330.0, "memory": 400.0}
+const PLACE_HZ := {
+	"forest": 180.0, "sky": 520.0, "market": 140.0, "picnic": 330.0, "memory": 400.0, "drive": 250.0
+}
 ## The tunes, one bar per row: a low note, then the melody, one note per beat, as MIDI note numbers
 ## (0 is a rest). _tune says how often the low note sounds.
 ## The menu: slow and calm, a music box.
@@ -56,6 +58,10 @@ func _init() -> void:
 	_save("sky/remove", _pop)
 	_save("market/splat", _splat)
 	_save("memory/match", _notes.bind([659.25, 987.77], 0.09, 0.35))
+	_save("drive/step", _thud.bind(95.0, 80.0, 0.12, 0.45))
+	_save("drive/bump", _boing)
+	_save("drive/honk", _notes.bind([440.0, 554.37], 0.07, 0.2))
+	_save("drive/ambience", func() -> PackedFloat32Array: return _seamless(_meadow()))
 	_save("forest/ambience", func() -> PackedFloat32Array: return _seamless(_water()))
 	_save("sky/ambience", func() -> PackedFloat32Array: return _seamless(_wind()))
 	_save("market/ambience", _tune.bind(MARKET_BARS, 0.25, 0.35, 4))
@@ -258,6 +264,28 @@ func _birds() -> PackedFloat32Array:
 			_add_chirp(samples, start + note * 0.14)
 		start += _rng.randf_range(0.8, 2.0)
 	return _normalize(samples, 0.45)
+
+
+# A soft, wobbly spring: a falling tone with a fast vibrato.
+func _boing() -> PackedFloat32Array:
+	var length := 0.35
+	var samples := _empty(length)
+	var phase := 0.0
+	for i in samples.size():
+		var t := float(i) / RATE
+		var hz := lerpf(320.0, 140.0, t / length) * (1.0 + 0.08 * sin(TAU * 18.0 * t))
+		phase += TAU * hz / RATE
+		samples[i] = sin(phase) * exp(-6.0 * t) * 0.6
+	return samples
+
+
+# The picnic's birds over a light breeze.
+func _meadow() -> PackedFloat32Array:
+	var birds := _birds()
+	var wind := _wind()
+	for i in mini(birds.size(), wind.size()):
+		birds[i] = birds[i] * 0.8 + wind[i] * 0.35
+	return _normalize(birds, 0.5)
 
 
 # A soft breeze with a few low chimes at random times: a calm meadow.
