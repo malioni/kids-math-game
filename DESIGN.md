@@ -48,6 +48,7 @@ Reusable building blocks that any world can compose. Each mechanic is a self-con
 | `MarketMechanic` | Multiplication | Fill the fox's order with equal-sized bags from crates that never run out |
 | `SharingMechanic` | Division | Fill the fox's plate so the baskets can share the same amount with every friend |
 | `MemoryMechanic` | Memory & attention | Turn over two cards at a time to find every pair of animals |
+| `DriveMechanic` | Spatial reasoning | Build a program of driving commands, then watch the car follow it to its garage |
 
 ## World Plan
 
@@ -117,12 +118,25 @@ deer, squirrel), so replays differ.
 - **Win condition:** Every pair found — the fox celebrates
 - **Fail state:** None. There is no limit on turns, so a mismatch just turns back over
 
+### World 6: Country Drive
+
+The fox's car, seen from above, stands on the left of a grassy field and its garage is on the right.
+Trees, rocks, bushes and ponds block the way. The child builds the whole program first, a row of
+command tiles, then presses Go. The car follows the program square by square and the tile it is
+running lights up. The program stays on screen, so it can be fixed and run again.
+
+- **Teaches:** Spatial reasoning and sequencing: planning a route, left and right, counting squares
+- **Mechanic:** `DriveMechanic`
+- **Levels:** 20 levels, generated from per-level ranges. Easy (1–10) uses screen arrows (up, down, left, right), on fields from 4×3 to 7×5, with up to 3 direction changes. Hard (11–20) uses forward and turn left or right, relative to the car, on fields from 4×3 to 7×5, with up to 3 turns
+- **Win condition:** The program's last move ends exactly on the garage. The car honks and the fox celebrates
+- **Fail state:** The car bumps into an obstacle or the edge of the field, or the program ends somewhere else. The fox is sad (or the car bumps); gentle retry that keeps the program and marks the tile where it went wrong
+
 ### Planned Future Worlds
 
 | World | Theme | Skill focus |
 |-------|-------|-------------|
-| World 6: The Garden | Plant seeds in rows | Addition, grouping |
-| World 7: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
+| World 7: The Garden | Plant seeds in rows | Addition, grouping |
+| World 8: The Kitchen | Combine ingredients by quantity | Addition and subtraction |
 
 ## Progression System
 
@@ -132,7 +146,7 @@ deer, squirrel), so replays differ.
 - **Transitions:** every level change, world switch and menu ↔ world change fades through a dark cover in about 0.3 s; taps are ignored while the screen is covered. Levels inside a world change without reloading the scene
 - A level badge (world icon + level number) sits in the top-left corner; tapping it opens a picker to jump to any level of any world (worlds are a strip of cards, like the menu's). After the last level of the difficulty, a star screen offers a restart from the difficulty's first level, home, or another world from a strip of cards
 - **Difficulty:** every world's levels split into Easy (1–10) and Hard (11–20) (`data/levels/difficulty.json`). A grown-up picks it with two icon buttons in the picker (a hill and a mountain); it applies to every world, and progress is kept separately per difficulty. The child-facing badge never names it, but counts to the end of it: 4/10 on easy, 14/20 on hard
-- **Shuffle:** the picker's shuffle tab (where the picker opens while shuffling) has continue and start-over buttons. Shuffle plays a random world after every win, always that world's next unplayed level of the current difficulty. Shuffle keeps its own place in each world, and the badge shows the place in the whole shuffle (e.g. 7/50 with five worlds); when every world's levels are played the star screen shows and restart starts a fresh shuffle. Picking a level leaves shuffle
+- **Shuffle:** the picker's shuffle tab (where the picker opens while shuffling) has continue and start-over buttons. Shuffle plays a random world after every win, always that world's next unplayed level of the current difficulty. Shuffle keeps its own place in each world, and the badge shows the place in the whole shuffle (e.g. 7/60 with six worlds); when every world's levels are played the star screen shows and restart starts a fresh shuffle. Picking a level leaves shuffle
 - **Sound:** every world has a quiet background loop and the menu has its own; right and wrong answers, placing and removing pieces, the star screen and taps all make a sound. A grown-up can turn background sound and effects off separately with two icons in the level picker
 - **Parent view:** Session summaries accessible via a separate parent-only screen (PIN-gated)
 - **Possible later, after more playtesting:** track per-skill mastery silently and adapt difficulty, e.g. if a child struggles at N=4, repeat N=3 variants before retrying
