@@ -137,11 +137,11 @@ func test_drive_retry_keeps_program_and_returns_car() -> void:
 
 
 func test_drive_level_change_mid_drive_leaves_nothing_behind() -> void:
-	_mechanic.step_duration = 0.2
+	_mechanic.step_duration = 0.4
 	watch_signals(_mechanic)
 	_enter_solution()
 	_mechanic.go()
-	await wait_seconds(0.1)
+	await wait_seconds(0.2)
 	_hud.level_chosen.emit("drive", 7)
 	await wait_seconds(1.5)
 	assert_eq(_world._current_index, 7)
@@ -162,11 +162,12 @@ func test_drive_level_change_mid_bump_leaves_nothing_behind() -> void:
 	assert_eq(_mechanic.get_car().animation, &"idle")
 
 
-func test_drive_through_the_garage_and_on_is_not_a_win() -> void:
+func test_drive_extra_step_past_the_garage_is_not_a_win() -> void:
 	watch_signals(_mechanic)
 	_enter_solution()
 	var last: String = _mechanic.get_program().get_tiles()[-1]["command"]
-	# One more step the same way drives off the garage (it's in the last column) or onward.
+	# One more step the same way leaves the field (the garage is in the last column), so the
+	# program does not end on the garage.
 	_mechanic.press_command(last if last != "turn_left" and last != "turn_right" else "forward")
 	_mechanic.go()
 	await wait_for_signal(_mechanic.incorrect, 3.0)

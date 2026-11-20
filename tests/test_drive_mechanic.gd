@@ -96,12 +96,12 @@ func test_drive_mechanic_win_route_emits_correct_once() -> void:
 
 
 func test_drive_mechanic_tiles_light_in_order() -> void:
-	_mechanic.step_duration = 0.2
+	_mechanic.step_duration = 0.4
 	_press(["down", "right"])
 	_mechanic.go()
-	await wait_process_frames(2)
+	await wait_seconds(0.2)
 	assert_eq(_mechanic.get_lit_tile(), 0)
-	await wait_seconds(0.3)
+	await wait_seconds(0.4)
 	assert_eq(_mechanic.get_lit_tile(), 1)
 	await wait_for_signal(_mechanic.incorrect, 2.0)
 	assert_eq(_mechanic.get_lit_tile(), -1)
