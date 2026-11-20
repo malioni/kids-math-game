@@ -6,6 +6,8 @@ extends GutTest
 const FRAMES_PATH := "res://assets/sprites/fox/fox_frames.tres"
 const SHEET_PATH := "res://assets/sprites/fox/character_%s.svg"
 const CELL := 160
+# Worlds whose character isn't the fox's own sprite (the drive's character is its car).
+const OWN_CHARACTER := ["drive"]
 # animation -> [frame count, frames per second, loops]
 const EXPECTED := {
 	"idle": [4, 6.0, true],
@@ -74,6 +76,8 @@ func _column_has_paint(image: Image, x: int) -> bool:
 func test_fox_frames_every_world_uses_the_shared_frames_at_its_old_size() -> void:
 	for world: Dictionary in GameRegistry.get_worlds():
 		var id: String = world["id"]
+		if id in OWN_CHARACTER:
+			continue
 		var root: Node = load(world["scene"]).instantiate()
 		var fox: AnimatedSprite2D = root.find_child("Character", true, false)
 		assert_eq(fox.sprite_frames, _frames, "%s has its own copy of the fox's frames" % id)

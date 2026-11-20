@@ -40,6 +40,11 @@ const WORLDS: Array[Dictionary] = [
 		"scene": "res://scenes/worlds/memory/memory.tscn",
 		"icon": "res://assets/sprites/ui/icon_world_memory.svg",
 	},
+	{
+		"id": "drive",
+		"scene": "res://scenes/worlds/drive/drive.tscn",
+		"icon": "res://assets/sprites/ui/icon_world_drive.svg",
+	},
 ]
 
 ## When false, go_to_world() and go_to_menu() only record where they were going (in
