@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<radialGradient id="water" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#B4E4F4"/><stop offset="1" stop-color="#3F8FBF"/></radialGradient>
+<radialGradient id="pad" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#9CD466"/><stop offset="1" stop-color="#4E9234"/></radialGradient>
+<radialGradient id="bank" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#E7D6A8"/><stop offset="1" stop-color="#C7AE78"/></radialGradient>
+</defs>
+<g stroke="#3D2617" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M20 62 C18 36 40 18 66 20 C94 22 112 40 110 64 C108 92 88 110 60 108 C34 106 22 88 20 62 Z" fill="url(#bank)" transform="translate(64 64) scale(1.09) translate(-64 -64)" stroke-width="2.75"/>
+<path d="M20 62 C18 36 40 18 66 20 C94 22 112 40 110 64 C108 92 88 110 60 108 C34 106 22 88 20 62 Z" fill="url(#water)"/>
+</g>
+<g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-opacity="0.65" stroke-width="3">
+<path d="M40 40 q12 -10 26 -10"/><path d="M34 54 q2 -4 5 -6"/>
+</g>
+<g fill="none" stroke="#2F6F9A" stroke-linecap="round" stroke-opacity="0.45" stroke-width="2.5">
+<path d="M54 86 q10 4 20 0"/><path d="M80 54 q6 3 12 0"/>
+</g>
+<g stroke="#3D2617" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M76 78 L90 70 A14 14 0 1 1 84 66 Z" fill="url(#pad)" transform="rotate(10 78 78)"/>
+<circle cx="74" cy="82" r="4" fill="#F7B6C8" stroke-width="2"/>
+<path d="M30 92 q-4 -16 -2 -28" fill="none" stroke="#3F7A2E" stroke-width="3"/>
+<path d="M34 94 q2 -18 8 -26" fill="none" stroke="#3F7A2E" stroke-width="3"/>
+<path d="M26 94 q-8 -10 -12 -14" fill="none" stroke="#3F7A2E" stroke-width="3"/>
+<rect x="24.5" y="56" width="7" height="14" rx="3.5" fill="#8A5A34" transform="rotate(-6 28 63)"/>
+<rect x="38" y="60" width="7" height="13" rx="3.5" fill="#8A5A34" transform="rotate(22 41 66)"/>
+</g>
+</svg>

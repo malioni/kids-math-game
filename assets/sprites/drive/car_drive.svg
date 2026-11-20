@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="160" viewBox="0 0 640 160">
+<defs>
+<radialGradient id="fur" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#F7A058"/><stop offset="1" stop-color="#D96B28"/></radialGradient>
+<radialGradient id="cream" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#FFF6E3"/><stop offset="1" stop-color="#EFD3A8"/></radialGradient>
+<radialGradient id="dark" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#5E3A24"/><stop offset="1" stop-color="#3A2113"/></radialGradient>
+<radialGradient id="body" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#E8604A"/><stop offset="1" stop-color="#B8382A"/></radialGradient>
+<radialGradient id="bonnet" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#F58A70"/><stop offset="1" stop-color="#D24E3A"/></radialGradient>
+<radialGradient id="seat" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#8A5A3A"/><stop offset="1" stop-color="#5A3622"/></radialGradient>
+<radialGradient id="glass" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#E4F4FB"/><stop offset="1" stop-color="#9CCBE0"/></radialGradient>
+<radialGradient id="metal" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#D8D8D2"/><stop offset="1" stop-color="#9C9C94"/></radialGradient>
+</defs>
+<g transform="translate(0 0)">
+<g transform="translate(-0.0 0)" stroke="#3D2617" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="82" cy="84" rx="64" ry="40" fill="#3D2617" fill-opacity="0.16" stroke="none"/>
+<rect x="33.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M38.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M43.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M48.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M104.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M109.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M114.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="33.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M38.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M43.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M48.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M104.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M109.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M114.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<g transform="translate(0 -1.0)">
+<rect x="18" y="58" width="12" height="44" rx="5" fill="url(#metal)"/>
+<rect x="22" y="45" width="116" height="70" rx="30" fill="url(#body)"/>
+<ellipse cx="135" cy="59" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<ellipse cx="135" cy="101" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<path d="M106 57 C120 56 130 64 131 80 C130 96 120 104 106 103 Z" fill="url(#bonnet)"/>
+<path d="M92 55 C100 62 102 98 92 105 L99 105 C108 96 108 64 99 55 Z" fill="url(#glass)"/>
+<rect x="32" y="56" width="62" height="48" rx="22" fill="url(#seat)"/>
+<path d="M30 56 C26 66 26 94 30 104" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="3"/>
+<path d="M44 49 L84 49 M112 60 Q121 62 125 70" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="3"/>
+<g transform="translate(60.0 80.0) scale(0.9) translate(-60.0 -80.0)" stroke-width="3.89">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+<g transform="translate(0 160) scale(1 -1)">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+</g>
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+<g transform="translate(0 160) scale(1 -1)">
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+</g>
+<path d="M58 58 C72 58 84 66 96 75 C101 78 101 82 96 85 C84 94 72 102 58 102 C45 102 36 92 36 80 C36 68 45 58 58 58 Z" fill="url(#fur)"/>
+<ellipse cx="99" cy="80" rx="4.5" ry="5.5" fill="#3D2617" stroke="none"/>
+<ellipse cx="50" cy="70" rx="9" ry="4.5" fill="#FFFFFF" fill-opacity="0.3" stroke="none" transform="rotate(-25 50 70)"/>
+<ellipse cx="74.0" cy="71.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="69.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+<ellipse cx="74.0" cy="89.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="87.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(160 0)">
+<g transform="translate(-0.0 0)" stroke="#3D2617" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="82" cy="84" rx="64" ry="40" fill="#3D2617" fill-opacity="0.16" stroke="none"/>
+<rect x="33.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M51.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M40.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M46.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M117.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M106.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M112.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="33.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M51.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M40.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M46.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M117.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M106.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M112.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<g transform="translate(0 -0.0)">
+<rect x="18" y="58" width="12" height="44" rx="5" fill="url(#metal)"/>
+<rect x="22" y="45" width="116" height="70" rx="30" fill="url(#body)"/>
+<ellipse cx="135" cy="59" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<ellipse cx="135" cy="101" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<path d="M106 57 C120 56 130 64 131 80 C130 96 120 104 106 103 Z" fill="url(#bonnet)"/>
+<path d="M92 55 C100 62 102 98 92 105 L99 105 C108 96 108 64 99 55 Z" fill="url(#glass)"/>
+<rect x="32" y="56" width="62" height="48" rx="22" fill="url(#seat)"/>
+<path d="M30 56 C26 66 26 94 30 104" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="3"/>
+<path d="M44 49 L84 49 M112 60 Q121 62 125 70" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="3"/>
+<g transform="translate(60.0 80.0) scale(0.9) translate(-60.0 -80.0)" stroke-width="3.89">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+<g transform="translate(0 160) scale(1 -1)">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+</g>
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+<g transform="translate(0 160) scale(1 -1)">
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+</g>
+<path d="M58 58 C72 58 84 66 96 75 C101 78 101 82 96 85 C84 94 72 102 58 102 C45 102 36 92 36 80 C36 68 45 58 58 58 Z" fill="url(#fur)"/>
+<ellipse cx="99" cy="80" rx="4.5" ry="5.5" fill="#3D2617" stroke="none"/>
+<ellipse cx="50" cy="70" rx="9" ry="4.5" fill="#FFFFFF" fill-opacity="0.3" stroke="none" transform="rotate(-25 50 70)"/>
+<ellipse cx="74.0" cy="71.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="69.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+<ellipse cx="74.0" cy="89.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="87.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(320 0)">
+<g transform="translate(-0.0 0)" stroke="#3D2617" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="82" cy="84" rx="64" ry="40" fill="#3D2617" fill-opacity="0.16" stroke="none"/>
+<rect x="33.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M48.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M38.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M43.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M114.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M104.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M109.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="33.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M48.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M38.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M43.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M114.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M104.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M109.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<g transform="translate(0 -1.0)">
+<rect x="18" y="58" width="12" height="44" rx="5" fill="url(#metal)"/>
+<rect x="22" y="45" width="116" height="70" rx="30" fill="url(#body)"/>
+<ellipse cx="135" cy="59" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<ellipse cx="135" cy="101" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<path d="M106 57 C120 56 130 64 131 80 C130 96 120 104 106 103 Z" fill="url(#bonnet)"/>
+<path d="M92 55 C100 62 102 98 92 105 L99 105 C108 96 108 64 99 55 Z" fill="url(#glass)"/>
+<rect x="32" y="56" width="62" height="48" rx="22" fill="url(#seat)"/>
+<path d="M30 56 C26 66 26 94 30 104" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="3"/>
+<path d="M44 49 L84 49 M112 60 Q121 62 125 70" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="3"/>
+<g transform="translate(60.0 80.0) scale(0.9) translate(-60.0 -80.0)" stroke-width="3.89">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+<g transform="translate(0 160) scale(1 -1)">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+</g>
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+<g transform="translate(0 160) scale(1 -1)">
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+</g>
+<path d="M58 58 C72 58 84 66 96 75 C101 78 101 82 96 85 C84 94 72 102 58 102 C45 102 36 92 36 80 C36 68 45 58 58 58 Z" fill="url(#fur)"/>
+<ellipse cx="99" cy="80" rx="4.5" ry="5.5" fill="#3D2617" stroke="none"/>
+<ellipse cx="50" cy="70" rx="9" ry="4.5" fill="#FFFFFF" fill-opacity="0.3" stroke="none" transform="rotate(-25 50 70)"/>
+<ellipse cx="74.0" cy="71.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="69.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+<ellipse cx="74.0" cy="89.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="87.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(480 0)">
+<g transform="translate(-0.0 0)" stroke="#3D2617" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="82" cy="84" rx="64" ry="40" fill="#3D2617" fill-opacity="0.16" stroke="none"/>
+<rect x="33.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M46.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M51.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M40.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="38.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M112.0 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M117.33 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M106.67 42.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="33.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M46.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M51.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M40.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<rect x="99.0" y="108.0" width="26" height="14" rx="6" fill="url(#dark)"/>
+<path d="M112.0 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M117.33 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<path d="M106.67 112.0 l0 6" fill="none" stroke="#A88B74" stroke-width="2"/>
+<g transform="translate(0 -0.0)">
+<rect x="18" y="58" width="12" height="44" rx="5" fill="url(#metal)"/>
+<rect x="22" y="45" width="116" height="70" rx="30" fill="url(#body)"/>
+<ellipse cx="135" cy="59" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<ellipse cx="135" cy="101" rx="4" ry="6.5" fill="#FFE08A" stroke-width="2.5"/>
+<path d="M106 57 C120 56 130 64 131 80 C130 96 120 104 106 103 Z" fill="url(#bonnet)"/>
+<path d="M92 55 C100 62 102 98 92 105 L99 105 C108 96 108 64 99 55 Z" fill="url(#glass)"/>
+<rect x="32" y="56" width="62" height="48" rx="22" fill="url(#seat)"/>
+<path d="M30 56 C26 66 26 94 30 104" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="3"/>
+<path d="M44 49 L84 49 M112 60 Q121 62 125 70" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="3"/>
+<g transform="translate(60.0 80.0) scale(0.9) translate(-60.0 -80.0)" stroke-width="3.89">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+<g transform="translate(0 160) scale(1 -1)">
+<g transform="rotate(0.0 54 66)">
+<path d="M64 62 Q46 46 26 48 Q34 66 48 76 Z" fill="url(#fur)"/>
+<path d="M56 63 Q44 54 34 54 Q39 64 47 70 Z" fill="url(#cream)" stroke="none"/>
+</g>
+</g>
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+<g transform="translate(0 160) scale(1 -1)">
+<path d="M66 64 Q76 54 90 56 Q86 66 80 74 Z" fill="url(#cream)"/>
+</g>
+<path d="M58 58 C72 58 84 66 96 75 C101 78 101 82 96 85 C84 94 72 102 58 102 C45 102 36 92 36 80 C36 68 45 58 58 58 Z" fill="url(#fur)"/>
+<ellipse cx="99" cy="80" rx="4.5" ry="5.5" fill="#3D2617" stroke="none"/>
+<ellipse cx="50" cy="70" rx="9" ry="4.5" fill="#FFFFFF" fill-opacity="0.3" stroke="none" transform="rotate(-25 50 70)"/>
+<ellipse cx="74.0" cy="71.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="69.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+<ellipse cx="74.0" cy="89.0" rx="3.8" ry="4.3" fill="#3D2617" stroke="none"/>
+<circle cx="75.0" cy="87.8" r="1.4" fill="#FFFFFF" stroke="none"/>
+</g>
+</g>
+</g>
+</g>
+</svg>
