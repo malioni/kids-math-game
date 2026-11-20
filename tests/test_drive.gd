@@ -79,10 +79,18 @@ func test_drive_level_1_is_a_global_4_by_3_field() -> void:
 func test_drive_reaching_the_garage_honks_and_advances() -> void:
 	watch_signals(AudioManager)
 	_enter_solution()
+	var garage_position: Vector2 = _mechanic.to_global(
+		_mechanic.cell_position(_mechanic.get_field()["garage"])
+	)
 	_mechanic.go()
 	await wait_for_signal(_mechanic.correct, 3.0)
 	await wait_seconds(0.3)
 	assert_eq(_world._current_index, 1)
+	assert_eq(
+		_world.get_node("CelebrationParticles").global_position,
+		garage_position,
+		"the confetti bursts over the garage"
+	)
 	assert_has(_sfx_played(), "drive/honk")
 	assert_has(_sfx_played(), "drive/step")
 	assert_true(_mechanic.get_program().is_empty(), "a new level starts with an empty program")

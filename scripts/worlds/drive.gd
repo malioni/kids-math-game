@@ -45,6 +45,9 @@ func _restore_stage() -> void:
 
 
 func _play_win() -> void:
+	_particles.global_position = _mechanic.to_global(
+		_mechanic.cell_position(_mechanic.get_field()["garage"])
+	)
 	AudioManager.play_sfx("drive/honk")
 	await get_tree().create_timer(honk_duration).timeout
 
