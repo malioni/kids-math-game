@@ -1,0 +1,16 @@
+{
+  "id": "world_drive_19",
+  "world": "drive",
+  "mode": "relative",
+  "cols": 7,
+  "rows": 5,
+  "obstacles": {
+    "min": 8,
+    "max": 10
+  },
+  "turns": {
+    "min": 3,
+    "max": 3
+  },
+  "max_tiles": 7
+}

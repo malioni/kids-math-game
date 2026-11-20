@@ -8,6 +8,7 @@ const _PARAMS := {
 	"turns": {"min": 2, "max": 3},
 	"max_tiles": 4,
 }
+const _SEEDS_PER_LEVEL := 100
 
 
 func _field(cols: int, rows: int, start: Vector2i, garage: Vector2i, blocked: Array) -> Dictionary:
@@ -124,3 +125,21 @@ func test_drive_generator_impossible_params_fall_back_to_open_field() -> void:
 	assert_true(field["fallback"])
 	assert_eq(field["obstacles"], [])
 	assert_ne(DrivePuzzleGenerator.fewest_tiles(field, "global")["tiles"], -1)
+
+
+func test_drive_generator_every_level_fits_its_ranges_without_fallback() -> void:
+	var rng := RandomNumberGenerator.new()
+	for level: Dictionary in LevelLoader.get_levels_for_world("drive"):
+		for seed_value in _SEEDS_PER_LEVEL:
+			rng.seed = seed_value
+			var field := DrivePuzzleGenerator.generate(level, rng)
+			var label := "%s seed %d" % [level["id"], seed_value]
+			assert_false(field["fallback"], label)
+			var best := DrivePuzzleGenerator.fewest_tiles(field, level["mode"])
+			assert_ne(best["tiles"], -1, label)
+			assert_lte(best["tiles"], int(level["max_tiles"]), label)
+			assert_between(
+				best["turns"], int(level["turns"]["min"]), int(level["turns"]["max"]), label
+			)
+			assert_eq(field["start"].x, 0, label)
+			assert_eq(field["garage"].x, int(level["cols"]) - 1, label)
