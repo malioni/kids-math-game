@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_hard.svg" id="7_hard"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_music_on.svg" id="8_music_on"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_effects_on.svg" id="9_effects_on"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_new_round.svg" id="10_new_round"]
 [ext_resource type="SpriteFrames" path="res://assets/sprites/fox/fox_frames.tres" id="fox_frames"]
 
 [node name="MainMenu" type="Control"]
@@ -115,7 +116,7 @@ offset_bottom = 500.0
 card_size = Vector2(160, 140)
 pitch = 180.0
 
-[node name="ShuffleSetup" type="Control" parent="PlayArea"]
+[node name="ShuffleSetup" type="HBoxContainer" parent="PlayArea"]
 visible = false
 layout_mode = 0
 offset_left = 90.0
@@ -123,6 +124,22 @@ offset_top = 350.0
 offset_right = 1190.0
 offset_bottom = 500.0
 mouse_filter = 2
+theme_override_constants/separation = 60
+alignment = 1
+
+[node name="WorldToggles" type="HBoxContainer" parent="PlayArea/ShuffleSetup"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="NewRoundButton" type="TextureButton" parent="PlayArea/ShuffleSetup"]
+custom_minimum_size = Vector2(110, 110)
+layout_mode = 2
+size_flags_vertical = 4
+texture_normal = ExtResource("10_new_round")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="Fox" type="AnimatedSprite2D" parent="PlayArea"]
 position = Vector2(250, 600)

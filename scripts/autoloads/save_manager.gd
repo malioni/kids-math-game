@@ -10,6 +10,8 @@ const _KEY_DIFFICULTY := "difficulty"
 const _KEY_PLAY_MODE := "play_mode"
 const _KEY_MUSIC := "music_enabled"
 const _KEY_EFFECTS := "effects_enabled"
+const _KEY_SHUFFLE_ROUND_PLAYED := "shuffle_round_played"
+const _KEY_SHUFFLE_OFF := "shuffle_off"
 const _DIFFICULTIES: Array[String] = ["easy", "hard"]
 const _PLAY_MODES: Array[String] = ["worlds", "shuffle"]
 
@@ -116,6 +118,36 @@ func save_effects_enabled(enabled: bool) -> void:
 ## Returns whether sound effects are on: true unless they were saved off.
 func load_effects_enabled() -> bool:
 	return _load_flag(_KEY_EFFECTS)
+
+
+## Saves how many levels of the current shuffle round have been won.
+func save_shuffle_round_played(played: int) -> void:
+	_write(_SECTION_META, _KEY_SHUFFLE_ROUND_PLAYED, played)
+
+
+## Returns how many levels of the current shuffle round have been won: 0 if none is saved or the
+## saved value is invalid.
+func load_shuffle_round_played() -> int:
+	var value: Variant = _cfg.get_value(_SECTION_META, _KEY_SHUFFLE_ROUND_PLAYED, 0)
+	return value if value is int and value >= 0 else 0
+
+
+## Saves the ids of the worlds switched off for shuffle. Saving the ones that are off, not on,
+## keeps worlds added later on by default.
+func save_shuffle_off(world_ids: Array[String]) -> void:
+	_write(_SECTION_META, _KEY_SHUFFLE_OFF, world_ids)
+
+
+## Returns the ids of the worlds switched off for shuffle; none by default. Entries that aren't
+## strings are dropped.
+func load_shuffle_off() -> Array[String]:
+	var value: Variant = _cfg.get_value(_SECTION_META, _KEY_SHUFFLE_OFF, [])
+	var ids: Array[String] = []
+	if value is Array:
+		for id: Variant in value:
+			if id is String:
+				ids.append(id)
+	return ids
 
 
 ## Moves progress saved before difficulties existed (one level per world) to the per-difficulty

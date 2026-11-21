@@ -81,7 +81,7 @@ func _ready() -> void:
 
 ## Shows the given level (0-based) of the world on the badge and closes any open overlay. The badge
 ## counts to the end of the difficulty (e.g. 4/10 on easy, 14/20 on hard), or in shuffle mode shows
-## the place in the whole shuffle (e.g. 7/50).
+## the place in the shuffle round (e.g. 7/10).
 func show_level(world_id: String, index: int) -> void:
 	_level_index = index
 	_update_badge_numbers()
@@ -108,8 +108,8 @@ func is_pause_open() -> bool:
 	return _pause.visible
 
 
-## Shows the world-complete screen: restart (from the difficulty's first level, or a fresh shuffle
-## in shuffle mode), home, and outside shuffle the next difficulty if there is one.
+## Shows the world-complete screen: restart (from the difficulty's first level, or a new shuffle
+## round in shuffle mode), home, and outside shuffle the next difficulty if there is one.
 func show_world_complete() -> void:
 	var shuffle: bool = GameRegistry.is_shuffle()
 	_restart_label.text = str(GameRegistry.get_level_range().x + 1)

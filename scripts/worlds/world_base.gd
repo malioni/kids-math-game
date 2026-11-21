@@ -6,8 +6,9 @@ extends Node2D
 ## after the last level.
 ##
 ## Only the current difficulty's levels are played (easy 1–10, hard 11–20; see GameRegistry). In
-## shuffle mode a win moves on to a random world's next shuffle level instead of this world's
-## next level; shuffle keeps its own place in each world.
+## shuffle mode a win moves on to another switched-on world's next shuffle level instead of this
+## world's next level, until the round of GameRegistry.SHUFFLE_ROUND_LENGTH wins is over; shuffle
+## keeps its own place in each world.
 ##
 ## Level changes inside the world fade through Transition (the first level is covered by the
 ## scene's own fade instead). The world starts at the level the main menu asked for, or resumes from
@@ -23,7 +24,7 @@ extends Node2D
 ## (or an override of _get_character()), CelebrationParticles, RetryPrompt/RetryIcon and a LevelHud.
 
 ## Emitted when the player completes the last level of the difficulty in this world, or the last
-## level of a whole shuffle.
+## level of a shuffle round.
 signal world_complete
 
 ## Seconds the celebration plays before the next level loads.
@@ -174,13 +175,11 @@ func _advance() -> void:
 
 func _advance_shuffle() -> void:
 	SaveManager.set_progress(_progress_key(), _current_index + 2)
-	var next_world: String = GameRegistry.next_shuffle_world()
-	if next_world == "":
+	SaveManager.save_shuffle_round_played(SaveManager.load_shuffle_round_played() + 1)
+	if GameRegistry.is_shuffle_round_finished():
 		_show_world_complete()
-	elif next_world == _world_id():
-		_go_to_level(_current_index + 1)
 	else:
-		GameRegistry.go_to_world(next_world)
+		GameRegistry.go_to_world(GameRegistry.next_shuffle_world(_world_id()))
 
 
 func _show_world_complete() -> void:
@@ -197,15 +196,13 @@ func _play_world_sound(sound: String) -> void:
 	AudioManager.play_sfx("%s/%s" % [_world_id(), sound])
 
 
-# Loads where the current mode and difficulty left off, fading unless fade is false. A world whose
-# shuffle levels are all played shows its last level while shuffle moves on to another world.
+# Loads where the current mode and difficulty left off, fading unless fade is false.
 func _resume(fade: bool = true) -> void:
+	if GameRegistry.is_shuffle():
+		_show_level(GameRegistry.shuffle_next_index(_world_id()), fade)
+		return
 	var level_range: Vector2i = GameRegistry.get_level_range()
 	var index: int = SaveManager.load_progress(_progress_key()) - 1
-	if GameRegistry.is_shuffle() and index > level_range.y:
-		_show_level(level_range.y, fade)
-		GameRegistry.start_shuffle.call_deferred()
-		return
 	_show_level(clampi(index, level_range.x, level_range.y), fade)
 
 
@@ -242,6 +239,7 @@ func _on_replay_requested() -> void:
 
 func _on_restart_requested() -> void:
 	if GameRegistry.is_shuffle():
+		GameRegistry.start_new_shuffle_round()
 		GameRegistry.start_shuffle()
 		return
 	var first: int = GameRegistry.get_level_range().x

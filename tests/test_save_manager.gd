@@ -193,3 +193,44 @@ func test_save_manager_invalid_sound_setting_loads_as_on() -> void:
 	cfg.save(SaveManager.save_path)
 	SaveManager.reload()
 	assert_true(SaveManager.load_music_enabled())
+
+
+func _write_meta(key: String, value: Variant) -> void:
+	var cfg := ConfigFile.new()
+	cfg.set_value("meta", key, value)
+	cfg.save(SaveManager.save_path)
+	SaveManager.reload()
+
+
+func test_save_manager_shuffle_round_played_defaults_to_0() -> void:
+	assert_eq(SaveManager.load_shuffle_round_played(), 0)
+
+
+func test_save_manager_shuffle_round_played_round_trips() -> void:
+	SaveManager.save_shuffle_round_played(4)
+	SaveManager.reload()
+	assert_eq(SaveManager.load_shuffle_round_played(), 4)
+
+
+func test_save_manager_shuffle_round_played_invalid_reads_0() -> void:
+	_write_meta("shuffle_round_played", -3)
+	assert_eq(SaveManager.load_shuffle_round_played(), 0)
+	_write_meta("shuffle_round_played", "five")
+	assert_eq(SaveManager.load_shuffle_round_played(), 0)
+
+
+func test_save_manager_shuffle_off_defaults_to_empty() -> void:
+	assert_eq(SaveManager.load_shuffle_off(), [] as Array[String])
+
+
+func test_save_manager_shuffle_off_round_trips() -> void:
+	SaveManager.save_shuffle_off(["memory", "sky"] as Array[String])
+	SaveManager.reload()
+	assert_eq(SaveManager.load_shuffle_off(), ["memory", "sky"] as Array[String])
+
+
+func test_save_manager_shuffle_off_drops_non_string_entries() -> void:
+	_write_meta("shuffle_off", ["memory", 4, null, "drive"])
+	assert_eq(SaveManager.load_shuffle_off(), ["memory", "drive"] as Array[String])
+	_write_meta("shuffle_off", "memory")
+	assert_eq(SaveManager.load_shuffle_off(), [] as Array[String])

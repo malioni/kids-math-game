@@ -67,12 +67,6 @@ func _shuffle_key(world_id: String) -> String:
 	return SaveManager.progress_key(world_id, GameRegistry.get_difficulty(), true)
 
 
-## Marks shuffle as having played every level of the current difficulty in the given worlds.
-func _finish_shuffle(world_ids: Array) -> void:
-	for world_id: String in world_ids:
-		SaveManager.set_progress(_shuffle_key(world_id), GameRegistry.get_level_range().y + 2)
-
-
 func test_world_modes_easy_starts_at_level_1_and_completes_after_level_10() -> void:
 	var world: Node2D = _make_world()
 	watch_signals(world)
@@ -143,27 +137,15 @@ func test_world_modes_shuffle_resumes_at_shuffle_level() -> void:
 	assert_eq(world._current_index, 5)
 
 
-func test_world_modes_shuffle_win_with_only_this_world_left_loads_next_level_in_place() -> void:
-	_finish_shuffle(["sky", "market", "picnic", "memory", "drive"])
+func test_world_modes_shuffle_win_adds_one_to_round() -> void:
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
 	await _win(world)
-	assert_eq(world._current_index, 1)
-	assert_eq(GameRegistry.last_world_request, "")
+	assert_eq(SaveManager.load_shuffle_round_played(), 1)
 
 
-func test_world_modes_shuffle_win_with_other_worlds_left_requests_one_of_them() -> void:
-	_finish_shuffle(["market", "picnic", "memory", "drive"])
-	SaveManager.set_progress(_shuffle_key("forest"), 10)
-	GameRegistry.set_shuffle(true)
-	var world: Node2D = _make_world()
-	await _win(world)
-	assert_eq(GameRegistry.last_world_request, "sky")
-
-
-func test_world_modes_shuffle_all_done_shows_star_screen() -> void:
-	_finish_shuffle(["sky", "market", "picnic", "memory", "drive"])
-	SaveManager.set_progress(_shuffle_key("forest"), 10)
+func test_world_modes_shuffle_tenth_win_shows_complete_screen() -> void:
+	SaveManager.save_shuffle_round_played(GameRegistry.SHUFFLE_ROUND_LENGTH - 1)
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
 	watch_signals(world)
@@ -173,26 +155,46 @@ func test_world_modes_shuffle_all_done_shows_star_screen() -> void:
 	assert_eq(GameRegistry.last_world_request, "")
 
 
-func test_world_modes_shuffle_restart_starts_fresh_shuffle() -> void:
-	_finish_shuffle(["forest", "sky", "market", "picnic", "memory", "drive"])
+func test_world_modes_shuffle_win_before_tenth_goes_to_another_world() -> void:
+	SaveManager.save_shuffle_round_played(GameRegistry.SHUFFLE_ROUND_LENGTH - 2)
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
-	await wait_process_frames(2)
-	GameRegistry.last_world_request = ""
+	await _win(world)
+	assert_false(_hud(world).is_world_complete_shown())
+	assert_false(GameRegistry.get_world(GameRegistry.last_world_request).is_empty())
+
+
+func test_world_modes_shuffle_win_never_loads_same_world_next() -> void:
+	GameRegistry.set_shuffle(true)
+	for run in 5:
+		SaveManager.save_shuffle_round_played(0)
+		GameRegistry.last_world_request = ""
+		var world: Node2D = _make_world()
+		await _win(world)
+		assert_ne(GameRegistry.last_world_request, "")
+		assert_ne(GameRegistry.last_world_request, "forest")
+		world.queue_free()
+
+
+func test_world_modes_shuffle_restart_starts_new_round_keeping_places() -> void:
+	SaveManager.save_shuffle_round_played(GameRegistry.SHUFFLE_ROUND_LENGTH)
+	SaveManager.set_progress(_shuffle_key("sky"), 5)
+	GameRegistry.set_shuffle(true)
+	var world: Node2D = _make_world()
 	_hud(world).restart_requested.emit()
-	assert_ne(GameRegistry.last_world_request, "")
-	assert_eq(GameRegistry.shuffle_next_index("forest"), 0)
+	assert_eq(SaveManager.load_shuffle_round_played(), 0)
+	assert_eq(GameRegistry.shuffle_next_index("sky"), 4)
 	assert_true(GameRegistry.is_shuffle())
+	assert_ne(GameRegistry.last_world_request, "")
 
 
-func test_world_modes_shuffle_finished_world_on_open_moves_on() -> void:
-	_finish_shuffle(["forest"])
+func test_world_modes_shuffle_world_past_last_level_resumes_at_first() -> void:
+	SaveManager.set_progress(_shuffle_key("forest"), 11)
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
-	assert_eq(world._current_index, 9)
+	assert_eq(world._current_index, 0)
 	await wait_process_frames(2)
-	assert_ne(GameRegistry.last_world_request, "")
-	assert_ne(GameRegistry.last_world_request, "forest")
+	assert_eq(GameRegistry.last_world_request, "", "it plays here instead of moving on")
 
 
 func _badge_text(world: Node2D) -> String:
@@ -213,14 +215,11 @@ func test_world_modes_hard_badge_counts_11_to_20() -> void:
 	assert_eq(_badge_text(world), "11/20")
 
 
-func test_world_modes_shuffle_badge_counts_through_every_world() -> void:
-	_finish_shuffle(["sky", "market", "picnic", "memory", "drive"])
+func test_world_modes_shuffle_badge_counts_to_10_with_six_worlds() -> void:
+	SaveManager.save_shuffle_round_played(2)
 	GameRegistry.set_shuffle(true)
 	var world: Node2D = _make_world()
-	var total: int = 10 * GameRegistry.get_worlds().size()
-	assert_eq(_badge_text(world), "51/%d" % total)
-	await _win(world)
-	assert_eq(_badge_text(world), "52/%d" % total)
+	assert_eq(_badge_text(world), "3/10")
 
 
 func test_world_modes_home_requested_goes_to_menu_and_keeps_mode() -> void:
