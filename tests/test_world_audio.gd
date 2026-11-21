@@ -38,10 +38,10 @@ func test_world_audio_world_plays_its_ambience() -> void:
 	assert_eq(AudioManager.current_music(), "forest/ambience")
 
 
-func test_world_audio_changing_level_keeps_the_music() -> void:
+func test_world_audio_replaying_level_keeps_the_music() -> void:
 	var world: WorldBase = _make_world(FOREST)
 	watch_signals(AudioManager)
-	world.get_node("LevelHud").level_chosen.emit("forest", 3)
+	world.get_node("LevelHud").replay_requested.emit()
 	assert_signal_not_emitted(AudioManager, "music_changed")
 
 
@@ -71,8 +71,8 @@ func test_world_audio_balloon_pop_plays_the_sky_pop() -> void:
 
 
 func test_world_audio_star_screen_plays_complete() -> void:
+	SaveFixture.start_at("forest", 9)
 	var world: WorldBase = _make_world(FOREST)
-	world.get_node("LevelHud").level_chosen.emit("forest", 9)
 	watch_signals(AudioManager)
 	world._advance()
 	assert_has(_sfx_played(), "complete")

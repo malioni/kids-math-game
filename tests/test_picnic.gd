@@ -116,19 +116,20 @@ func test_picnic_retry_keeps_same_orders_and_clears_plate() -> void:
 	assert_eq(_world.get_node("Character").animation, &"idle")
 
 
-func test_picnic_level_change_during_deal_does_not_show_retry() -> void:
+func test_picnic_replay_during_deal_does_not_show_retry() -> void:
 	_mechanic.confirm()
-	_hud.level_chosen.emit("picnic", 7)
+	_hud.replay_requested.emit()
 	await wait_seconds(_SETTLE)
 	assert_false(_retry.visible)
-	assert_eq(_world._current_index, 7)
-	assert_eq(_mechanic.get_orders().size(), 2)
+	assert_eq(_world._current_index, 0)
+	assert_eq(_mechanic.get_orders().size(), 1)
 	assert_false(_mechanic.get_node("GoButton").disabled)
 
 
 func test_picnic_every_level_solvable_in_order() -> void:
 	for difficulty in LevelLoader.DIFFICULTIES:
-		_hud.difficulty_chosen.emit(difficulty)
+		if difficulty != LevelLoader.DIFFICULTIES[0]:
+			_hud.next_difficulty_requested.emit()
 		var level_range: Vector2i = LevelLoader.get_difficulty_range(difficulty)
 		for i in range(level_range.x, level_range.y + 1):
 			assert_eq(_world._current_index, i, difficulty)

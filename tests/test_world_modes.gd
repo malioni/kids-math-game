@@ -118,21 +118,9 @@ func test_world_modes_progress_is_saved_per_difficulty() -> void:
 	assert_eq(SaveManager.load_progress("forest:hard"), 1)
 
 
-func test_world_modes_difficulty_chosen_resumes_at_that_difficultys_level() -> void:
-	SaveManager.set_progress("forest:easy", 4)
-	SaveManager.set_progress("forest:hard", 16)
+func test_world_modes_starting_hard_level_on_easy_switches_difficulty() -> void:
+	GameRegistry.request_level("forest", 13)
 	var world: Node2D = _make_world()
-	assert_eq(world._current_index, 3)
-	_hud(world).difficulty_chosen.emit("hard")
-	assert_eq(world._current_index, 15)
-	assert_eq(GameRegistry.get_difficulty(), "hard")
-	_hud(world).difficulty_chosen.emit("easy")
-	assert_eq(world._current_index, 3)
-
-
-func test_world_modes_picking_hard_level_on_easy_switches_difficulty() -> void:
-	var world: Node2D = _make_world()
-	_hud(world).level_chosen.emit("forest", 13)
 	assert_eq(world._current_index, 13)
 	assert_eq(GameRegistry.get_difficulty(), "hard")
 	assert_eq(SaveManager.load_progress("forest:hard"), 14)
@@ -197,15 +185,6 @@ func test_world_modes_shuffle_restart_starts_fresh_shuffle() -> void:
 	assert_true(GameRegistry.is_shuffle())
 
 
-func test_world_modes_picking_a_level_leaves_shuffle() -> void:
-	GameRegistry.set_shuffle(true)
-	var world: Node2D = _make_world()
-	_hud(world).level_chosen.emit("forest", 4)
-	assert_false(GameRegistry.is_shuffle())
-	assert_eq(world._current_index, 4)
-	assert_eq(SaveManager.load_progress("forest:easy"), 5)
-
-
 func test_world_modes_shuffle_finished_world_on_open_moves_on() -> void:
 	_finish_shuffle(["forest"])
 	GameRegistry.set_shuffle(true)
@@ -214,44 +193,6 @@ func test_world_modes_shuffle_finished_world_on_open_moves_on() -> void:
 	await wait_process_frames(2)
 	assert_ne(GameRegistry.last_world_request, "")
 	assert_ne(GameRegistry.last_world_request, "forest")
-
-
-func test_world_modes_shuffle_continue_starts_shuffle() -> void:
-	var world: Node2D = _make_world()
-	_hud(world).shuffle_requested.emit(false)
-	assert_true(GameRegistry.is_shuffle())
-	assert_ne(GameRegistry.last_world_request, "")
-
-
-func test_world_modes_shuffle_continue_while_shuffling_stays_put() -> void:
-	SaveManager.set_progress(_shuffle_key("forest"), 4)
-	GameRegistry.set_shuffle(true)
-	var world: Node2D = _make_world()
-	_hud(world).shuffle_requested.emit(false)
-	assert_eq(GameRegistry.last_world_request, "")
-	assert_eq(world._current_index, 3)
-	assert_eq(SaveManager.load_progress(_shuffle_key("forest")), 4)
-
-
-func test_world_modes_shuffle_start_over_clears_shuffle_progress() -> void:
-	SaveManager.set_progress(_shuffle_key("forest"), 6)
-	SaveManager.set_progress(_shuffle_key("sky"), 3)
-	SaveManager.set_progress("forest:easy", 5)
-	GameRegistry.set_shuffle(true)
-	var world: Node2D = _make_world()
-	_hud(world).shuffle_requested.emit(true)
-	assert_true(GameRegistry.is_shuffle())
-	assert_ne(GameRegistry.last_world_request, "")
-	assert_eq(GameRegistry.shuffle_position().x, 1)
-	assert_eq(SaveManager.load_progress("forest:easy"), 5, "normal progress is untouched")
-
-
-func test_world_modes_shuffle_start_over_from_worlds_mode_turns_shuffle_on() -> void:
-	SaveManager.set_progress(_shuffle_key("market"), 7)
-	var world: Node2D = _make_world()
-	_hud(world).shuffle_requested.emit(true)
-	assert_true(GameRegistry.is_shuffle())
-	assert_eq(GameRegistry.shuffle_next_index("market"), 0)
 
 
 func _badge_text(world: Node2D) -> String:
@@ -292,13 +233,14 @@ func test_world_modes_home_requested_goes_to_menu_and_keeps_mode() -> void:
 
 
 func test_world_modes_level_change_with_transition_loads_after_cover() -> void:
+	SaveFixture.start_at("forest", 4)
 	var world: Node2D = _make_world()
 	Transition.half_duration = 0.05
 	Transition.enabled = true
-	_hud(world).level_chosen.emit("forest", 4)
-	assert_eq(world._current_index, 0, "the old level stays until the screen is covered")
+	_hud(world).restart_requested.emit()
+	assert_eq(world._current_index, 4, "the old level stays until the screen is covered")
 	await wait_for_signal(Transition.finished, 2.0)
-	assert_eq(world._current_index, 4)
+	assert_eq(world._current_index, 0)
 
 
 func test_world_modes_first_level_loads_without_transition() -> void:
@@ -309,17 +251,59 @@ func test_world_modes_first_level_loads_without_transition() -> void:
 	assert_false(Transition.is_busy())
 
 
-# The player taps while the fade from an earlier tap is still running, and the celebration's timer
-# runs out under it: _advance() must not undo what the player asked for.
-func test_choosing_a_level_as_a_win_finishes_keeps_the_chosen_level() -> void:
+# The player taps replay, and the celebration's timer runs out under the fade: _advance() must not
+# undo what the player asked for.
+func test_replaying_as_a_win_finishes_keeps_the_replayed_level() -> void:
+	SaveFixture.start_at("forest", 5)
 	var world: Node2D = _make_world()
 	Transition.half_duration = 0.01
 	Transition.enabled = true
-	_hud(world).level_chosen.emit("forest", 5)
+	_hud(world).replay_requested.emit()
 	world._advance()
 	await wait_for_signal(Transition.finished, 2.0)
 	assert_eq(world._current_index, 5)
 	assert_eq(SaveManager.load_progress("forest:easy"), 6)
+
+
+func test_world_modes_replay_reloads_same_level() -> void:
+	SaveFixture.start_at("forest", 4)
+	var world: Node2D = _make_world()
+	var load_count: int = world._load_count
+	_hud(world).replay_requested.emit()
+	assert_eq(world._current_index, 4)
+	assert_eq(world._load_count, load_count + 1)
+	assert_eq(SaveManager.load_progress("forest:easy"), 5)
+
+
+func test_world_modes_replay_during_win_cancels_advance() -> void:
+	SaveFixture.start_at("forest", 2)
+	var world: Node2D = _make_world()
+	_mechanic(world).correct.emit()
+	_hud(world).replay_requested.emit()
+	await wait_seconds(_SETTLE)
+	assert_eq(world._current_index, 2)
+	assert_eq(SaveManager.load_progress("forest:easy"), 3)
+
+
+func test_world_modes_next_difficulty_switches_to_hard_and_loads_level_11() -> void:
+	SaveManager.set_progress("forest:easy", 10)
+	var world: Node2D = _make_world()
+	await _win(world)
+	assert_true(_hud(world).is_world_complete_shown())
+	_hud(world).next_difficulty_requested.emit()
+	assert_eq(GameRegistry.get_difficulty(), "hard")
+	assert_eq(world._current_index, 10)
+	assert_false(_hud(world).is_world_complete_shown())
+
+
+func test_world_modes_next_difficulty_saves_hard_progress_at_level_11() -> void:
+	SaveManager.set_progress("forest:hard", 17)
+	SaveManager.set_progress("forest:easy", 10)
+	var world: Node2D = _make_world()
+	await _win(world)
+	_hud(world).next_difficulty_requested.emit()
+	assert_eq(SaveManager.load_progress("forest:hard"), 11)
+	assert_eq(SaveManager.load_progress("forest:easy"), 1, "easy restarts next time")
 
 
 func test_going_home_as_a_shuffle_win_finishes_stays_on_the_menu() -> void:

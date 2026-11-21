@@ -11,9 +11,8 @@ extends Node
 const MENU_SCENE := "res://scenes/ui/main_menu.tscn"
 
 ## Every world in play order. "id" matches the world's level folder (data/levels/world_<id>/)
-## and its save key; "icon" is shown on the world's card in the menu, the level picker and the
-## world-complete screen, and on the level badge. Every world needs levels for all of every
-## difficulty's range in data/levels/difficulty.json.
+## and its save key; "icon" is shown on the world's card in the menu and on the level badge.
+## Every world needs levels for all of every difficulty's range in data/levels/difficulty.json.
 const WORLDS: Array[Dictionary] = [
 	{
 		"id": "forest",
@@ -121,6 +120,11 @@ func get_difficulty() -> String:
 ## Sets and saves the game-wide difficulty, "easy" or "hard".
 func set_difficulty(difficulty: String) -> void:
 	SaveManager.save_difficulty(difficulty)
+
+
+## Returns the difficulty after the current one, or "" when it is already the hardest.
+func next_difficulty() -> String:
+	return LevelLoader.get_next_difficulty(get_difficulty())
 
 
 ## Returns true while the game is in shuffle mode.

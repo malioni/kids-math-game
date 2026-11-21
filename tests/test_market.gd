@@ -172,23 +172,23 @@ func test_market_retry_keeps_same_orders_and_clears_table() -> void:
 	assert_false(_mechanic.get_node("GoButton").disabled)
 
 
-func test_market_level_change_during_throw_does_not_show_retry() -> void:
+func test_market_replay_during_throw_does_not_show_retry() -> void:
 	_mechanic.confirm()
-	_hud.level_chosen.emit("market", 7)
+	_hud.replay_requested.emit()
 	await wait_seconds(_THROW_SETTLE)
 	assert_false(_retry.visible)
 	assert_false(_world.get_node("Splat").visible)
 	assert_false(_world.get_node("FlyingTomato").visible)
-	assert_eq(_world._current_index, 7)
-	assert_eq(_mechanic.get_orders().size(), 2)
+	assert_eq(_world._current_index, 0)
+	assert_eq(_mechanic.get_orders().size(), 1)
 
 
-func test_market_level_change_during_flight_leaves_nothing_behind() -> void:
+func test_market_replay_during_flight_leaves_nothing_behind() -> void:
 	var tomato: Sprite2D = _world.get_node("FlyingTomato")
 	_world.throw_duration = 1.0
 	_mechanic.confirm()
 	await wait_until(func() -> bool: return tomato.visible, 2.0)
-	_hud.level_chosen.emit("market", 7)
+	_hud.replay_requested.emit()
 	assert_false(tomato.visible)
 	await wait_seconds(1.0 + _SETTLE)
 	assert_false(tomato.visible)
@@ -197,12 +197,12 @@ func test_market_level_change_during_flight_leaves_nothing_behind() -> void:
 	assert_eq(_world.get_node("Character").animation, &"idle")
 
 
-func test_market_level_change_during_splat_leaves_nothing_behind() -> void:
+func test_market_replay_during_splat_leaves_nothing_behind() -> void:
 	var splat: Sprite2D = _world.get_node("Splat")
 	_world.splat_duration = 1.0
 	_mechanic.confirm()
 	await wait_until(func() -> bool: return splat.visible, 2.0)
-	_hud.level_chosen.emit("market", 7)
+	_hud.replay_requested.emit()
 	assert_false(splat.visible)
 	await wait_seconds(1.0 + _SETTLE)
 	assert_false(splat.visible)
@@ -211,11 +211,12 @@ func test_market_level_change_during_splat_leaves_nothing_behind() -> void:
 	assert_eq(_world.get_node("Character").animation, &"idle")
 
 
-func test_market_throw_cut_short_by_level_change_does_not_join_the_next_throw() -> void:
+func test_market_throw_cut_short_by_replay_does_not_join_the_next_throw() -> void:
 	watch_signals(AudioManager)
 	_mechanic.confirm()
-	_hud.level_chosen.emit("market", 7)
-	await wait_until(func() -> bool: return _world._current_index == 7, 2.0)
+	var load_count: int = _world._load_count
+	_hud.replay_requested.emit()
+	await wait_until(func() -> bool: return _world._load_count > load_count, 2.0)
 	_mechanic.confirm()
 	await wait_seconds(_THROW_SETTLE)
 	assert_eq(_sfx_played().count("market/splat"), 1)
@@ -237,7 +238,8 @@ func test_market_wrong_again_after_retry_throws_again() -> void:
 
 func test_market_every_level_solvable_in_order() -> void:
 	for difficulty in LevelLoader.DIFFICULTIES:
-		_hud.difficulty_chosen.emit(difficulty)
+		if difficulty != LevelLoader.DIFFICULTIES[0]:
+			_hud.next_difficulty_requested.emit()
 		var level_range: Vector2i = LevelLoader.get_difficulty_range(difficulty)
 		for i in range(level_range.x, level_range.y + 1):
 			assert_eq(_world._current_index, i, difficulty)

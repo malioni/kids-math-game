@@ -1,6 +1,7 @@
 extends GutTest
 
 const SCENE := preload("res://scenes/ui/level_hud.tscn")
+const ROW := "Root/Pause/Panel/Margin/Row/"
 
 var hud: LevelHud
 
@@ -17,27 +18,6 @@ func after_each() -> void:
 	AudioManager.set_music_enabled(true)
 	AudioManager.set_effects_enabled(true)
 	SaveFixture.clear()
-
-
-func _level_texts() -> Array:
-	return hud.get_level_buttons().map(func(b: Button) -> String: return b.text)
-
-
-func _picker_carousel() -> WorldCarousel:
-	return hud.get_node("Root/Picker/Panel/Margin/VBox/TopRow/WorldCarousel")
-
-
-# Taps the card with the given id, as a finger would, once the HUD has laid out.
-func _tap_card(carousel: WorldCarousel, id: String) -> void:
-	await wait_process_frames(1)
-	var card: Panel = carousel.get_card(id)
-	var at: Vector2 = card.get_parent().position + card.position + card.pivot_offset
-	for pressed in [true, false]:
-		var event := InputEventMouseButton.new()
-		event.button_index = MOUSE_BUTTON_LEFT
-		event.pressed = pressed
-		event.position = at
-		carousel._gui_input(event)
 
 
 func _assert_tap_size(control: Control) -> void:
@@ -76,161 +56,6 @@ func test_level_hud_badge_shows_world_icon() -> void:
 	assert_eq(icon.resource_path, GameRegistry.get_world("forest")["icon"])
 
 
-func test_level_hud_picker_hidden_on_start() -> void:
-	assert_false(hud.is_picker_open())
-	assert_false(hud.is_world_complete_shown())
-
-
-func test_level_hud_badge_press_opens_picker() -> void:
-	hud.get_node("Root/LevelBadge").pressed.emit()
-	assert_true(hud.is_picker_open())
-
-
-func test_level_hud_picker_lists_only_easy_levels() -> void:
-	hud.open_picker()
-	assert_eq(_level_texts(), ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
-
-
-func test_level_hud_picker_on_hard_lists_levels_11_to_20() -> void:
-	GameRegistry.set_difficulty("hard")
-	hud.open_picker()
-	assert_eq(_level_texts(), ["11", "12", "13", "14", "15", "16", "17", "18", "19", "20"])
-	watch_signals(hud)
-	hud.get_level_buttons()[3].pressed.emit()
-	assert_signal_emitted_with_parameters(hud, "level_chosen", ["forest", 13])
-
-
-func test_level_hud_picker_has_a_card_per_world_plus_shuffle() -> void:
-	hud.open_picker()
-	var ids: Array = GameRegistry.get_worlds().map(func(w: Dictionary) -> String: return w["id"])
-	var names: Array = hud.get_world_tabs().map(func(c: Panel) -> String: return c.name)
-	assert_eq(names, ids.map(func(id: String) -> String: return "Card_%s" % id))
-	assert_not_null(hud.get_shuffle_tab())
-	assert_eq(_picker_carousel().get_cards().size(), ids.size() + 1)
-
-
-func test_level_hud_picker_opens_centred_on_current_world() -> void:
-	hud.show_level("market", 2)
-	hud.open_picker()
-	assert_eq(_picker_carousel().get_centred_id(), "market")
-	var style: StyleBoxTexture = hud.get_world_tabs()[2].get_theme_stylebox("panel")
-	assert_eq(style.modulate_color, Color(1.0, 0.72, 0.3))
-
-
-func test_level_hud_level_button_emits_level_chosen_and_closes() -> void:
-	hud.open_picker()
-	watch_signals(hud)
-	hud.get_level_buttons()[6].pressed.emit()
-	assert_signal_emitted_with_parameters(hud, "level_chosen", ["forest", 6])
-	assert_false(hud.is_picker_open())
-
-
-func test_level_hud_other_world_card_lists_its_levels_and_emits_its_id() -> void:
-	hud.open_picker()
-	await _tap_card(_picker_carousel(), "sky")
-	await wait_process_frames(1)
-	assert_eq(hud.get_level_buttons().size(), 10)
-	watch_signals(hud)
-	hud.get_level_buttons()[2].pressed.emit()
-	assert_signal_emitted_with_parameters(hud, "level_chosen", ["sky", 2])
-
-
-func test_level_hud_close_button_closes_picker_without_choosing() -> void:
-	hud.open_picker()
-	watch_signals(hud)
-	hud.get_node("Root/Picker/Panel/Margin/VBox/TopRow/CloseButton").pressed.emit()
-	assert_false(hud.is_picker_open())
-	assert_signal_not_emitted(hud, "level_chosen")
-
-
-func test_level_hud_world_complete_shows_restart() -> void:
-	hud.show_world_complete()
-	assert_true(hud.is_world_complete_shown())
-	watch_signals(hud)
-	hud.get_node("Root/Complete/Choices/RestartButton").pressed.emit()
-	assert_signal_emitted(hud, "restart_requested")
-	assert_false(hud.is_world_complete_shown())
-
-
-func test_level_hud_world_complete_offers_other_worlds() -> void:
-	hud.show_world_complete()
-	assert_null(hud.get_choice_carousel().get_card("forest"))
-	watch_signals(hud)
-	await _tap_card(hud.get_choice_carousel(), "sky")
-	assert_signal_emitted_with_parameters(hud, "level_chosen", ["sky", -1])
-	assert_false(hud.is_world_complete_shown())
-
-
-func test_level_hud_show_level_closes_overlays() -> void:
-	hud.show_world_complete()
-	hud.show_level("forest", 0)
-	assert_false(hud.is_world_complete_shown())
-	assert_eq(hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "1")
-
-
-func test_level_hud_difficulty_button_emits_difficulty_chosen_and_closes() -> void:
-	hud.open_picker()
-	watch_signals(hud)
-	hud.get_difficulty_buttons()[1].pressed.emit()
-	assert_signal_emitted_with_parameters(hud, "difficulty_chosen", ["hard"])
-	assert_false(hud.is_picker_open())
-
-
-func test_level_hud_current_difficulty_button_is_highlighted() -> void:
-	GameRegistry.set_difficulty("hard")
-	hud.open_picker()
-	var easy: StyleBoxFlat = hud.get_difficulty_buttons()[0].get_theme_stylebox("normal")
-	var hard: StyleBoxFlat = hud.get_difficulty_buttons()[1].get_theme_stylebox("normal")
-	assert_ne(easy.bg_color, hard.bg_color)
-	assert_eq(hard.bg_color, Color(1.0, 0.72, 0.3))
-
-
-func test_level_hud_shuffle_tab_shows_shuffle_page_instead_of_levels() -> void:
-	hud.open_picker()
-	assert_false(hud.is_shuffle_page_shown())
-	watch_signals(hud)
-	await _tap_card(_picker_carousel(), "shuffle")
-	assert_true(hud.is_shuffle_page_shown())
-	assert_true(hud.is_picker_open())
-	assert_eq(hud.get_level_buttons().size(), 0)
-	assert_signal_not_emitted(hud, "shuffle_requested")
-
-
-func test_level_hud_shuffle_continue_emits_not_from_start_and_closes() -> void:
-	hud.open_picker()
-	await _tap_card(_picker_carousel(), "shuffle")
-	watch_signals(hud)
-	hud.get_shuffle_buttons()[0].pressed.emit()
-	assert_signal_emitted_with_parameters(hud, "shuffle_requested", [false])
-	assert_false(hud.is_picker_open())
-
-
-func test_level_hud_shuffle_start_over_emits_from_start_and_closes() -> void:
-	hud.open_picker()
-	await _tap_card(_picker_carousel(), "shuffle")
-	watch_signals(hud)
-	hud.get_shuffle_buttons()[1].pressed.emit()
-	assert_signal_emitted_with_parameters(hud, "shuffle_requested", [true])
-	assert_false(hud.is_picker_open())
-
-
-func test_level_hud_picker_opens_on_shuffle_page_while_shuffling() -> void:
-	GameRegistry.set_shuffle(true)
-	hud.open_picker()
-	assert_true(hud.is_shuffle_page_shown())
-	var style: StyleBoxTexture = hud.get_shuffle_tab().get_theme_stylebox("panel")
-	assert_eq(style.modulate_color, Color(1.0, 0.72, 0.3))
-
-
-func test_level_hud_world_card_from_shuffle_page_shows_its_levels() -> void:
-	GameRegistry.set_shuffle(true)
-	hud.open_picker()
-	await _tap_card(_picker_carousel(), "sky")
-	await wait_process_frames(1)
-	assert_false(hud.is_shuffle_page_shown())
-	assert_eq(hud.get_level_buttons().size(), 10)
-
-
 func test_level_hud_badge_shows_shuffle_icon_only_while_shuffling() -> void:
 	var icon: TextureRect = hud.get_node("Root/LevelBadge/ShuffleIcon")
 	assert_false(icon.visible)
@@ -240,6 +65,70 @@ func test_level_hud_badge_shows_shuffle_icon_only_while_shuffling() -> void:
 	GameRegistry.set_shuffle(false)
 	hud.show_level("sky", 2)
 	assert_false(icon.visible)
+
+
+func test_level_hud_pause_hidden_on_start() -> void:
+	assert_false(hud.is_pause_open())
+
+
+func test_level_hud_badge_press_opens_pause() -> void:
+	hud.get_node("Root/LevelBadge").pressed.emit()
+	assert_true(hud.is_pause_open())
+
+
+func test_level_hud_pause_has_home_replay_music_effects_close() -> void:
+	var names: Array = hud.get_node(ROW).get_children().map(func(n: Node) -> String: return n.name)
+	assert_eq(names, ["HomeButton", "ReplayButton", "MusicButton", "EffectsButton", "CloseButton"])
+
+
+func test_level_hud_pause_has_no_level_buttons_or_world_strip() -> void:
+	assert_eq(hud.find_children("*", "WorldCarousel", true, false).size(), 0)
+	assert_null(hud.get_node_or_null("Root/Picker"))
+	for child in hud.get_node(ROW).get_children():
+		assert_false(child is Button and child.text != "", "%s has no text" % child.name)
+
+
+func test_level_hud_replay_emits_replay_requested_and_closes() -> void:
+	hud.open_pause()
+	watch_signals(hud)
+	hud.get_replay_button().pressed.emit()
+	assert_signal_emitted(hud, "replay_requested")
+	assert_false(hud.is_pause_open())
+
+
+func test_level_hud_pause_home_emits_home_requested_and_closes() -> void:
+	hud.open_pause()
+	watch_signals(hud)
+	hud.get_home_buttons()[0].pressed.emit()
+	assert_signal_emitted(hud, "home_requested")
+	assert_false(hud.is_pause_open())
+
+
+func test_level_hud_close_button_closes_pause() -> void:
+	hud.open_pause()
+	watch_signals(hud)
+	hud.get_close_button().pressed.emit()
+	assert_false(hud.is_pause_open())
+	assert_signal_not_emitted(hud, "replay_requested")
+	assert_signal_not_emitted(hud, "home_requested")
+
+
+func test_level_hud_backdrop_tap_closes_pause() -> void:
+	hud.open_pause()
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = true
+	hud.get_node("Root/Pause/Backdrop").gui_input.emit(event)
+	assert_false(hud.is_pause_open())
+
+
+func test_level_hud_world_complete_shows_restart() -> void:
+	hud.show_world_complete()
+	assert_true(hud.is_world_complete_shown())
+	watch_signals(hud)
+	hud.get_restart_button().pressed.emit()
+	assert_signal_emitted(hud, "restart_requested")
+	assert_false(hud.is_world_complete_shown())
 
 
 func test_level_hud_world_complete_restart_label_shows_first_level_of_difficulty() -> void:
@@ -252,20 +141,58 @@ func test_level_hud_world_complete_restart_label_shows_first_level_of_difficulty
 	assert_true(label.visible)
 
 
-func test_level_hud_world_complete_in_shuffle_hides_label_and_lists_every_world() -> void:
+func test_level_hud_world_complete_in_shuffle_hides_restart_label() -> void:
 	GameRegistry.set_shuffle(true)
 	hud.show_world_complete()
 	assert_false(hud.get_node("Root/Complete/Choices/RestartButton/OneLabel").visible)
-	assert_eq(hud.get_choice_carousel().get_cards().size(), GameRegistry.get_worlds().size())
-	assert_not_null(hud.get_choice_carousel().get_card("forest"))
 
 
-func test_level_hud_picker_home_button_emits_home_requested_and_closes() -> void:
-	hud.open_picker()
+func test_level_hud_world_complete_on_easy_shows_next_difficulty_button() -> void:
+	hud.show_world_complete()
+	var button: TextureButton = hud.get_next_difficulty_button()
+	assert_true(button.visible)
+	assert_eq(button.texture_normal.resource_path, "res://assets/sprites/ui/icon_hard.svg")
+
+
+func test_level_hud_world_complete_on_hard_hides_next_difficulty_button() -> void:
+	GameRegistry.set_difficulty("hard")
+	hud.show_world_complete()
+	assert_false(hud.get_next_difficulty_button().visible)
+
+
+func test_level_hud_world_complete_in_shuffle_hides_next_difficulty_button() -> void:
+	GameRegistry.set_shuffle(true)
+	hud.show_world_complete()
+	assert_false(hud.get_next_difficulty_button().visible)
+
+
+func test_level_hud_next_difficulty_button_emits_next_difficulty_requested() -> void:
+	hud.show_world_complete()
 	watch_signals(hud)
-	hud.get_home_buttons()[0].pressed.emit()
-	assert_signal_emitted(hud, "home_requested")
-	assert_false(hud.is_picker_open())
+	hud.get_next_difficulty_button().pressed.emit()
+	assert_signal_emitted(hud, "next_difficulty_requested")
+	assert_false(hud.is_world_complete_shown())
+
+
+func test_level_hud_next_difficulty_label_shows_next_difficultys_first_level() -> void:
+	hud.show_world_complete()
+	var label: Label = hud.get_next_difficulty_button().get_node("FirstLabel")
+	assert_eq(label.text, str(LevelLoader.get_difficulty_range("hard").x + 1))
+
+
+func test_level_hud_world_complete_has_no_world_strip() -> void:
+	hud.show_world_complete()
+	assert_eq(hud.get_node("Root/Complete").find_children("*", "WorldCarousel").size(), 0)
+
+
+func test_level_hud_show_level_closes_overlays() -> void:
+	hud.show_world_complete()
+	hud.show_level("forest", 0)
+	assert_false(hud.is_world_complete_shown())
+	hud.open_pause()
+	hud.show_level("forest", 0)
+	assert_false(hud.is_pause_open())
+	assert_eq(hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "1")
 
 
 func test_level_hud_world_complete_home_button_emits_home_requested() -> void:
@@ -277,22 +204,15 @@ func test_level_hud_world_complete_home_button_emits_home_requested() -> void:
 
 
 func test_level_hud_buttons_meet_minimum_tap_size() -> void:
-	hud.open_picker()
+	hud.open_pause()
 	await wait_process_frames(2)
-	for button in hud.get_level_buttons():
-		_assert_tap_size(button)
-	for button in hud.get_difficulty_buttons():
-		_assert_tap_size(button)
-	for card in _picker_carousel().get_cards():
-		_assert_tap_size(card)
-	_assert_tap_size(hud.get_home_buttons()[0])
-	_assert_tap_size(hud.get_node("Root/Picker/Panel/Margin/VBox/TopRow/CloseButton"))
+	for child in hud.get_node(ROW).get_children():
+		_assert_tap_size(child)
 	hud.show_world_complete()
 	await wait_process_frames(2)
 	_assert_tap_size(hud.get_home_buttons()[1])
-	_assert_tap_size(hud.get_node("Root/Complete/Choices/RestartButton"))
-	for card in hud.get_choice_carousel().get_cards():
-		_assert_tap_size(card)
+	_assert_tap_size(hud.get_restart_button())
+	_assert_tap_size(hud.get_next_difficulty_button())
 
 
 func test_level_hud_badge_tap_plays_tap() -> void:
@@ -301,28 +221,35 @@ func test_level_hud_badge_tap_plays_tap() -> void:
 	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
 
 
-func test_level_hud_level_button_plays_tap() -> void:
-	hud.open_picker()
-	watch_signals(AudioManager)
-	hud.get_level_buttons()[0].pressed.emit()
-	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
+func test_level_hud_pause_and_complete_buttons_play_tap() -> void:
+	var buttons: Array[BaseButton] = [
+		hud.get_replay_button(),
+		hud.get_close_button(),
+		hud.get_restart_button(),
+		hud.get_next_difficulty_button(),
+	]
+	buttons.append_array(hud.get_home_buttons())
+	for button in buttons:
+		watch_signals(AudioManager)
+		button.pressed.emit()
+		assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
 
 
 func test_level_hud_music_button_toggles_and_shows_it() -> void:
-	hud.open_picker()
+	hud.open_pause()
 	var music: Button = hud.get_sound_buttons()[0]
 	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_on.svg")
 	music.pressed.emit()
 	assert_false(AudioManager.is_music_enabled())
 	assert_true(AudioManager.is_effects_enabled())
 	assert_eq(music.icon.resource_path, "res://assets/sprites/ui/icon_music_off.svg")
-	assert_true(hud.is_picker_open(), "a sound toggle keeps the picker open")
+	assert_true(hud.is_pause_open(), "a sound toggle keeps the pause panel open")
 	music.pressed.emit()
 	assert_true(AudioManager.is_music_enabled())
 
 
 func test_level_hud_effects_button_toggles_and_shows_it() -> void:
-	hud.open_picker()
+	hud.open_pause()
 	var effects: Button = hud.get_sound_buttons()[1]
 	effects.pressed.emit()
 	assert_false(AudioManager.is_effects_enabled())
@@ -332,36 +259,7 @@ func test_level_hud_effects_button_toggles_and_shows_it() -> void:
 
 func test_level_hud_sound_buttons_show_saved_settings_when_opened() -> void:
 	AudioManager.set_music_enabled(false)
-	hud.open_picker()
+	hud.open_pause()
 	assert_eq(
 		hud.get_sound_buttons()[0].icon.resource_path, "res://assets/sprites/ui/icon_music_off.svg"
 	)
-
-
-func test_level_hud_sound_buttons_meet_minimum_tap_size() -> void:
-	hud.open_picker()
-	await wait_process_frames(1)
-	for button in hud.get_sound_buttons():
-		assert_gte(button.size.y, 100.0)
-		assert_gte(button.size.x, 100.0)
-
-
-func test_level_hud_sound_buttons_sit_apart_from_difficulty() -> void:
-	hud.open_picker()
-	await wait_process_frames(1)
-	var easy: Button = hud.get_node("Root/Picker/Panel/Margin/VBox/ModeRow/EasyButton")
-	var hard: Button = hud.get_node("Root/Picker/Panel/Margin/VBox/ModeRow/HardButton")
-	var row: Control = easy.get_parent()
-	var sounds: Array[Button] = hud.get_sound_buttons()
-	assert_almost_eq(easy.position.x, 0.0, 1.0, "difficulty in the left corner")
-	assert_almost_eq(sounds[1].get_rect().end.x, row.size.x, 1.0, "sound in the right corner")
-	assert_gt(sounds[0].position.x - hard.get_rect().end.x, 200.0, "a clear gap between them")
-
-
-func test_level_hud_carousel_arrows_play_tap() -> void:
-	hud.show_world_complete()
-	for carousel in [_picker_carousel(), hud.get_choice_carousel()]:
-		for arrow in ["PrevButton", "NextButton"]:
-			watch_signals(AudioManager)
-			carousel.get_node(arrow).pressed.emit()
-			assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])

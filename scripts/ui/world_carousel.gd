@@ -4,8 +4,10 @@ extends Control
 ## A horizontal strip of picture cards, one per item, that snaps to one centred card.
 ##
 ## Swipe the strip or use the arrow buttons to move; tap a card to pick it. Cards further from the
-## centre are drawn smaller and fainter. Nothing in here knows about worlds: callers pass a list of
-## {"id": String, "icon": Texture2D} items (normally built from GameRegistry.WORLDS). Every card's
+## centre are drawn smaller and fainter. Nothing in here knows about worlds or levels: callers
+## pass a list of {"id": String, "icon": Texture2D} items (normally built from
+## GameRegistry.WORLDS), or {"id": String, "text": String} items for cards that show text instead
+## (e.g. level numbers). Every card's
 ## place on the strip comes from _card_position(), and the cards sit on Track, which is what
 ## scrolls, so a painted path can replace the straight line later.
 
@@ -21,6 +23,8 @@ const _SNAP_DURATION := 0.2
 const _OVERSCROLL := 0.3
 const _CREAM := Color(1.0, 0.96, 0.86)
 const _CURRENT := Color(1.0, 0.72, 0.3)
+const _TEXT := Color(0.3, 0.2, 0.12)
+const _DIMMED := Color(0.6, 0.6, 0.6, 0.5)
 const _FRAME := preload("res://assets/sprites/ui/card_frame.svg")
 const _FRAME_MARGIN := 24.0
 
@@ -131,6 +135,16 @@ func get_card(id: String) -> Panel:
 func set_highlighted(id: String) -> void:
 	_highlighted = id
 	_apply_highlight()
+
+
+## Greys out the card with the given id (dimmed true) or draws it normally again (dimmed false).
+## Does nothing for an unknown id.
+func set_dimmed(id: String, dimmed: bool) -> void:
+	var card: Panel = get_card(id)
+	if card:
+		card.self_modulate = _DIMMED if dimmed else Color.WHITE
+		for child in card.get_children():
+			child.self_modulate = card.self_modulate
 
 
 ## Returns where the card at index sits on the track, relative to the first card's centre.
@@ -265,19 +279,31 @@ func _make_card(item: Dictionary) -> Panel:
 	frame.texture = _FRAME
 	frame.set_texture_margin_all(_FRAME_MARGIN)
 	card.add_theme_stylebox_override("panel", frame)
-	var icon := TextureRect.new()
-	icon.name = "Icon"
-	icon.texture = item["icon"]
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var inset: float = minf(card_size.x, card_size.y) * 0.12
-	icon.offset_left = inset
-	icon.offset_top = inset
-	icon.offset_right = -inset
-	icon.offset_bottom = -inset
-	card.add_child(icon)
+	var content: Control
+	if item.has("text"):
+		var label := Label.new()
+		label.name = "Text"
+		label.text = item["text"]
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.add_theme_font_size_override("font_size", roundi(card_size.y * 0.45))
+		label.add_theme_color_override("font_color", _TEXT)
+		content = label
+	else:
+		var icon := TextureRect.new()
+		icon.name = "Icon"
+		icon.texture = item["icon"]
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		content = icon
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.set_anchors_preset(Control.PRESET_FULL_RECT)
+	content.offset_left = inset
+	content.offset_top = inset
+	content.offset_right = -inset
+	content.offset_bottom = -inset
+	card.add_child(content)
 	_track.add_child(card)
 	return card
 
