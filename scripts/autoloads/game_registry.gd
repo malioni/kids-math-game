@@ -9,6 +9,8 @@ extends Node
 
 ## The main menu scene.
 const MENU_SCENE := "res://scenes/ui/main_menu.tscn"
+## Levels in one shuffle round, however many worlds there are.
+const SHUFFLE_ROUND_LENGTH := 10
 
 ## Every world in play order. "id" matches the world's level folder (data/levels/world_<id>/)
 ## and its save key; "icon" is shown on the world's card in the menu and on the level badge.
@@ -143,48 +145,78 @@ func get_level_range() -> Vector2i:
 
 
 ## Returns the 0-based index of the given world's next shuffle level at the current difficulty.
-## It is past get_level_range().y once shuffle has played all of that world's levels.
+## Shuffle keeps each world's place between rounds; a place past the end of the difficulty's
+## levels goes back to its first.
 func shuffle_next_index(world_id: String) -> int:
-	var key: String = SaveManager.progress_key(world_id, get_difficulty(), true)
-	return maxi(SaveManager.load_progress(key) - 1, get_level_range().x)
-
-
-## Returns where the current shuffle is (x, 1-based: the level being played) out of every world's
-## levels at the current difficulty (y), e.g. (1, 50) at the start of a shuffle with five worlds.
-func shuffle_position() -> Vector2i:
 	var level_range: Vector2i = get_level_range()
-	var size: int = level_range.y - level_range.x + 1
-	var total: int = size * WORLDS.size()
-	var played: int = 0
+	var key: String = SaveManager.progress_key(world_id, get_difficulty(), true)
+	var index: int = maxi(SaveManager.load_progress(key) - 1, level_range.x)
+	return level_range.x if index > level_range.y else index
+
+
+## Returns where the current shuffle round is (x, 1-based: the level being played) out of
+## SHUFFLE_ROUND_LENGTH (y), e.g. (3, 10).
+func shuffle_position() -> Vector2i:
+	var played: int = SaveManager.load_shuffle_round_played()
+	return Vector2i(mini(played + 1, SHUFFLE_ROUND_LENGTH), SHUFFLE_ROUND_LENGTH)
+
+
+## Returns the worlds switched on for shuffle, in play order. If fewer than two are on (e.g. a
+## save edited by hand), every world is.
+func shuffle_worlds() -> Array[String]:
+	var off: Array[String] = SaveManager.load_shuffle_off()
+	var on: Array[String] = []
 	for world in WORLDS:
-		played += mini(shuffle_next_index(world["id"]) - level_range.x, size)
-	return Vector2i(mini(played + 1, total), total)
+		if not world["id"] in off:
+			on.append(world["id"])
+	if on.size() < 2:
+		on.clear()
+		for world in WORLDS:
+			on.append(world["id"])
+	return on
 
 
-## Returns a random world that still has shuffle levels left at the current difficulty, or "" if
-## shuffle has played every world's levels.
-func next_shuffle_world() -> String:
-	var next_levels := {}
+## Switches the given world on or off for shuffle and saves it. Returns false, changing nothing,
+## when that would leave fewer than two worlds on.
+func set_shuffle_world_on(world_id: String, on: bool) -> bool:
+	var worlds: Array[String] = shuffle_worlds()
+	if not on and world_id in worlds and worlds.size() <= 2:
+		return false
+	if on and not world_id in worlds:
+		worlds.append(world_id)
+	elif not on:
+		worlds.erase(world_id)
+	var off: Array[String] = []
 	for world in WORLDS:
-		next_levels[world["id"]] = shuffle_next_index(world["id"])
-	return ShufflePicker.pick(next_levels, get_level_range().y, _rng)
+		if not world["id"] in worlds:
+			off.append(world["id"])
+	SaveManager.save_shuffle_off(off)
+	return true
 
 
-## Clears shuffle's place in every world at the current difficulty.
-func reset_shuffle() -> void:
-	for world in WORLDS:
-		SaveManager.reset_progress(SaveManager.progress_key(world["id"], get_difficulty(), true))
+## Returns a random switched-on world other than previous, for the next shuffle level.
+func next_shuffle_world(previous: String = "") -> String:
+	return ShufflePicker.pick(shuffle_worlds(), previous, _rng)
 
 
-## Turns shuffle on and goes to a random world with levels left, starting a fresh shuffle first if
-## every world's levels have been played.
+## Returns true once the current shuffle round has had SHUFFLE_ROUND_LENGTH wins.
+func is_shuffle_round_finished() -> bool:
+	return SaveManager.load_shuffle_round_played() >= SHUFFLE_ROUND_LENGTH
+
+
+## Starts a new shuffle round. Every world keeps its shuffle place.
+func start_new_shuffle_round() -> void:
+	SaveManager.save_shuffle_round_played(0)
+
+
+## Turns shuffle on and goes to a random switched-on world, starting a new round first if the last
+## one is finished. The round count is kept when the player leaves shuffle or changes difficulty,
+## so an unfinished round carries on.
 func start_shuffle() -> void:
 	set_shuffle(true)
-	var world_id: String = next_shuffle_world()
-	if world_id == "":
-		reset_shuffle()
-		world_id = next_shuffle_world()
-	go_to_world(world_id)
+	if is_shuffle_round_finished():
+		start_new_shuffle_round()
+	go_to_world(next_shuffle_world())
 
 
 func _change_scene(path: String) -> void:

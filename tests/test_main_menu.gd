@@ -208,17 +208,13 @@ func test_main_menu_play_on_shuffle_card_starts_shuffle() -> void:
 	assert_false(GameRegistry.get_world(GameRegistry.last_world_request).is_empty())
 
 
-func test_main_menu_play_on_shuffle_card_continues_shuffle_place() -> void:
+func test_main_menu_play_on_shuffle_card_continues_unfinished_round() -> void:
 	GameRegistry.set_shuffle(true)
-	for world in GameRegistry.get_worlds():
-		if world["id"] != "market":
-			var key: String = SaveManager.progress_key(world["id"], "easy", true)
-			SaveManager.set_progress(key, 12)
-	SaveManager.set_progress(SaveManager.progress_key("market", "easy", true), 5)
+	SaveManager.save_shuffle_round_played(4)
 	var menu: MainMenu = _make_menu()
 	menu.get_play_button().pressed.emit()
-	assert_eq(GameRegistry.last_world_request, "market")
-	assert_eq(GameRegistry.shuffle_next_index("market"), 4)
+	assert_ne(GameRegistry.last_world_request, "")
+	assert_eq(SaveManager.load_shuffle_round_played(), 4)
 
 
 func test_main_menu_difficulty_button_sets_difficulty_and_rebuilds_wheel() -> void:
@@ -337,3 +333,86 @@ func test_main_menu_carousel_arrows_play_tap() -> void:
 		carousel.get_node("NextButton").pressed.emit()
 	assert_signal_emit_count(AudioManager, "sfx_played", 4)
 	assert_signal_emitted_with_parameters(AudioManager, "sfx_played", ["tap"])
+
+
+func _open_shuffle(menu: MainMenu) -> void:
+	menu.get_carousel().scroll_to(MainMenu.SHUFFLE_ID, false)
+
+
+func test_main_menu_shuffle_setup_has_a_toggle_per_world() -> void:
+	var menu: MainMenu = _make_menu()
+	var names: Array = menu.get_world_toggles().map(func(t: Node) -> String: return t.name)
+	assert_eq(names, _world_ids().map(func(id: String) -> String: return "Toggle_%s" % id))
+
+
+func test_main_menu_world_toggle_switches_world_off_and_dims_it() -> void:
+	var menu: MainMenu = _make_menu()
+	_open_shuffle(menu)
+	var toggle: TextureButton = menu.get_world_toggles()[2]
+	assert_eq(toggle.self_modulate, Color.WHITE)
+	toggle.pressed.emit()
+	assert_false(_world_ids()[2] in GameRegistry.shuffle_worlds())
+	assert_ne(toggle.self_modulate, Color.WHITE)
+	toggle.pressed.emit()
+	assert_true(_world_ids()[2] in GameRegistry.shuffle_worlds())
+	assert_eq(toggle.self_modulate, Color.WHITE)
+
+
+func test_main_menu_world_toggle_refuses_below_two_worlds() -> void:
+	var menu: MainMenu = _make_menu()
+	_open_shuffle(menu)
+	var toggles: Array[TextureButton] = menu.get_world_toggles()
+	for i in range(2, toggles.size()):
+		toggles[i].pressed.emit()
+	toggles[0].pressed.emit()
+	assert_eq(GameRegistry.shuffle_worlds().size(), 2)
+	assert_eq(toggles[0].self_modulate, Color.WHITE)
+
+
+func test_main_menu_world_toggles_show_saved_choice() -> void:
+	SaveManager.save_shuffle_off(["market"] as Array[String])
+	var menu: MainMenu = _make_menu()
+	_open_shuffle(menu)
+	for toggle in menu.get_world_toggles():
+		var off: bool = toggle.name == "Toggle_market"
+		assert_eq(toggle.self_modulate != Color.WHITE, off, toggle.name)
+
+
+func test_main_menu_new_round_button_hidden_without_unfinished_round() -> void:
+	var menu: MainMenu = _make_menu()
+	_open_shuffle(menu)
+	assert_false(menu.get_new_round_button().visible)
+	SaveManager.save_shuffle_round_played(GameRegistry.SHUFFLE_ROUND_LENGTH)
+	menu.get_carousel().scroll_to("forest", false)
+	_open_shuffle(menu)
+	assert_false(menu.get_new_round_button().visible)
+
+
+func test_main_menu_new_round_button_shown_mid_round_in_worlds_mode() -> void:
+	SaveManager.save_shuffle_round_played(3)
+	var menu: MainMenu = _make_menu()
+	_open_shuffle(menu)
+	assert_false(GameRegistry.is_shuffle())
+	assert_true(menu.get_new_round_button().visible)
+
+
+func test_main_menu_new_round_button_starts_new_round() -> void:
+	SaveManager.save_shuffle_round_played(3)
+	SaveManager.set_progress(SaveManager.progress_key("sky", "easy", true), 5)
+	var menu: MainMenu = _make_menu()
+	_open_shuffle(menu)
+	menu.get_new_round_button().pressed.emit()
+	assert_eq(SaveManager.load_shuffle_round_played(), 0)
+	assert_eq(GameRegistry.shuffle_next_index("sky"), 4)
+	assert_true(GameRegistry.is_shuffle())
+	assert_ne(GameRegistry.last_world_request, "")
+
+
+func test_main_menu_shuffle_setup_buttons_meet_minimum_tap_size() -> void:
+	SaveManager.save_shuffle_round_played(3)
+	var menu: MainMenu = _make_menu()
+	_open_shuffle(menu)
+	await wait_process_frames(2)
+	for toggle in menu.get_world_toggles():
+		_assert_tap_size(toggle)
+	_assert_tap_size(menu.get_new_round_button())

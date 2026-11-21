@@ -9,25 +9,40 @@ func before_each() -> void:
 	_rng.seed = 7
 
 
-func test_shuffle_picker_returns_only_worlds_with_levels_left() -> void:
-	var next_levels := {"forest": 10, "sky": 4, "market": 12, "picnic": 9}
+func _worlds(ids: Array) -> Array[String]:
+	var worlds: Array[String] = []
+	worlds.assign(ids)
+	return worlds
+
+
+func test_shuffle_picker_picks_only_from_given_worlds() -> void:
 	for run in RUNS:
-		assert_has(["sky", "picnic"], ShufflePicker.pick(next_levels, 9, _rng))
+		assert_has(["sky", "picnic"], ShufflePicker.pick(_worlds(["sky", "picnic"]), "", _rng))
 
 
-func test_shuffle_picker_returns_empty_when_all_done() -> void:
-	assert_eq(ShufflePicker.pick({"forest": 10, "sky": 10}, 9, _rng), "")
-	assert_eq(ShufflePicker.pick({}, 9, _rng), "")
+func test_shuffle_picker_never_repeats_previous_when_others_exist() -> void:
+	for run in RUNS:
+		var pick: String = ShufflePicker.pick(_worlds(["forest", "sky", "market"]), "sky", _rng)
+		assert_ne(pick, "sky")
 
 
-func test_shuffle_picker_eventually_picks_every_open_world() -> void:
+func test_shuffle_picker_returns_previous_when_it_is_the_only_world() -> void:
+	assert_eq(ShufflePicker.pick(_worlds(["forest"]), "forest", _rng), "forest")
+
+
+func test_shuffle_picker_returns_empty_for_no_worlds() -> void:
+	assert_eq(ShufflePicker.pick(_worlds([]), "forest", _rng), "")
+
+
+func test_shuffle_picker_eventually_picks_every_world_but_previous() -> void:
 	var seen := {}
 	for run in RUNS:
-		seen[ShufflePicker.pick({"forest": 0, "sky": 3, "market": 9}, 9, _rng)] = true
-	assert_eq(seen.size(), 3)
+		seen[ShufflePicker.pick(_worlds(["forest", "sky", "market", "drive"]), "drive", _rng)] = true
+	assert_eq(seen.keys().size(), 3)
+	assert_false(seen.has("drive"))
 
 
 func test_shuffle_picker_same_seed_same_pick() -> void:
-	var first: String = ShufflePicker.pick({"forest": 0, "sky": 0, "market": 0}, 9, _rng)
+	var first: String = ShufflePicker.pick(_worlds(["forest", "sky", "market"]), "", _rng)
 	_rng.seed = 7
-	assert_eq(ShufflePicker.pick({"market": 0, "sky": 0, "forest": 0}, 9, _rng), first)
+	assert_eq(ShufflePicker.pick(_worlds(["market", "sky", "forest"]), "", _rng), first)

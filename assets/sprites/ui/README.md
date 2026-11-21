@@ -12,13 +12,14 @@ the sizes.
 | `icon_world_market.svg` | 128×128 | Market world icon |
 | `icon_world_picnic.svg` | 128×128 | Picnic world icon |
 | `icon_world_memory.svg` | 128×128 | Memory Meadow world icon |
-| `icon_shuffle.svg` | 128×128 | Shuffle: the menu's Shuffle card and the badge's sticker |
+| `icon_shuffle.svg` | 128×128 | Shuffle: the menu's Shuffle card and the badge's sticker. The world icons double as the shuffle setup's on/off toggles |
 | `icon_easy.svg` | 128×128 | Easy difficulty button on the menu (a hill) |
 | `icon_hard.svg` | 128×128 | Hard difficulty button on the menu, and the world-complete screen's button to go on to hard (a mountain) |
 | `icon_music_on.svg`, `icon_music_off.svg` | 128×128 | Background sound toggle; the "off" icon is the "on" icon with a red slash |
 | `icon_effects_on.svg`, `icon_effects_off.svg` | 128×128 | Sound effects toggle |
 | `icon_close.svg` | 128×128 | Close the pause panel |
 | `icon_replay.svg` | 128×128 | Replay this level, in the pause panel (a circular arrow around a green play triangle) |
+| `icon_new_round.svg` | 128×128 | Start a new shuffle round, in the menu's shuffle setup (the replay arrow around small shuffle arrows) |
 | `icon_home.svg` | 128×128 | Home button in the pause panel and on the world-complete screen |
 | `icon_star.svg` | 200×200 | World-complete screen |
 | `icon_arrow.svg` | 128×128 | Carousel arrows; points right, flipped for left |

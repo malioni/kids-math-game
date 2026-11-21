@@ -43,12 +43,12 @@ func test_level_hud_badge_on_hard_shows_real_number_out_of_20() -> void:
 	assert_eq(_badge_text(), "14/20")
 
 
-func test_level_hud_badge_in_shuffle_shows_place_in_whole_shuffle() -> void:
+func test_level_hud_badge_in_shuffle_shows_place_in_round() -> void:
 	GameRegistry.set_shuffle(true)
+	SaveManager.save_shuffle_round_played(5)
 	SaveManager.set_progress(SaveManager.progress_key("sky", "easy", true), 4)
-	SaveManager.set_progress(SaveManager.progress_key("market", "easy", true), 3)
 	hud.show_level("sky", 3)
-	assert_eq(_badge_text(), "6/%d" % (10 * GameRegistry.get_worlds().size()))
+	assert_eq(_badge_text(), "6/10")
 
 
 func test_level_hud_badge_shows_world_icon() -> void:

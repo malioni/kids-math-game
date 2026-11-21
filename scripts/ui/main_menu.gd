@@ -9,8 +9,10 @@ extends Control
 ## The carousel opens on the Shuffle card while shuffling, otherwise on the last world played. With
 ## a world centred, the level wheel shows the current difficulty's levels and opens on that world's
 ## saved level; Play, or tapping the centred world or level card, opens the world at the centred
-## level and leaves shuffle. With the Shuffle card centred, the wheel gives way to the shuffle setup
-## and Play starts or continues a shuffle. Tapping a side card only slides it to the centre.
+## level and leaves shuffle. With the Shuffle card centred, the wheel gives way to the shuffle
+## setup: a toggle per world (dimmed when off; at least two stay on) and, while a round is
+## unfinished, a new-round button. Play then starts or continues a shuffle round. Tapping a side
+## card only slides it to the centre.
 ## Its background loop and taps play through AudioManager.
 
 const SHUFFLE_ID := "shuffle"
@@ -22,10 +24,14 @@ const _EFFECTS_OFF := preload("res://assets/sprites/ui/icon_effects_off.svg")
 const _CREAM := Color(1.0, 0.96, 0.86)
 const _CURRENT := Color(1.0, 0.72, 0.3)
 const _BORDER := Color(0.45, 0.3, 0.18)
+const _DIMMED := Color(0.6, 0.6, 0.6, 0.5)
+const _TOGGLE_SIZE := Vector2(110, 110)
 
 @onready var _carousel: WorldCarousel = $PlayArea/WorldCarousel
 @onready var _level_wheel: WorldCarousel = $PlayArea/LevelWheel
 @onready var _shuffle_setup: Control = $PlayArea/ShuffleSetup
+@onready var _world_toggles: HBoxContainer = $PlayArea/ShuffleSetup/WorldToggles
+@onready var _new_round_button: TextureButton = $PlayArea/ShuffleSetup/NewRoundButton
 @onready var _play_button: TextureButton = $PlayArea/PlayButton
 @onready var _easy_button: Button = $PlayArea/DifficultyRow/EasyButton
 @onready var _hard_button: Button = $PlayArea/DifficultyRow/HardButton
@@ -39,6 +45,8 @@ func _ready() -> void:
 		items.append({"id": world["id"], "icon": load(world["icon"])})
 	items.append({"id": SHUFFLE_ID, "icon": _SHUFFLE_ICON})
 	_carousel.set_items(items)
+	for world in GameRegistry.get_worlds():
+		_world_toggles.add_child(_make_toggle(world))
 	var start_id: String = (
 		SHUFFLE_ID if GameRegistry.is_shuffle() else SaveManager.load_last_world()
 	)
@@ -51,10 +59,11 @@ func _ready() -> void:
 	_hard_button.pressed.connect(_on_difficulty_pressed.bind("hard"))
 	_music_button.pressed.connect(_on_music_pressed)
 	_effects_button.pressed.connect(_on_effects_pressed)
+	_new_round_button.pressed.connect(_on_new_round_pressed)
 	$PlayArea/Fox.play("idle")
 	AudioManager.play_music(AudioManager.MENU_MUSIC)
 	for button: BaseButton in [
-		_play_button, _easy_button, _hard_button, _music_button, _effects_button
+		_play_button, _easy_button, _hard_button, _music_button, _effects_button, _new_round_button
 	]:
 		button.pressed.connect(_play_tap)
 	for carousel in [_carousel, _level_wheel]:
@@ -79,6 +88,18 @@ func get_level_wheel() -> WorldCarousel:
 ## Returns the shuffle setup, shown in place of the level wheel while the Shuffle card is centred.
 func get_shuffle_setup() -> Control:
 	return _shuffle_setup
+
+
+## Returns the shuffle setup's world toggles, one per registered world in play order.
+func get_world_toggles() -> Array[TextureButton]:
+	var toggles: Array[TextureButton] = []
+	toggles.assign(_world_toggles.get_children())
+	return toggles
+
+
+## Returns the shuffle setup's new-round button.
+func get_new_round_button() -> TextureButton:
+	return _new_round_button
 
 
 ## Returns the Play button, which opens the centred world at the centred level, or starts shuffle.
@@ -121,6 +142,7 @@ func _show_centred() -> void:
 	_level_wheel.visible = not on_shuffle
 	_shuffle_setup.visible = on_shuffle
 	if on_shuffle:
+		_update_shuffle_setup()
 		return
 	var level_range: Vector2i = GameRegistry.get_level_range()
 	var items: Array[Dictionary] = []
@@ -131,6 +153,44 @@ func _show_centred() -> void:
 	var saved: int = clampi(SaveManager.load_progress(key) - 1, level_range.x, level_range.y)
 	_level_wheel.scroll_to(str(saved + 1), false)
 	_level_wheel.set_highlighted(str(saved + 1))
+
+
+func _make_toggle(world: Dictionary) -> TextureButton:
+	var toggle := TextureButton.new()
+	toggle.name = "Toggle_%s" % world["id"]
+	toggle.texture_normal = load(world["icon"])
+	toggle.ignore_texture_size = true
+	toggle.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	toggle.custom_minimum_size = _TOGGLE_SIZE
+	toggle.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	toggle.pivot_offset = _TOGGLE_SIZE / 2.0
+	toggle.pressed.connect(_on_toggle_pressed.bind(world["id"], toggle))
+	toggle.pressed.connect(_play_tap)
+	return toggle
+
+
+func _on_toggle_pressed(world_id: String, toggle: TextureButton) -> void:
+	var on: bool = world_id in GameRegistry.shuffle_worlds()
+	if GameRegistry.set_shuffle_world_on(world_id, not on):
+		_update_shuffle_setup()
+		return
+	var tween: Tween = toggle.create_tween()
+	for angle in [-0.15, 0.15, -0.1, 0.0]:
+		tween.tween_property(toggle, "rotation", angle, 0.06)
+
+
+func _on_new_round_pressed() -> void:
+	GameRegistry.start_new_shuffle_round()
+	GameRegistry.start_shuffle()
+
+
+func _update_shuffle_setup() -> void:
+	var on_worlds: Array[String] = GameRegistry.shuffle_worlds()
+	for world in GameRegistry.get_worlds():
+		var toggle: TextureButton = _world_toggles.get_node("Toggle_%s" % world["id"])
+		toggle.self_modulate = Color.WHITE if world["id"] in on_worlds else _DIMMED
+	var played: int = SaveManager.load_shuffle_round_played()
+	_new_round_button.visible = played > 0 and played < GameRegistry.SHUFFLE_ROUND_LENGTH
 
 
 func _on_difficulty_pressed(difficulty: String) -> void:
