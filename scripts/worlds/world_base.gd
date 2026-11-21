@@ -10,7 +10,10 @@ extends Node2D
 ## next level; shuffle keeps its own place in each world.
 ##
 ## Level changes inside the world fade through Transition (the first level is covered by the
-## scene's own fade instead). Home in the HUD goes back to the main menu.
+## scene's own fade instead). The world starts at the level the main menu asked for, or resumes from
+## its save. In the HUD, replay reloads the current level with a fresh puzzle and home goes back to
+## the main menu; after the last level, the world-complete screen can restart the difficulty or move
+## this world on to the next difficulty.
 ##
 ## Sounds play through AudioManager: the world's ambience on load, its place and remove sounds
 ## when the mechanic reports a piece, win and lose on an answer, and complete with the star screen.
@@ -32,7 +35,7 @@ var _levels: Array[Dictionary] = []
 var _current_index: int = 0
 var _rng := RandomNumberGenerator.new()
 # Bumped on every level load. The win and lose flows check it after each wait, so a win or fall
-# from a level the player has since left (e.g. by picking another level) doesn't carry on.
+# from a level the player has since left (e.g. by replaying it) doesn't carry on.
 var _load_count: int = 0
 
 @onready var _hud: LevelHud = $LevelHud
@@ -54,10 +57,9 @@ func _ready() -> void:
 	_retry_prompt.pressed.connect(_on_retry_pressed)
 	_retry_prompt.pressed.connect(_play_tap)
 	_retry_prompt.visible = false
-	_hud.level_chosen.connect(_on_level_chosen)
+	_hud.replay_requested.connect(_on_replay_requested)
 	_hud.restart_requested.connect(_on_restart_requested)
-	_hud.difficulty_chosen.connect(_on_difficulty_chosen)
-	_hud.shuffle_requested.connect(_on_shuffle_requested)
+	_hud.next_difficulty_requested.connect(_on_next_difficulty_requested)
 	_hud.home_requested.connect(GameRegistry.go_to_menu)
 	SaveManager.save_last_world(_world_id())
 	AudioManager.play_music("%s/ambience" % _world_id())
@@ -155,7 +157,7 @@ func _on_retry_pressed() -> void:
 ## Moves on after a win: in shuffle, to the next shuffle pick; otherwise to the next level, or after
 ## the difficulty's last level resets its save and shows the world-complete screen.
 func _advance() -> void:
-	# A fade this late means the player has already picked a level or gone home.
+	# A fade this late means the player has already replayed the level or gone home.
 	if Transition.is_busy():
 		return
 	if GameRegistry.is_shuffle():
@@ -234,14 +236,8 @@ func _progress_key() -> String:
 	)
 
 
-func _on_level_chosen(world_id: String, index: int) -> void:
-	GameRegistry.set_shuffle(false)
-	if world_id != _world_id():
-		GameRegistry.go_to_world(world_id, index)
-	elif index < 0:
-		_resume()
-	else:
-		_choose_level(index)
+func _on_replay_requested() -> void:
+	_go_to_level(_current_index)
 
 
 func _on_restart_requested() -> void:
@@ -253,15 +249,11 @@ func _on_restart_requested() -> void:
 	_go_to_level(first)
 
 
-func _on_difficulty_chosen(difficulty: String) -> void:
-	GameRegistry.set_difficulty(difficulty)
-	_resume()
-
-
-func _on_shuffle_requested(from_start: bool) -> void:
-	if from_start:
-		GameRegistry.set_shuffle(true)
-		GameRegistry.reset_shuffle()
-		GameRegistry.start_shuffle()
-	elif not GameRegistry.is_shuffle():
-		GameRegistry.start_shuffle()
+func _on_next_difficulty_requested() -> void:
+	var next: String = GameRegistry.next_difficulty()
+	if next == "":
+		return
+	GameRegistry.set_difficulty(next)
+	var first: int = GameRegistry.get_level_range().x
+	SaveManager.set_progress(_progress_key(), first + 1)
+	_go_to_level(first)

@@ -2,9 +2,9 @@ extends Node
 
 ## Plays sound effects and background loops by name. A name maps to a file in assets/audio/:
 ## "win" is win.wav, "forest/place" is forest/place.wav. Effects play on the Effects bus and
-## loops on the Music bus, and a grown-up can turn each off in the level picker; the choice is
-## saved. A missing sound warns once and stays silent, so a sound problem never stops the game;
-## a test checks every expected sound exists.
+## loops on the Music bus, and a grown-up can turn each off on the main menu or in the pause
+## panel; the choice is saved. A missing sound warns once and stays silent, so a sound problem
+## never stops the game; a test checks every expected sound exists.
 ##
 ## Mechanics never call this. WorldBase, the main menu and the level HUD do, in response to
 ## signals. If another system (adaptive difficulty, a parent view) comes to need the same

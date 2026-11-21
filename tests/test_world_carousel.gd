@@ -210,3 +210,30 @@ func test_world_carousel_with_twelve_items_reaches_every_card() -> void:
 		assert_eq(carousel.get_centred_id(), ids[i])
 	carousel.scroll_to("w11", false)
 	assert_almost_eq(_card_centre("w11").x, carousel.size.x / 2.0, 0.5)
+
+
+func test_world_carousel_text_item_shows_label_with_text() -> void:
+	carousel.set_items([{"id": "7", "text": "7"}] as Array[Dictionary])
+	var card: Panel = carousel.get_card("7")
+	assert_eq(card.get_node("Text").text, "7")
+	assert_null(card.get_node_or_null("Icon"))
+
+
+func test_world_carousel_icon_item_has_no_label() -> void:
+	var card: Panel = carousel.get_card("a")
+	assert_not_null(card.get_node_or_null("Icon"))
+	assert_null(card.get_node_or_null("Text"))
+
+
+func test_world_carousel_set_dimmed_greys_only_that_card() -> void:
+	carousel.set_dimmed("b", true)
+	assert_ne(carousel.get_card("b").self_modulate, Color.WHITE)
+	assert_ne(carousel.get_card("b").get_node("Icon").self_modulate, Color.WHITE)
+	assert_eq(carousel.get_card("a").self_modulate, Color.WHITE)
+
+
+func test_world_carousel_set_dimmed_false_restores_card() -> void:
+	carousel.set_dimmed("b", true)
+	carousel.set_dimmed("b", false)
+	assert_eq(carousel.get_card("b").self_modulate, Color.WHITE)
+	assert_eq(carousel.get_card("b").get_node("Icon").self_modulate, Color.WHITE)

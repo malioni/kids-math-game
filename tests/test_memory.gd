@@ -122,7 +122,12 @@ func test_memory_clearing_board_fox_celebrates() -> void:
 
 
 func test_memory_last_easy_level_shows_world_complete() -> void:
-	_hud.level_chosen.emit("memory", 9)
+	SaveFixture.start_at("memory", 9)
+	_world.queue_free()
+	_world = _make_world()
+	add_child(_world)
+	_mechanic = _world.get_node("MemoryMechanic")
+	_hud = _world.get_node("LevelHud")
 	await _solve()
 	await wait_seconds(_SETTLE)
 	assert_true(_hud.is_world_complete_shown())
@@ -162,7 +167,8 @@ func test_memory_registered_in_game_registry() -> void:
 
 func test_memory_every_level_solvable_in_order() -> void:
 	for difficulty in LevelLoader.DIFFICULTIES:
-		_hud.difficulty_chosen.emit(difficulty)
+		if difficulty != LevelLoader.DIFFICULTIES[0]:
+			_hud.next_difficulty_requested.emit()
 		var level_range: Vector2i = LevelLoader.get_difficulty_range(difficulty)
 		for i in range(level_range.x, level_range.y + 1):
 			assert_eq(_world._current_index, i, difficulty)

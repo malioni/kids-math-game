@@ -91,6 +91,7 @@ const SIZES := {
 	"ui/icon_music_off.svg": Vector2(128, 128),
 	"ui/icon_effects_on.svg": Vector2(128, 128),
 	"ui/icon_effects_off.svg": Vector2(128, 128),
+	"ui/icon_replay.svg": Vector2(128, 128),
 }
 
 

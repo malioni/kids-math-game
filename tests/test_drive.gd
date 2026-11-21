@@ -136,27 +136,27 @@ func test_drive_retry_keeps_program_and_returns_car() -> void:
 	assert_eq(_mechanic.get_program().get_tiles().size(), 2, "editing works after retry")
 
 
-func test_drive_level_change_mid_drive_leaves_nothing_behind() -> void:
+func test_drive_replay_mid_drive_leaves_nothing_behind() -> void:
 	_mechanic.step_duration = 0.4
 	watch_signals(_mechanic)
 	_enter_solution()
 	_mechanic.go()
 	await wait_seconds(0.2)
-	_hud.level_chosen.emit("drive", 7)
+	_hud.replay_requested.emit()
 	await wait_seconds(1.5)
-	assert_eq(_world._current_index, 7)
+	assert_eq(_world._current_index, 0)
 	assert_signal_not_emitted(_mechanic, "correct")
 	assert_false(_retry.visible)
 	assert_true(_mechanic.get_program().is_empty())
 	assert_eq(_mechanic.get_car().position, _mechanic.cell_position(_mechanic.get_field()["start"]))
 
 
-func test_drive_level_change_mid_bump_leaves_nothing_behind() -> void:
+func test_drive_replay_mid_bump_leaves_nothing_behind() -> void:
 	_world.lose_duration = 1.0
 	_enter_short()
 	_mechanic.go()
 	await wait_for_signal(_mechanic.incorrect, 2.0)
-	_hud.level_chosen.emit("drive", 3)
+	_hud.replay_requested.emit()
 	await wait_seconds(1.3)
 	assert_false(_retry.visible)
 	assert_eq(_mechanic.get_car().animation, &"idle")
@@ -184,11 +184,12 @@ func test_drive_sounds_exist() -> void:
 func test_drive_every_level_solvable_in_order() -> void:
 	watch_signals(_mechanic)
 	for difficulty in LevelLoader.DIFFICULTIES:
-		_hud.difficulty_chosen.emit(difficulty)
+		if difficulty != LevelLoader.DIFFICULTIES[0]:
+			await wait_until(_hud.is_world_complete_shown, 5.0)
+			_hud.next_difficulty_requested.emit()
 		var level_range: Vector2i = LevelLoader.get_difficulty_range(difficulty)
 		for index in range(level_range.x, level_range.y + 1):
-			_hud.level_chosen.emit("drive", index)
-			await wait_process_frames(1)
+			await wait_until(func() -> bool: return _world._current_index == index, 5.0)
 			assert_eq(_world._current_index, index)
 			_enter_solution()
 			_mechanic.go()

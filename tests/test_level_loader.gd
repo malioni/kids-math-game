@@ -78,3 +78,15 @@ func test_level_loader_difficulty_range_hard_is_levels_11_to_20() -> void:
 
 func test_level_loader_difficulty_range_unknown_falls_back_to_easy() -> void:
 	assert_eq(LevelLoader.get_difficulty_range("impossible"), Vector2i(0, 9))
+
+
+func test_level_loader_next_difficulty_after_easy_is_hard() -> void:
+	assert_eq(LevelLoader.get_next_difficulty("easy"), "hard")
+
+
+func test_level_loader_next_difficulty_after_last_is_empty() -> void:
+	assert_eq(LevelLoader.get_next_difficulty(LevelLoader.DIFFICULTIES[-1]), "")
+
+
+func test_level_loader_next_difficulty_of_unknown_is_empty() -> void:
+	assert_eq(LevelLoader.get_next_difficulty("impossible"), "")

@@ -266,31 +266,34 @@ func test_forest_bridge_hud_shows_current_level() -> void:
 	assert_eq(hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "2")
 
 
-func test_forest_bridge_picking_a_level_loads_it_and_saves() -> void:
-	_world.get_node("LevelHud").level_chosen.emit("forest", 7)
-	assert_eq(_level_index(_world), 7)
-	assert_true(_bridge_length_in_range(7, _mechanic.get_target_length()))
+func test_forest_bridge_starting_at_a_level_loads_it_and_saves() -> void:
+	SaveFixture.start_at("forest", 7)
+	var world: Node2D = add_child_autofree(_make_world())
+	var mechanic: PlacementMechanic = world.get_node("BridgeLayer/PlacementMechanic")
+	assert_eq(_level_index(world), 7)
+	assert_true(_bridge_length_in_range(7, mechanic.get_target_length()))
 	assert_eq(SaveManager.load_progress(_KEY), 8)
 
 
-func test_forest_bridge_picking_a_lower_level_lowers_the_save() -> void:
+func test_forest_bridge_starting_at_a_lower_level_lowers_the_save() -> void:
 	SaveManager.save_progress(_KEY, 9)
-	var world: Node2D = add_child_autofree(_make_world())
-	world.get_node("LevelHud").level_chosen.emit("forest", 1)
+	SaveFixture.start_at("forest", 1)
+	add_child_autofree(_make_world())
 	assert_eq(SaveManager.load_progress(_KEY), 2)
 
 
-func test_forest_bridge_picking_a_level_mid_walk_does_not_advance_twice() -> void:
+func test_forest_bridge_replay_mid_walk_does_not_advance() -> void:
 	_fill_and_confirm(_mechanic)
-	_world.get_node("LevelHud").level_chosen.emit("forest", 5)
+	_world.get_node("LevelHud").replay_requested.emit()
 	await wait_seconds(_SETTLE)
-	assert_eq(_level_index(_world), 5)
+	assert_eq(_level_index(_world), 0)
+	assert_eq(SaveManager.load_progress(_KEY), 1)
 	assert_false(_mechanic.get_node("GoButton").disabled)
 
 
-func test_forest_bridge_picking_a_level_mid_fall_hides_retry() -> void:
+func test_forest_bridge_replay_mid_fall_hides_retry() -> void:
 	_drop_one_short_and_confirm(_mechanic)
-	_world.get_node("LevelHud").level_chosen.emit("forest", 3)
+	_world.get_node("LevelHud").replay_requested.emit()
 	await wait_seconds(_SETTLE)
 	assert_false(_retry.visible)
 	assert_eq(_world.get_node("Character").position, Vector2(150, 340))

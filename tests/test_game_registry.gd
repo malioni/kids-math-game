@@ -156,3 +156,10 @@ func test_game_registry_shuffle_position_never_passes_total() -> void:
 		_finish_shuffle(world["id"])
 	var position: Vector2i = GameRegistry.shuffle_position()
 	assert_eq(position.x, position.y)
+
+
+func test_game_registry_next_difficulty_follows_current_difficulty() -> void:
+	GameRegistry.set_difficulty("easy")
+	assert_eq(GameRegistry.next_difficulty(), "hard")
+	GameRegistry.set_difficulty("hard")
+	assert_eq(GameRegistry.next_difficulty(), "")

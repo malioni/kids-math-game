@@ -119,16 +119,17 @@ func test_sky_balloons_retry_restores_same_puzzle() -> void:
 	assert_lt(_world.get_node("Rig").position.y, 600.0)
 
 
-func test_sky_balloons_picking_a_level_loads_it_and_saves() -> void:
-	_hud.level_chosen.emit("sky", 6)
-	assert_eq(_world._current_index, 6)
+func test_sky_balloons_starting_at_a_level_loads_it_and_saves() -> void:
+	SaveFixture.start_at("sky", 6)
+	var world: Node2D = add_child_autofree(_make_world())
+	assert_eq(world._current_index, 6)
 	assert_eq(SaveManager.load_progress("sky:easy"), 7)
-	assert_eq(_hud.get_node("Root/LevelBadge/Row/LevelLabel").text, "7")
+	assert_eq(world.get_node("LevelHud/Root/LevelBadge/Row/LevelLabel").text, "7")
 
 
-func test_sky_balloons_picking_a_level_mid_fall_cancels_the_fall() -> void:
+func test_sky_balloons_replay_mid_fall_cancels_the_fall() -> void:
 	_pop_too_many(_mechanic)
-	_hud.level_chosen.emit("sky", 2)
+	_hud.replay_requested.emit()
 	await wait_seconds(_SETTLE)
 	assert_false(_retry.visible)
 	assert_true(_world.is_rising())
@@ -163,7 +164,8 @@ func test_sky_balloons_remembers_it_was_played_last() -> void:
 
 func test_sky_balloons_every_level_solvable_in_order() -> void:
 	for difficulty in LevelLoader.DIFFICULTIES:
-		_hud.difficulty_chosen.emit(difficulty)
+		if difficulty != LevelLoader.DIFFICULTIES[0]:
+			_hud.next_difficulty_requested.emit()
 		var level_range: Vector2i = LevelLoader.get_difficulty_range(difficulty)
 		for i in range(level_range.x, level_range.y + 1):
 			assert_eq(_world._current_index, i, difficulty)

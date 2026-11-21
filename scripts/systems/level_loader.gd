@@ -79,3 +79,12 @@ func get_difficulty_range(difficulty: String) -> Vector2i:
 		return Vector2i(0, 9)
 	var entry: Dictionary = parsed.get(difficulty, parsed["easy"])
 	return Vector2i(int(entry["first"]) - 1, int(entry["last"]) - 1)
+
+
+## Returns the difficulty after the given one in DIFFICULTIES, or "" for the hardest or an unknown
+## difficulty.
+func get_next_difficulty(difficulty: String) -> String:
+	var index: int = DIFFICULTIES.find(difficulty)
+	if index < 0 or index + 1 >= DIFFICULTIES.size():
+		return ""
+	return DIFFICULTIES[index + 1]

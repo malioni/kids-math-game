@@ -7,22 +7,23 @@ the sizes.
 
 | File | Size | Use |
 |---|---|---|
-| `icon_world_forest.svg` | 128×128 | Forest Bridge world icon (the level badge, and its card on the menu, in the picker and on the world-complete screen) |
+| `icon_world_forest.svg` | 128×128 | Forest Bridge world icon (the level badge and its card on the menu) |
 | `icon_world_sky.svg` | 128×128 | Sky Balloons world icon |
 | `icon_world_market.svg` | 128×128 | Market world icon |
 | `icon_world_picnic.svg` | 128×128 | Picnic world icon |
 | `icon_world_memory.svg` | 128×128 | Memory Meadow world icon |
-| `icon_shuffle.svg` | 128×128 | Shuffle: the menu's button, the picker's tab and the badge's sticker |
-| `icon_easy.svg` | 128×128 | Easy difficulty button (a hill) |
-| `icon_hard.svg` | 128×128 | Hard difficulty button (a mountain) |
+| `icon_shuffle.svg` | 128×128 | Shuffle: the menu's Shuffle card and the badge's sticker |
+| `icon_easy.svg` | 128×128 | Easy difficulty button on the menu (a hill) |
+| `icon_hard.svg` | 128×128 | Hard difficulty button on the menu, and the world-complete screen's button to go on to hard (a mountain) |
 | `icon_music_on.svg`, `icon_music_off.svg` | 128×128 | Background sound toggle; the "off" icon is the "on" icon with a red slash |
 | `icon_effects_on.svg`, `icon_effects_off.svg` | 128×128 | Sound effects toggle |
-| `icon_close.svg` | 128×128 | Close the level picker |
-| `icon_home.svg` | 128×128 | Home button in the picker and on the world-complete screen |
+| `icon_close.svg` | 128×128 | Close the pause panel |
+| `icon_replay.svg` | 128×128 | Replay this level, in the pause panel (a circular arrow around a green play triangle) |
+| `icon_home.svg` | 128×128 | Home button in the pause panel and on the world-complete screen |
 | `icon_star.svg` | 200×200 | World-complete screen |
 | `icon_arrow.svg` | 128×128 | Carousel arrows; points right, flipped for left |
 | `icon_play.svg` | 200×200 | Main menu Play button |
-| `card_frame.svg` | 96×96 | World card frame, drawn through a `StyleBoxTexture` with 24-unit margins; plain white so the carousel can tint it |
+| `card_frame.svg` | 96×96 | Card frame for the world carousel and the level wheel, drawn through a `StyleBoxTexture` with 24-unit margins; plain white so the carousel can tint it |
 | `bg_menu.svg` | 1800×1000 | Main menu background, with the 1280×720 play area centred |
 
 Style: a `#3D2617` outline 3 units wide with round joins, one highlight (top left) and one shade (bottom
